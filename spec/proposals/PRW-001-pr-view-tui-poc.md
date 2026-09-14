@@ -1,6 +1,6 @@
 # PRW-001: PR view proof of concept as a terminal UI
 
-**Status:** accepted
+**Status:** scheduled
 **Created:** 2026-09-13
 **Updated:** 2026-09-13
 
@@ -59,6 +59,9 @@ Rationale: the extension must be JavaScript. Writing the fetch, normalize, and c
 is written once. The shared layer must use only `fetch` and standard web APIs. Bun-specific and Node-specific APIs
 stay in the CLI entry point.
 
+The shared layer is its own workspace package with no Bun or Node type packages in its `tsconfig.json`. The boundary
+is a type error, not a convention.
+
 ### TUI library
 
 OpenTUI, with an explicit checkpoint. If OpenTUI becomes cumbersome for something Ink already solves, that is raised
@@ -67,6 +70,8 @@ silent swap.
 
 Rationale: OpenTUI is worth evaluating for its rendering speed and richer layouts. Rendering is kept separate from the
 data model so a swap stays contained. The checkpoint is validated under milestone 2.
+
+The front end is `@opentui/react`. Ink is React-only, so a swap ports components rather than rewriting them.
 
 ### Authentication
 
@@ -445,6 +450,9 @@ under milestone 1, and issue-comment placement under milestone 2.
   diff.
 - 2026-09-13: Accepted. All open questions settled, Risks section compliant, no high-likelihood/high-impact risk
   outstanding.
+- 2026-09-13: Promoted to Phases 1 through 5, one phase per milestone. Phases 3, 4, and 5 are independent of each
+  other. The shared layer becomes a separate workspace package with no Bun or Node types. The TUI front end is
+  `@opentui/react`.
 
 ## References
 
