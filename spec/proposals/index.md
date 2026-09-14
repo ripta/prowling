@@ -5,4 +5,4 @@ whenever a proposal is created or its status changes.
 
 | Proposal | Description | Status |
 |----------|-------------|--------|
-| [PRW-001](PRW-001-pr-view-tui-poc.md) | PR view proof of concept as a terminal UI | draft |
+| [PRW-001](PRW-001-pr-view-tui-poc.md) | PR view proof of concept as a terminal UI | accepted |
