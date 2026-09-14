@@ -73,6 +73,19 @@ data model so a swap stays contained. The checkpoint is validated under mileston
 
 The front end is `@opentui/react`. Ink is React-only, so a swap ports components rather than rewriting them.
 
+### Layout gate
+
+Once the state header and the revision-grouped timeline render against live pull requests, work pauses. The user
+reviews the TUI hands-on against at least three pull requests of their choosing, including one with force-pushes.
+Findings go in the Decision Log. Any settled decision the review contradicts is reopened there. Nothing beyond that
+point begins until the gate is ruled.
+
+Rationale: this proposal exists to settle the information architecture, and that can only be judged with real data
+on screen. Gating before classification, CI detail, and perspective keeps those from being built on a grouping that
+turns out to be wrong. Seeing some real data is enough. The gate does not wait for all of it.
+
+The gate sits at the end of the phase that delivers the header and timeline. See the phase index.
+
 ### Authentication
 
 GitHub: shell out to `gh auth token`. Fall back to the `GITHUB_TOKEN` environment variable.
@@ -409,7 +422,7 @@ under milestone 1, and issue-comment placement under milestone 2.
 | Milestone | Description |
 |-----------|-------------|
 | 1 | Fetch and normalize. GraphQL client, auth, partial-error classification, revision chain, threads, comments, and checks. Transport record and replay. JSON dump output. Settles the fallback for commits with no push record, and validates a fork PR. |
-| 2 | TUI skeleton in OpenTUI. State header, revision-grouped timeline, collapsible groups, keyboard navigation. Settles issue-comment placement, the detail-pane markdown renderer, and the description collapse height. OpenTUI checkpoint. |
+| 2 | TUI skeleton in OpenTUI. State header, revision-grouped timeline, collapsible groups, keyboard navigation. Settles issue-comment placement, the detail-pane markdown renderer, and the description collapse height. Layout gate. OpenTUI checkpoint. |
 | 3 | Classification heuristics with fixture tests. Procedural items folded with count and toggle. |
 | 4 | CI provider layer. Actions step logs. Cloud Build via application default credentials. Generic Checks fallback. |
 | 5 | Perspective toggle. Reviewer and author emphasis with authorship auto-detect. |
@@ -453,6 +466,8 @@ under milestone 1, and issue-comment placement under milestone 2.
 - 2026-09-13: Promoted to Phases 1 through 5, one phase per milestone. Phases 3, 4, and 5 are independent of each
   other. The shared layer becomes a separate workspace package with no Bun or Node types. The TUI front end is
   `@opentui/react`.
+- 2026-09-13: Layout gate added at the end of the header-and-timeline phase. The detail pane becomes its own phase,
+  and classification, CI, and perspective shift to Phases 4, 5, and 6. All are held until the gate is ruled.
 
 ## References
 

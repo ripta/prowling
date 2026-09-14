@@ -1,9 +1,9 @@
-# Phase 5: Perspective
+# Phase 6: Perspective
 
 **Goal:** Lead with what matters to the viewer's role, reviewer or author, with a toggle between them.
 **Status:** PLANNED
 **Complexity:** MEDIUM
-**Dependencies:** Phase 1, Phase 2
+**Dependencies:** Phase 1, Phase 2. Held until the layout gate at the end of Phase 2 is ruled.
 
 ## Scope
 
@@ -42,8 +42,8 @@ storage.
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
-| 5.1 | PRW-001 M5 | Authorship detection, both boundaries, read marker store, divider in the timeline | NOT STARTED |
-| 5.2 | PRW-001 M5 | Reviewer and author emphasis layouts with a toggle | NOT STARTED |
+| 6.1 | PRW-001 M5 | Authorship detection, both boundaries, read marker store, divider in the timeline | NOT STARTED |
+| 6.2 | PRW-001 M5 | Reviewer and author emphasis layouts with a toggle | NOT STARTED |
 
 ## Implementation
 
@@ -71,7 +71,7 @@ storage.
 
 ## Acceptance Criteria
 
-### Phase 5.1
+### Phase 6.1
 
 - [ ] Authorship is detected from the viewer login
 - [ ] Reviewer boundary comes from `viewerLatestReview.commit.oid`, and a null review yields no boundary with the whole
@@ -81,7 +81,7 @@ storage.
 - [ ] The timeline draws a divider at the active boundary
 - [ ] Tracking updated: this document, `spec/phases/index.md`
 
-### Phase 5.2
+### Phase 6.2
 
 - [ ] Reviewer emphasis leads with unresolved threads, then what changed since the boundary
 - [ ] Author emphasis leads with CI failures, requested changes, and outstanding reviewers

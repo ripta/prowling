@@ -1,10 +1,10 @@
-# Phase 4: CI providers
+# Phase 5: CI providers
 
 **Goal:** Show failing step log excerpts inline for Actions and Cloud Build, with a generic fallback for everything
 else.
 **Status:** PLANNED
 **Complexity:** MEDIUM
-**Dependencies:** Phase 1, Phase 2
+**Dependencies:** Phase 1, Phase 2. Held until the layout gate at the end of Phase 2 is ruled.
 
 ## Scope
 
@@ -39,13 +39,13 @@ The Cloud Build REST API is plain HTTPS with a bearer token.
 **Decision:** The Actions job id is `CheckRun.databaseId`. The log comes from
 `GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs`, following the redirect.
 
-**Rationale:** Actions jobs are check runs, so the ids coincide. Phase 4.1 verifies this against a fixture before
+**Rationale:** Actions jobs are check runs, so the ids coincide. Phase 5.1 verifies this against a fixture before
 relying on it, and falls back to parsing `detailsUrl` if it does not hold.
 
 ### Cloud Build build identity
 
 **Decision:** The build id and project come from the check's `detailsUrl`, which the Cloud Build GitHub app points at
-the console page for the build. The exact URL shape is verified against a real check in Phase 4.2.
+the console page for the build. The exact URL shape is verified against a real check in Phase 5.2.
 
 **Rationale:** the check run carries no other reference to the build.
 
@@ -60,8 +60,8 @@ transport seam, so replay covers them.
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
-| 4.1 | PRW-001 M4 | Provider seam, generic provider, Actions logs with `##[group]` parsing, step and excerpt rendering | NOT STARTED |
-| 4.2 | PRW-001 M4 | Cloud Build provider with `Step #N` parsing and permission-error degradation | NOT STARTED |
+| 5.1 | PRW-001 M4 | Provider seam, generic provider, Actions logs with `##[group]` parsing, step and excerpt rendering | NOT STARTED |
+| 5.2 | PRW-001 M4 | Cloud Build provider with `Step #N` parsing and permission-error degradation | NOT STARTED |
 
 ## Implementation
 
@@ -89,7 +89,7 @@ transport seam, so replay covers them.
 
 ## Acceptance Criteria
 
-### Phase 4.1
+### Phase 5.1
 
 - [ ] `check.provider` is derived during normalization and covered by fixture tests
 - [ ] The generic provider renders `summaryText` and `detailsUrl` for a check with no steps
@@ -99,7 +99,7 @@ transport seam, so replay covers them.
 - [ ] Opening a failing check shows its steps and the failing step's excerpt inline
 - [ ] Tracking updated: this document, `spec/phases/index.md`
 
-### Phase 4.2
+### Phase 5.2
 
 - [ ] Token comes from `gcloud auth application-default print-access-token`, with a clear error when unavailable
 - [ ] Build id and project parsed from `detailsUrl`, with the URL shape recorded in this document

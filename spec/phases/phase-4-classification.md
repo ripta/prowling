@@ -1,9 +1,9 @@
-# Phase 3: Classification
+# Phase 4: Classification
 
 **Goal:** Separate procedural items from technical ones, and fold the procedural ones.
 **Status:** PLANNED
 **Complexity:** MEDIUM
-**Dependencies:** Phase 1, Phase 2
+**Dependencies:** Phase 1, Phase 2. Held until the layout gate at the end of Phase 2 is ruled.
 
 ## Scope
 
@@ -35,8 +35,8 @@ wins, and its name is what the model records.
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
-| 3.1 | PRW-001 M3 | Heuristics in core with fixture tests | NOT STARTED |
-| 3.2 | PRW-001 M3 | Folded rows with count and toggle in the TUI | NOT STARTED |
+| 4.1 | PRW-001 M3 | Heuristics in core with fixture tests | NOT STARTED |
+| 4.2 | PRW-001 M3 | Folded rows with count and toggle in the TUI | NOT STARTED |
 
 ## Implementation
 
@@ -60,7 +60,7 @@ wins, and its name is what the model records.
 
 ## Acceptance Criteria
 
-### Phase 3.1
+### Phase 4.1
 
 - [ ] Each signal listed in PRW-001 has a named rule and a test
 - [ ] The model records the classification and the rule that fired
@@ -68,7 +68,7 @@ wins, and its name is what the model records.
       values checked in alongside the fixture
 - [ ] Tracking updated: this document, `spec/phases/index.md`
 
-### Phase 3.2
+### Phase 4.2
 
 - [ ] Procedural items in a revision fold into one row showing a count
 - [ ] The row expands to reveal every folded item, and no item is dropped

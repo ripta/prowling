@@ -7,21 +7,28 @@ phase status changes.
 | Phase | Proposal | Description | Status | Progress |
 |-------|----------|-------------|--------|----------|
 | 1 | PRW-001 | Data layer: transport, model, revision chain | PLANNED | 0/3 |
-| 2 | PRW-001 | TUI skeleton: header, timeline, detail pane | PLANNED | 0/3 |
-| 3 | PRW-001 | Classification and folding | PLANNED | 0/2 |
-| 4 | PRW-001 | CI providers: Actions logs, Cloud Build, generic | PLANNED | 0/2 |
-| 5 | PRW-001 | Perspective: boundaries and emphasis | PLANNED | 0/2 |
+| 2 | PRW-001 | Header and timeline, ending in the layout gate | PLANNED | 0/2 |
+| 3 | PRW-001 | Detail pane and OpenTUI checkpoint | PLANNED | 0/1 |
+| 4 | PRW-001 | Classification and folding | PLANNED | 0/2 |
+| 5 | PRW-001 | CI providers: Actions logs, Cloud Build, generic | PLANNED | 0/2 |
+| 6 | PRW-001 | Perspective: boundaries and emphasis | PLANNED | 0/2 |
 
 ## Scheduling Notes
 
-Phases 3, 4, and 5 depend on Phases 1 and 2 only. They do not depend on each other and can run in any order.
+The layout gate sits at the end of Phase 2. The user reviews the header and timeline hands-on against live pull
+requests before anything else is built on top of them. Phases 3 through 6 are held until the gate is ruled. The ruling
+and any reopened decisions are recorded in PRW-001's Decision Log.
 
-PRW-001 becomes `implemented` when Phase 5 completes. Its revisit hook for the first extension proposal fires then.
+Phases 4, 5, and 6 depend on Phases 1 and 2 only. They do not depend on each other or on Phase 3, and can run in any
+order once the gate is ruled.
+
+PRW-001 becomes `implemented` when Phase 6 completes. Its revisit hook for the first extension proposal fires then.
 
 ## Pending Phases
 
 - Phase 1: Data layer
-- Phase 2: TUI skeleton
-- Phase 3: Classification
-- Phase 4: CI providers
-- Phase 5: Perspective
+- Phase 2: Header and timeline
+- Phase 3: Detail pane
+- Phase 4: Classification
+- Phase 5: CI providers
+- Phase 6: Perspective

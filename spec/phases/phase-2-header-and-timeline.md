@@ -1,18 +1,19 @@
-# Phase 2: TUI skeleton
+# Phase 2: Header and timeline
 
-**Goal:** Render the model in OpenTUI with a state header, a revision-grouped timeline, and a detail pane.
+**Goal:** Render the state header and the revision-grouped timeline in OpenTUI against live pull requests, then hold
+for the layout gate.
 **Status:** PLANNED
 **Complexity:** HIGH
 **Dependencies:** Phase 1
 
 ## Scope
 
-Implements: PRW-001 M2
+Implements: PRW-001 M2, the header and timeline portion. The detail pane and the OpenTUI checkpoint are Phase 3.
 
 ## Problem Statement
 
 The model exists but nothing shows it. The information architecture PRW-001 exists to settle can only be judged on
-screen, against real pull requests.
+screen, against real pull requests. This phase puts enough on screen to judge it, and ends with that judgement.
 
 ## Design Decisions
 
@@ -20,8 +21,8 @@ screen, against real pull requests.
 
 **Decision:** `@opentui/react`.
 
-**Rationale:** Ink is React-only. If the checkpoint at the end of this phase rules against OpenTUI, components port
-rather than get rewritten. That keeps the swap PRW-001 already budgets for as cheap as it can be.
+**Rationale:** Ink is React-only. If the checkpoint in Phase 3 rules against OpenTUI, components port rather than get
+rewritten. That keeps the swap PRW-001 already budgets for as cheap as it can be.
 
 ### Rendering reads the model only
 
@@ -30,29 +31,30 @@ rather than get rewritten. That keeps the swap PRW-001 already budgets for as ch
 **Rationale:** replay and fixtures already produce a model. Rendering from it keeps layout iteration offline, and keeps
 an OpenTUI swap contained to `packages/cli/src/tui`.
 
-### Checkpoint is a write-up, not a milestone
+### Layout gate
 
-**Decision:** Phase 2.3 ends with a written account of every point where OpenTUI resisted. The ruling on whether to
-keep OpenTUI is made with the user and recorded in PRW-001's Decision Log.
+**Decision:** After Phase 2.2, work pauses. The user reviews the TUI hands-on against at least three live pull
+requests of their choosing, including one with force-pushes. Findings go in PRW-001's Decision Log. Any settled
+decision the review contradicts is reopened there. No later phase begins until the gate is ruled.
 
-**Rationale:** design rulings are not implementation milestones. The write-up is the deliverable the ruling needs.
+**Rationale:** classification, CI detail, and perspective all build on the grouping this phase renders. Judging the
+grouping first keeps them from being built on something that turns out to be wrong. Seeing some real data is enough;
+the gate does not wait for all of it.
 
 ## Milestones
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
 | 2.1 | PRW-001 M2 | App shell, state header with check rows, description region with collapse and scrollbox | NOT STARTED |
-| 2.2 | PRW-001 M2 | Revision-grouped timeline, expansion rules, keyboard navigation. Settles issue-comment placement | NOT STARTED |
-| 2.3 | PRW-001 M2 | Detail pane with markdown rendering. Settles the pane renderer. OpenTUI checkpoint write-up | NOT STARTED |
+| 2.2 | PRW-001 M2 | Revision-grouped timeline, expansion rules, keyboard navigation. Settles issue-comment placement. Layout gate | NOT STARTED |
 
-Deferred questions from PRW-001 milestone 2, and which milestone owns each:
+Deferred questions from PRW-001 milestone 2 owned here:
 
 - Phase 2.1 tunes the description collapse height, starting at 8 lines.
 - Phase 2.2 settles where issue comments render: inline in the revision, in a separate discussion section, or in a
   parallel lane.
-- Phase 2.3 settles the detail pane's markdown renderer, between OpenTUI's `<markdown>` and a `marked` AST mapped onto
-  text nodes and `<code>` renderables.
-- Phase 2.3 produces the OpenTUI checkpoint write-up.
+
+The detail pane's markdown renderer and the OpenTUI checkpoint are owned by Phase 3.
 
 Each gets recorded in PRW-001's Decision Log before its milestone is DONE.
 
@@ -65,9 +67,7 @@ Each gets recorded in PRW-001's Decision Log before its milestone is DONE.
 3. `packages/cli/src/tui/description.tsx` - collapse, remaining count, scrollbox
 4. `packages/cli/src/tui/timeline.tsx` - revision groups and expansion state
 5. `packages/cli/src/tui/revision.tsx` - one revision and its items
-6. `packages/cli/src/tui/detail.tsx` - detail pane
-7. `packages/cli/src/tui/markdown.tsx` - pane renderer behind one component
-8. `packages/cli/src/tui/keys.ts` - key bindings
+6. `packages/cli/src/tui/keys.ts` - key bindings
 
 ### Files to Modify
 
@@ -81,9 +81,8 @@ Each gets recorded in PRW-001's Decision Log before its milestone is DONE.
 3. Description region: 8 lines collapsed with a remaining count, `<scrollbox>` capped near half the viewport when
    expanded, dim placeholder when empty.
 4. Timeline grouped by revision, with the newest and any unresolved-thread revision expanded, others collapsed.
-5. Keyboard navigation across revisions and items, expand and collapse, open detail.
-6. Detail pane rendering `body` with HTML comments stripped.
-7. Checkpoint write-up.
+5. Keyboard navigation across revisions and items, expand and collapse.
+6. Hands-on review against live pull requests, with findings recorded.
 
 ## Acceptance Criteria
 
@@ -105,13 +104,7 @@ Each gets recorded in PRW-001's Decision Log before its milestone is DONE.
 - [ ] The newest revision and any revision holding an unresolved thread start expanded, all others collapsed
 - [ ] Review comments, reviews, and check runs render under the revision they anchor to
 - [ ] Issue-comment placement settled and recorded in PRW-001
-- [ ] Keyboard navigation moves between revisions and items, toggles expansion, and opens the detail pane
-- [ ] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
-
-### Phase 2.3
-
-- [ ] Detail pane renders `body` with HTML comments stripped
-- [ ] Fenced code blocks and lists keep their shape in the pane
-- [ ] Pane renderer settled and recorded in PRW-001
-- [ ] Checkpoint write-up lists every point of OpenTUI friction met in this phase, and the ruling is recorded in PRW-001
+- [ ] Keyboard navigation moves between revisions and items and toggles expansion
+- [ ] Layout gate: the TUI reviewed hands-on against at least three live pull requests, including one with
+      force-pushes, with findings and any reopened decisions recorded in PRW-001's Decision Log
 - [ ] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
