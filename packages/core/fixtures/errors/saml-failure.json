@@ -1,0 +1,25 @@
+{
+  "data": {
+    "search": {
+      "nodes": [
+        {
+          "id": "PR_kwDOAbCdEf4AAAAB",
+          "number": 42,
+          "title": "Visible pull request"
+        },
+        null
+      ]
+    }
+  },
+  "errors": [
+    {
+      "type": "FORBIDDEN",
+      "path": ["search", "nodes", 1],
+      "extensions": {
+        "saml_failure": true
+      },
+      "locations": [{ "line": 3, "column": 5 }],
+      "message": "Resource protected by organization SAML enforcement. You must grant your Personal Access token access to this organization."
+    }
+  ]
+}

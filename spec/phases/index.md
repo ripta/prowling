@@ -6,7 +6,7 @@ phase status changes.
 
 | Phase | Proposal | Description | Status | Progress |
 |-------|----------|-------------|--------|----------|
-| 1 | PRW-001 | Data layer: transport, model, revision chain | PLANNED | 0/3 |
+| 1 | PRW-001 | Data layer: transport, model, revision chain | IN PROGRESS | 1/3 |
 | 2 | PRW-001 | Header and timeline, ending in the layout gate | PLANNED | 0/2 |
 | 3 | PRW-001 | Detail pane and OpenTUI checkpoint | PLANNED | 0/1 |
 | 4 | PRW-001 | Classification and folding | PLANNED | 0/2 |
@@ -26,7 +26,6 @@ PRW-001 becomes `implemented` when Phase 6 completes. Its revisit hook for the f
 
 ## Pending Phases
 
-- Phase 1: Data layer
 - Phase 2: Header and timeline
 - Phase 3: Detail pane
 - Phase 4: Classification

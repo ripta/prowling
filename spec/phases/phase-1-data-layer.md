@@ -1,7 +1,7 @@
 # Phase 1: Data layer
 
 **Goal:** Fetch one pull request and normalize it into a revision-anchored model, with no terminal involved.
-**Status:** PLANNED
+**Status:** IN PROGRESS
 **Complexity:** HIGH
 **Dependencies:** None
 
@@ -61,7 +61,7 @@ A model built from the first page only is silently wrong.
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
-| 1.1 | PRW-001 M1 | Workspace, transport seam, auth, record and replay, partial-error classification | NOT STARTED |
+| 1.1 | PRW-001 M1 | Workspace, transport seam, auth, record and replay, partial-error classification | DONE |
 | 1.2 | PRW-001 M1 | GraphQL query, normalized model with node IDs, JSON dump | NOT STARTED |
 | 1.3 | PRW-001 M1 | Revision chain and anchoring. Settles the no-push-record fallback. Validates a fork PR | NOT STARTED |
 
@@ -107,16 +107,16 @@ repository. Both get settled and recorded in the proposal's Decision Log before 
 
 ### Phase 1.1
 
-- [ ] `packages/core/tsconfig.json` lists no Bun or Node type packages, and typecheck passes for both packages
-- [ ] Every GraphQL and REST request passes through the one transport function
-- [ ] `--record <dir>` writes one file per response, keyed by hash of method, URL, and request body
-- [ ] `--replay <dir>` serves from disk and makes no network call, proven by a test with `fetch` stubbed to throw
-- [ ] A test asserts the `Authorization` header appears in no recording
-- [ ] The recordings directory is gitignored
-- [ ] Token comes from `gh auth token`, then `GITHUB_TOKEN`, with a clear error when neither is available
-- [ ] A fixture with `extensions.saml_failure` raises the fatal error with the remedy text
-- [ ] A fixture with a non-auth partial error yields a model carrying that degradation
-- [ ] Tracking updated: this document, `spec/phases/index.md`
+- [x] `packages/core/tsconfig.json` lists no Bun or Node type packages, and typecheck passes for both packages
+- [x] Every GraphQL and REST request passes through the one transport function
+- [x] `--record <dir>` writes one file per response, keyed by hash of method, URL, and request body
+- [x] `--replay <dir>` serves from disk and makes no network call, proven by a test with `fetch` stubbed to throw
+- [x] A test asserts the `Authorization` header appears in no recording
+- [x] The recordings directory is gitignored
+- [x] Token comes from `gh auth token`, then `GITHUB_TOKEN`, with a clear error when neither is available
+- [x] A fixture with `extensions.saml_failure` raises the fatal error with the remedy text
+- [x] A fixture with a non-auth partial error yields a model carrying that degradation
+- [x] Tracking updated: this document, `spec/phases/index.md`
 
 ### Phase 1.2
 

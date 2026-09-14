@@ -1,0 +1,20 @@
+{
+  "data": {
+    "repository": {
+      "pullRequest": {
+        "id": "PR_kwDOAbCdEf4AAAAC",
+        "number": 7,
+        "title": "Pull request with a dropped commit"
+      },
+      "object": null
+    }
+  },
+  "errors": [
+    {
+      "type": "NOT_FOUND",
+      "path": ["repository", "object"],
+      "locations": [{ "line": 9, "column": 5 }],
+      "message": "Could not resolve to a Commit with the oid 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeef'."
+    }
+  ]
+}

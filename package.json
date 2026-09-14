@@ -1,0 +1,15 @@
+{
+  "name": "prowling",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "typecheck": "bun run --filter='*' typecheck",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "bun-types": "^1.4.2",
+    "typescript": "^5"
+  }
+}

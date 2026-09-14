@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "errors": [
+    {
+      "message": "Something went wrong while executing your query. Please include `A1B2:C3D4:E5F6:0001` when reporting this issue.",
+      "locations": [{ "line": 1, "column": 1 }]
+    }
+  ]
+}

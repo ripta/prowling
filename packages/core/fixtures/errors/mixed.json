@@ -1,0 +1,32 @@
+{
+  "data": {
+    "search": {
+      "nodes": [
+        null,
+        {
+          "id": "PR_kwDOAbCdEf4AAAAD",
+          "number": 99,
+          "title": "Visible pull request"
+        },
+        null
+      ]
+    }
+  },
+  "errors": [
+    {
+      "type": "NOT_FOUND",
+      "path": ["search", "nodes", 0],
+      "locations": [{ "line": 3, "column": 5 }],
+      "message": "Could not resolve to a node with the global id of 'PR_kwDOAbCdEf4AAAAE'."
+    },
+    {
+      "type": "FORBIDDEN",
+      "path": ["search", "nodes", 2],
+      "extensions": {
+        "saml_failure": true
+      },
+      "locations": [{ "line": 3, "column": 5 }],
+      "message": "Resource protected by organization SAML enforcement. You must grant your Personal Access token access to this organization."
+    }
+  ]
+}

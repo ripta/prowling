@@ -1,0 +1,16 @@
+{
+  "name": "@prowling/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "start": "bun run src/main.ts"
+  },
+  "dependencies": {
+    "@prowling/core": "workspace:*"
+  },
+  "devDependencies": {
+    "bun-types": "^1.4.2"
+  }
+}
