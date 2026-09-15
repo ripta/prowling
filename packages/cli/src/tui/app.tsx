@@ -17,7 +17,7 @@ import { Description, descriptionHeight } from "./description";
 import { Header, headerHeight } from "./header";
 import { hintsFor, REGIONS, type RegionId, resolveAction } from "./keys";
 import { type Cursor, ON_HEADER } from "./revision";
-import { COLORS } from "./theme";
+import { DARK, type Palette, PaletteContext, usePalette } from "./theme";
 import { cursorsOf, flattenRows, sameCursor, Timeline } from "./timeline";
 
 // The title line and the status bar, which sit outside every region.
@@ -31,9 +31,17 @@ export type AppProps = {
   pullRequest: PullRequest;
   onQuit: (code: number) => void;
   collapsedRows?: number;
+  // Which background the terminal reported. The caller owns the query, so a test mounts this
+  // without one and a component below reads the result through the context rather than a prop.
+  palette?: Palette;
 };
 
-export function App({ pullRequest, onQuit, collapsedRows = DEFAULT_COLLAPSED_ROWS }: AppProps) {
+export function App({
+  pullRequest,
+  onQuit,
+  collapsedRows = DEFAULT_COLLAPSED_ROWS,
+  palette = DARK,
+}: AppProps) {
   const { width, height } = useTerminalDimensions();
   const [focus, setFocus] = useState<RegionId>("header");
   const [expanded, setExpanded] = useState(false);
@@ -172,41 +180,43 @@ export function App({ pullRequest, onQuit, collapsedRows = DEFAULT_COLLAPSED_ROW
   });
 
   return (
-    <box style={{ flexDirection: "column", width: "100%", height: "100%" }}>
-      <Title pullRequest={pullRequest} />
-      <Header
-        pullRequest={pullRequest}
-        rows={rows}
-        focused={focus === "header"}
-        height={checkListHeight(height)}
-        width={width}
-      />
-      <Description
-        view={view}
-        expanded={expanded}
-        focused={focus === "description"}
-        expandedHeight={expandedHeight(height)}
-        width={width}
-      />
-      {detail === null ? (
-        <Timeline
-          rows={timelineRows}
-          cursor={cursor}
-          focused={focus === "timeline"}
-          height={timelineHeight(pullRequest, rows, view, expanded, height)}
+    <PaletteContext value={palette}>
+      <box style={{ flexDirection: "column", width: "100%", height: "100%" }}>
+        <Title pullRequest={pullRequest} />
+        <Header
+          pullRequest={pullRequest}
+          rows={rows}
+          focused={focus === "header"}
+          height={checkListHeight(height)}
           width={width}
         />
-      ) : (
-        <Detail
-          entry={detail}
-          focused={focus === "detail"}
-          height={timelineHeight(pullRequest, rows, view, expanded, height)}
+        <Description
+          view={view}
+          expanded={expanded}
+          focused={focus === "description"}
+          expandedHeight={expandedHeight(height)}
           width={width}
         />
-      )}
-      <box style={{ flexGrow: 1 }} />
-      <StatusBar region={focus} />
-    </box>
+        {detail === null ? (
+          <Timeline
+            rows={timelineRows}
+            cursor={cursor}
+            focused={focus === "timeline"}
+            height={timelineHeight(pullRequest, rows, view, expanded, height)}
+            width={width}
+          />
+        ) : (
+          <Detail
+            entry={detail}
+            focused={focus === "detail"}
+            height={timelineHeight(pullRequest, rows, view, expanded, height)}
+            width={width}
+          />
+        )}
+        <box style={{ flexGrow: 1 }} />
+        <StatusBar region={focus} />
+      </box>
+    </PaletteContext>
   );
 }
 
@@ -222,22 +232,26 @@ function step(current: RegionId, delta: number): RegionId {
 }
 
 function Title({ pullRequest }: { pullRequest: PullRequest }) {
+  const palette = usePalette();
+
   return (
     <box style={{ flexDirection: "row", flexShrink: 0, paddingLeft: 1 }}>
-      <text fg={COLORS.accent}>{`#${pullRequest.number} `}</text>
-      <text fg={COLORS.text}>{pullRequest.title}</text>
-      <text fg={COLORS.dim}>{`  ${pullRequest.author?.login ?? "ghost"} · ${pullRequest.state}`}</text>
+      <text fg={palette.accent}>{`#${pullRequest.number} `}</text>
+      <text fg={palette.text}>{pullRequest.title}</text>
+      <text fg={palette.dim}>{`  ${pullRequest.author?.login ?? "ghost"} · ${pullRequest.state}`}</text>
     </box>
   );
 }
 
 function StatusBar({ region }: { region: RegionId }) {
+  const palette = usePalette();
+
   return (
     <box style={{ flexDirection: "row", flexShrink: 0, paddingLeft: 1 }}>
       {hintsFor(region).map((hint) => (
         <box key={hint.keys} style={{ flexDirection: "row" }}>
-          <text fg={COLORS.accent}>{hint.keys}</text>
-          <text fg={COLORS.dim}>{` ${hint.label}   `}</text>
+          <text fg={palette.accent}>{hint.keys}</text>
+          <text fg={palette.dim}>{` ${hint.label}   `}</text>
         </box>
       ))}
     </box>

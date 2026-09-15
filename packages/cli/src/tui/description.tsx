@@ -3,7 +3,7 @@
 
 import type { DescriptionView } from "@prowling/core";
 
-import { BORDER, clamp, COLORS } from "./theme";
+import { BORDER, clamp, usePalette } from "./theme";
 
 // The border and the padding either side of the text.
 const CHROME = 4;
@@ -32,6 +32,8 @@ export type DescriptionProps = {
 };
 
 export function Description({ view, expanded, focused, expandedHeight, width }: DescriptionProps) {
+  const palette = usePalette();
+
   return (
     <box
       title=" description "
@@ -40,13 +42,13 @@ export function Description({ view, expanded, focused, expandedHeight, width }: 
         flexShrink: 0,
         border: true,
         borderStyle: "rounded",
-        borderColor: focused ? COLORS.accent : COLORS.dim,
+        borderColor: focused ? palette.accent : palette.dim,
         paddingLeft: 1,
         paddingRight: 1,
       }}
     >
       {view.isEmpty ? (
-        <text fg={COLORS.dim}>no description</text>
+        <text fg={palette.dim}>no description</text>
       ) : expanded ? (
         <scrollbox focused={focused} scrollY viewportCulling style={{ height: expandedHeight }}>
           {view.lines.map((line, index) => (
@@ -64,7 +66,7 @@ export function Description({ view, expanded, focused, expandedHeight, width }: 
             ))}
           </box>
           {view.remaining > 0 && (
-            <text fg={COLORS.dim}>{`… ${view.remaining} more ${plural(view.remaining)}, d to expand`}</text>
+            <text fg={palette.dim}>{`… ${view.remaining} more ${plural(view.remaining)}, d to expand`}</text>
           )}
         </>
       )}
@@ -74,17 +76,18 @@ export function Description({ view, expanded, focused, expandedHeight, width }: 
 
 // An empty line still owns a row, and a text node with nothing in it collapses to none.
 function Line({ text, clipped = false }: { text: string; clipped?: boolean }) {
+  const palette = usePalette();
   const content = text === "" ? " " : text;
 
   if (clipped) {
     return (
-      <text fg={COLORS.text} wrapMode="none">
+      <text fg={palette.text} wrapMode="none">
         {content}
       </text>
     );
   }
 
-  return <text fg={COLORS.text}>{content}</text>;
+  return <text fg={palette.text}>{content}</text>;
 }
 
 function plural(count: number): string {

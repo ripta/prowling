@@ -1,6 +1,7 @@
 // Colors, glyphs, and the column widths the header lines up on.
 
 import { type CheckRow, isFailingConclusion, type TimelineEntry } from "@prowling/core";
+import { createContext, useContext } from "react";
 
 // Field labels sit in their own column, so the check rows start where the proposal's sketch puts
 // them: under the value, not under the label.
@@ -18,14 +19,41 @@ export const NESTED_INDENT = 6;
 export const OPEN = "▾";
 export const CLOSED = "▸";
 
-export const COLORS = {
+// What a color means, not what it is. The rules below name a role, and the component drawing the
+// row resolves it against whichever palette the terminal called for.
+//
+// That split is what lets one set of rules serve both backgrounds. A hex chosen for a dark terminal
+// is unreadable on a light one, and the rule about which check is "bad" does not change either way.
+export type Role = "text" | "dim" | "accent" | "ok" | "bad" | "warn";
+
+export type Palette = Record<Role, string>;
+
+export const DARK: Palette = {
   text: "#c9d1d9",
   dim: "#6e7681",
   accent: "#58a6ff",
   ok: "#3fb950",
   bad: "#f85149",
   warn: "#d29922",
-} as const;
+};
+
+// Every role here clears roughly 4.5:1 against white. The dark foregrounds do not come close on that
+// background: #c9d1d9 lands near 1.3:1, which is why the title and the description read as blank.
+export const LIGHT: Palette = {
+  text: "#1f2328",
+  dim: "#59636e",
+  accent: "#0969da",
+  ok: "#1a7f37",
+  bad: "#d1242f",
+  warn: "#9a6700",
+};
+
+// Dark is the default, which is what a terminal that answers no background query gets.
+export const PaletteContext = createContext<Palette>(DARK);
+
+export function usePalette(): Palette {
+  return useContext(PaletteContext);
+}
 
 export function glyphFor(row: CheckRow): string {
   switch (row.kind) {
@@ -38,14 +66,14 @@ export function glyphFor(row: CheckRow): string {
   }
 }
 
-export function colorFor(row: CheckRow): string {
+export function colorFor(row: CheckRow): Role {
   switch (row.kind) {
     case "pending":
-      return COLORS.accent;
+      return "accent";
     case "missing":
-      return COLORS.warn;
+      return "warn";
     case "stale":
-      return failed(row) ? COLORS.bad : COLORS.dim;
+      return failed(row) ? "bad" : "dim";
     default:
       return conclusionColor(row);
   }
@@ -93,37 +121,37 @@ export function entryGlyph(entry: TimelineEntry): string {
   }
 }
 
-export function entryColor(entry: TimelineEntry): string {
+export function entryColor(entry: TimelineEntry): Role {
   switch (entry.kind) {
     case "checks":
       if (entry.failing.length > 0) {
-        return COLORS.bad;
+        return "bad";
       }
 
       if (entry.pending > 0) {
-        return COLORS.accent;
+        return "accent";
       }
 
-      return entry.passing > 0 ? COLORS.ok : COLORS.dim;
+      return entry.passing > 0 ? "ok" : "dim";
     case "review":
       return reviewColor(entry.state);
     case "thread":
-      return entry.isResolved ? COLORS.dim : COLORS.bad;
+      return entry.isResolved ? "dim" : "bad";
     case "comment":
-      return COLORS.dim;
+      return "dim";
   }
 }
 
-function reviewColor(state: string): string {
+function reviewColor(state: string): Role {
   switch (state) {
     case "APPROVED":
-      return COLORS.ok;
+      return "ok";
     case "CHANGES_REQUESTED":
-      return COLORS.bad;
+      return "bad";
     case "COMMENTED":
-      return COLORS.text;
+      return "text";
     default:
-      return COLORS.dim;
+      return "dim";
   }
 }
 
@@ -143,18 +171,18 @@ function conclusionGlyph(row: CheckRow): string {
   }
 }
 
-function conclusionColor(row: CheckRow): string {
+function conclusionColor(row: CheckRow): Role {
   switch (row.conclusion) {
     case "SUCCESS":
-      return COLORS.ok;
+      return "ok";
     case "SKIPPED":
     case "NEUTRAL":
     case "CANCELLED":
-      return COLORS.dim;
+      return "dim";
     case null:
-      return COLORS.accent;
+      return "accent";
     default:
-      return COLORS.bad;
+      return "bad";
   }
 }
 

@@ -6,13 +6,14 @@ import {
   BORDER,
   clamp,
   colorFor,
-  COLORS,
   glyphFor,
   LABEL_WIDTH,
   NAME_WIDTH_CAP,
   RESULT_WIDTH,
   resultFor,
+  type Role,
   staleSuffix,
+  usePalette,
 } from "./theme";
 
 export type HeaderProps = {
@@ -37,6 +38,7 @@ function listHeight(rows: CheckRow[], height: number): number {
 }
 
 export function Header({ pullRequest, rows, focused, height, width }: HeaderProps) {
+  const palette = usePalette();
   const unresolved = pullRequest.threads.filter((thread) => !thread.isResolved).length;
 
   return (
@@ -47,27 +49,23 @@ export function Header({ pullRequest, rows, focused, height, width }: HeaderProp
         flexShrink: 0,
         border: true,
         borderStyle: "rounded",
-        borderColor: focused ? COLORS.accent : COLORS.dim,
+        borderColor: focused ? palette.accent : palette.dim,
         paddingLeft: 1,
         paddingRight: 1,
       }}
     >
-      <Field label="review" value={pullRequest.reviewDecision ?? "no decision"} fg={decisionColor(pullRequest)} />
-      <Field label="merge" value={mergeText(pullRequest)} fg={mergeColor(pullRequest)} />
+      <Field label="review" value={pullRequest.reviewDecision ?? "no decision"} role={decisionColor(pullRequest)} />
+      <Field label="merge" value={mergeText(pullRequest)} role={mergeColor(pullRequest)} />
       <Field
         label="threads"
         value={threadText(unresolved, pullRequest.threads.length)}
-        fg={unresolved > 0 ? COLORS.bad : COLORS.dim}
+        role={unresolved > 0 ? "bad" : "dim"}
       />
-      <Field label="waiting" value={reviewerText(pullRequest)} fg={COLORS.text} />
+      <Field label="waiting" value={reviewerText(pullRequest)} role="text" />
       {pullRequest.degradations.length > 0 && (
-        <Field
-          label=""
-          value={`! ${pullRequest.degradations.length} fields could not be read`}
-          fg={COLORS.warn}
-        />
+        <Field label="" value={`! ${pullRequest.degradations.length} fields could not be read`} role="warn" />
       )}
-      <Field label="checks" value={summaryText(rows)} fg={COLORS.dim} />
+      <Field label="checks" value={summaryText(rows)} role="dim" />
 
       {rows.length > 0 && (
         <scrollbox
@@ -86,25 +84,28 @@ export function Header({ pullRequest, rows, focused, height, width }: HeaderProp
 }
 
 function CheckLine({ row, width }: { row: CheckRow; width: number }) {
-  const color = colorFor(row);
+  const palette = usePalette();
+  const color = palette[colorFor(row)];
   const suffix = staleSuffix(row);
 
   return (
     <box style={{ flexDirection: "row" }}>
       <text fg={color}>{`${glyphFor(row)} `}</text>
-      <text fg={COLORS.text}>{clamp(row.name, width).padEnd(width + 1)}</text>
+      <text fg={palette.text}>{clamp(row.name, width).padEnd(width + 1)}</text>
       <text fg={color}>{resultFor(row).padEnd(RESULT_WIDTH)}</text>
-      {suffix !== "" && <text fg={COLORS.dim}>{suffix}</text>}
-      {row.isRequired && row.kind !== "missing" && <text fg={COLORS.dim}>{"  required"}</text>}
+      {suffix !== "" && <text fg={palette.dim}>{suffix}</text>}
+      {row.isRequired && row.kind !== "missing" && <text fg={palette.dim}>{"  required"}</text>}
     </box>
   );
 }
 
-function Field({ label, value, fg }: { label: string; value: string; fg: string }) {
+function Field({ label, value, role }: { label: string; value: string; role: Role }) {
+  const palette = usePalette();
+
   return (
     <box style={{ flexDirection: "row" }}>
-      <text fg={COLORS.dim}>{label.padEnd(LABEL_WIDTH)}</text>
-      <text fg={fg}>{value}</text>
+      <text fg={palette.dim}>{label.padEnd(LABEL_WIDTH)}</text>
+      <text fg={palette[role]}>{value}</text>
     </box>
   );
 }
@@ -164,26 +165,26 @@ function mergeText(pullRequest: PullRequest): string {
   return pullRequest.isDraft ? `${pullRequest.mergeable}, draft` : pullRequest.mergeable;
 }
 
-function decisionColor(pullRequest: PullRequest): string {
+function decisionColor(pullRequest: PullRequest): Role {
   switch (pullRequest.reviewDecision) {
     case "APPROVED":
-      return COLORS.ok;
+      return "ok";
     case "CHANGES_REQUESTED":
-      return COLORS.bad;
+      return "bad";
     case "REVIEW_REQUIRED":
-      return COLORS.warn;
+      return "warn";
     default:
-      return COLORS.dim;
+      return "dim";
   }
 }
 
-function mergeColor(pullRequest: PullRequest): string {
+function mergeColor(pullRequest: PullRequest): Role {
   switch (pullRequest.mergeable) {
     case "MERGEABLE":
-      return COLORS.ok;
+      return "ok";
     case "CONFLICTING":
-      return COLORS.bad;
+      return "bad";
     default:
-      return COLORS.dim;
+      return "dim";
   }
 }

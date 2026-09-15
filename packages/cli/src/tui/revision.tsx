@@ -8,7 +8,7 @@
 import type { ChecksEntry, FailedRun, TimelineEntry, TimelineGroup } from "@prowling/core";
 import type { ReactNode } from "react";
 
-import { clamp, CLOSED, COLORS, ENTRY_INDENT, entryColor, entryGlyph, NESTED_INDENT, OPEN } from "./theme";
+import { clamp, CLOSED, ENTRY_INDENT, entryColor, entryGlyph, NESTED_INDENT, OPEN, usePalette } from "./theme";
 
 // The cursor sits on a revision header, or on one of its entries.
 export type Cursor = { group: number; entry: number };
@@ -32,6 +32,7 @@ export function RevisionLine({
   selected: boolean;
   width: number;
 }) {
+  const palette = usePalette();
   const revision = group.revision;
   const parts = [revision.headOid.slice(0, 7)];
 
@@ -52,10 +53,10 @@ export function RevisionLine({
 
   return (
     <Row selected={selected} width={width}>
-      <text fg={selected ? COLORS.accent : COLORS.dim} wrapMode="none">{`${expanded ? OPEN : CLOSED} `}</text>
-      <text fg={COLORS.text} wrapMode="none">{clamp(parts.join("  "), budget)}</text>
+      <text fg={selected ? palette.accent : palette.dim} wrapMode="none">{`${expanded ? OPEN : CLOSED} `}</text>
+      <text fg={palette.text} wrapMode="none">{clamp(parts.join("  "), budget)}</text>
       {threads !== "" && (
-        <text fg={COLORS.bad} wrapMode="none">
+        <text fg={palette.bad} wrapMode="none">
           {threads}
         </text>
       )}
@@ -72,13 +73,14 @@ export function EntryLine({
   selected: boolean;
   width: number;
 }) {
+  const palette = usePalette();
   const room = inner(width, ENTRY_INDENT) - GLYPH;
 
   if (entry.kind === "checks") {
     return (
       <Row selected={selected} width={width} indent={ENTRY_INDENT}>
-        <text fg={entryColor(entry)} wrapMode="none">{`${entryGlyph(entry)} `}</text>
-        <text fg={COLORS.text} wrapMode="none">
+        <text fg={palette[entryColor(entry)]} wrapMode="none">{`${entryGlyph(entry)} `}</text>
+        <text fg={palette.text} wrapMode="none">
           {clamp(checksText(entry), room)}
         </text>
       </Row>
@@ -89,11 +91,11 @@ export function EntryLine({
 
   return (
     <Row selected={selected} width={width} indent={ENTRY_INDENT}>
-      <text fg={entryColor(entry)} wrapMode="none">{`${entryGlyph(entry)} `}</text>
-      <text fg={COLORS.accent} wrapMode="none">
+      <text fg={palette[entryColor(entry)]} wrapMode="none">{`${entryGlyph(entry)} `}</text>
+      <text fg={palette.accent} wrapMode="none">
         {author}
       </text>
-      <text fg={COLORS.text} wrapMode="none">
+      <text fg={palette.text} wrapMode="none">
         {clamp(headline(entry), Math.max(1, room - author.length))}
       </text>
     </Row>
@@ -103,13 +105,14 @@ export function EntryLine({
 // A failing run sits under the line that counted it, so the count and the name it stands for read as
 // one thing.
 export function FailureLine({ run, width }: { run: FailedRun; width: number }) {
+  const palette = usePalette();
   const result = run.conclusion ?? run.status;
   const budget = inner(width, NESTED_INDENT) - GLYPH - result.length - 2;
 
   return (
     <Row selected={false} width={width} indent={NESTED_INDENT}>
-      <text fg={COLORS.bad} wrapMode="none">{`⚠ ${clamp(run.name, Math.max(1, budget))}  `}</text>
-      <text fg={COLORS.dim} wrapMode="none">
+      <text fg={palette.bad} wrapMode="none">{`⚠ ${clamp(run.name, Math.max(1, budget))}  `}</text>
+      <text fg={palette.dim} wrapMode="none">
         {result}
       </text>
     </Row>
@@ -129,9 +132,11 @@ function Row({
   width: number;
   indent?: number;
 }) {
+  const palette = usePalette();
+
   return (
     <box style={{ flexDirection: "row", width, height: 1, flexShrink: 0 }}>
-      <text fg={COLORS.accent} wrapMode="none">{selected ? "▎" : " "}</text>
+      <text fg={palette.accent} wrapMode="none">{selected ? "▎" : " "}</text>
       {indent > 0 && <text wrapMode="none">{" ".repeat(indent)}</text>}
       {children}
     </box>

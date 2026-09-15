@@ -1,3 +1,4 @@
+import { type CapturedFrame, RGBA, rgbToHex } from "@opentui/core";
 import { testRender } from "@opentui/react/test-utils";
 import { afterEach, describe, expect, test } from "bun:test";
 import { join } from "node:path";
@@ -9,6 +10,7 @@ import { createFileRecorder } from "../recorder";
 import { FIXTURES_DIR, readManifest } from "../record-fixtures";
 
 import { App } from "./app";
+import { DARK, LIGHT, type Palette } from "./theme";
 
 const loaded = new Map<string, Promise<PullRequest>>();
 
@@ -334,6 +336,54 @@ describe("the detail pane", () => {
     expect(screen.draw()).not.toContain("esc/q close");
   });
 });
+
+describe("the palette", () => {
+  test("draws in the light foreground when the terminal reports a light background", async () => {
+    const frame = await spans(await fixture("cli-cli-14429"), LIGHT);
+
+    expect(fgOf(frame, "Fix remote branch deletion")).toBe(hex(LIGHT.text));
+    expect(fgOf(frame, "APPROVED")).toBe(hex(LIGHT.ok));
+  });
+
+  test("draws in the dark foreground with no palette given", async () => {
+    const frame = await spans(await fixture("cli-cli-14429"));
+
+    expect(fgOf(frame, "Fix remote branch deletion")).toBe(hex(DARK.text));
+  });
+});
+
+// The character frame carries no color, so a palette assertion reads the spans instead. Resolving
+// happens in the component that draws the row, which makes what the span carries the only evidence
+// the choice reached it.
+async function spans(pullRequest: PullRequest, palette?: Palette): Promise<CapturedFrame> {
+  const setup = await testRender(<App pullRequest={pullRequest} onQuit={() => {}} palette={palette} />, {
+    width: 100,
+    height: 40,
+  });
+
+  destroy = () => setup.renderer.destroy();
+  await setup.renderOnce();
+
+  return setup.captureSpans();
+}
+
+function fgOf(frame: CapturedFrame, text: string): string {
+  for (const line of frame.lines) {
+    for (const span of line.spans) {
+      if (span.text.includes(text)) {
+        return rgbToHex(span.fg);
+      }
+    }
+  }
+
+  throw new Error(`no span holding ${text}`);
+}
+
+// Both sides of the comparison go through the same conversion, so the assertion turns on the color
+// rather than on how either side spells it.
+function hex(color: string): string {
+  return rgbToHex(RGBA.fromHex(color));
+}
 
 // The fixtures all pass their checks, so a failure has to be made. Flipping one conclusion leaves
 // everything else about the recording alone.

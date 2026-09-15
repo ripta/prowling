@@ -7,7 +7,7 @@
 import { type ChecksEntry, stripHtmlComments, type TimelineEntry } from "@prowling/core";
 
 import { Markdown } from "./markdown";
-import { clamp, COLORS, entryColor, entryGlyph } from "./theme";
+import { clamp, entryColor, entryGlyph, usePalette } from "./theme";
 
 // A checks entry counts runs and holds no prose, so there is nothing for the pane to open.
 export type DetailEntry = Exclude<TimelineEntry, ChecksEntry>;
@@ -25,6 +25,7 @@ export type DetailProps = {
 };
 
 export function Detail({ entry, focused, height, width }: DetailProps) {
+  const palette = usePalette();
   const body = stripHtmlComments(entry.body);
 
   return (
@@ -36,14 +37,14 @@ export function Detail({ entry, focused, height, width }: DetailProps) {
         height,
         border: true,
         borderStyle: "rounded",
-        borderColor: focused ? COLORS.accent : COLORS.dim,
+        borderColor: focused ? palette.accent : palette.dim,
         paddingLeft: 1,
         paddingRight: 1,
       }}
     >
       <Byline entry={entry} width={width} />
       <scrollbox focused={focused} style={{ flexGrow: 1 }}>
-        {body === "" ? <text fg={COLORS.dim}>no description</text> : <Markdown content={body} />}
+        {body === "" ? <text fg={palette.dim}>no description</text> : <Markdown content={body} />}
       </scrollbox>
     </box>
   );
@@ -52,14 +53,15 @@ export function Detail({ entry, focused, height, width }: DetailProps) {
 // Who wrote it and what it hangs off, which the row it opened from no longer has the width to say in
 // full.
 function Byline({ entry, width }: { entry: DetailEntry; width: number }) {
+  const palette = usePalette();
   const author = `@${entry.author?.login ?? "ghost"}`;
   const context = contextOf(entry);
 
   return (
     <box style={{ flexDirection: "row", height: 1, flexShrink: 0 }}>
-      <text fg={entryColor(entry)} wrapMode="none">{`${entryGlyph(entry)} `}</text>
-      <text fg={COLORS.accent} wrapMode="none">{`${author}  `}</text>
-      <text fg={COLORS.dim} wrapMode="none">
+      <text fg={palette[entryColor(entry)]} wrapMode="none">{`${entryGlyph(entry)} `}</text>
+      <text fg={palette.accent} wrapMode="none">{`${author}  `}</text>
+      <text fg={palette.dim} wrapMode="none">
         {clamp(context, Math.max(1, width - author.length - 6))}
       </text>
     </box>

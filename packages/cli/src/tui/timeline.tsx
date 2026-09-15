@@ -8,7 +8,7 @@ import type { FailedRun, TimelineEntry, TimelineGroup } from "@prowling/core";
 import { useRef } from "react";
 
 import { type Cursor, EntryLine, FailureLine, ON_HEADER, RevisionLine } from "./revision";
-import { COLORS } from "./theme";
+import { usePalette } from "./theme";
 
 // A row is one terminal row. A failing check gets one but carries no cursor: it belongs to the line
 // that counted it, and stopping on it separately would say nothing new.
@@ -79,6 +79,7 @@ export function sameCursor(left: Cursor, right: Cursor): boolean {
 }
 
 export function Timeline({ rows, cursor, focused, height, width }: TimelineProps) {
+  const palette = usePalette();
   const visible = Math.max(1, height - BOX_CHROME);
   const rowWidth = Math.max(1, width - ROW_CHROME);
   const top = useWindowTop(indexOf(rows, cursor), rows.length, visible);
@@ -93,13 +94,13 @@ export function Timeline({ rows, cursor, focused, height, width }: TimelineProps
         height,
         border: true,
         borderStyle: "rounded",
-        borderColor: focused ? COLORS.accent : COLORS.dim,
+        borderColor: focused ? palette.accent : palette.dim,
         paddingLeft: 1,
         paddingRight: 1,
       }}
     >
       {rows.length === 0 ? (
-        <text fg={COLORS.dim}>no revisions</text>
+        <text fg={palette.dim}>no revisions</text>
       ) : (
         <box style={{ flexDirection: "column", height: shown.length }}>
           {shown.map((row) => (
@@ -108,7 +109,7 @@ export function Timeline({ rows, cursor, focused, height, width }: TimelineProps
         </box>
       )}
       <box style={{ flexGrow: 1 }} />
-      <text fg={COLORS.dim} wrapMode="none">
+      <text fg={palette.dim} wrapMode="none">
         {footerText(rows, top, visible)}
       </text>
     </box>

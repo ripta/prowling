@@ -326,6 +326,19 @@ renderer would need a VT emulation shim and is not a drop-in.
 
 Putting the rich renderer on exactly one surface is what makes that checkpoint cheap to act on.
 
+### Terminal background
+
+Colors are named by role rather than by value. A role resolves against one of two palettes, chosen from the background
+OpenTUI queries at startup. A terminal that answers nothing gets the dark palette.
+
+Rationale: a foreground picked for a dark terminal is unreadable on a light one, and the rules about which check reads
+as failing do not change with the background. Naming the role keeps those rules in one place and independent of the
+terminal they land on. OpenTUI queries the background itself and reports changes while the app runs, so following a
+system-wide theme switch costs nothing extra.
+
+The detail pane's markdown is not covered. It renders through OpenTUI's own token defaults, and matching those to the
+palette is separate work.
+
 ### Long and empty descriptions
 
 The description region collapses to a fixed number of lines, starting at 8, with the count of remaining lines shown
@@ -540,6 +553,10 @@ milestone 1, and issue-comment placement under milestone 2.
   it on the same key.
 - 2026-09-14: Phase 3 began before the layout gate was ruled, at the user's explicit direction. The gate remains
   unruled, and Phase 2.1's collapse height and Phase 2.2's layout gate are both still open.
+- 2026-09-15: The view carries a palette per terminal background, chosen from the background OpenTUI queries at
+  startup. The theme rules name a role rather than a color, and the component drawing the row resolves it. Raised by a
+  hands-on pass on a light terminal, where the single dark palette left the title, the description, and every check
+  name illegible: `#c9d1d9` on white is about 1.3:1. Dark stays the default for a terminal that answers no query.
 
 ## References
 
