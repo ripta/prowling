@@ -493,6 +493,18 @@ under milestone 1, and issue-comment placement under milestone 2.
 - 2026-09-14: A server error is never written to a recording. A 502 recorded mid-fetch replayed on every later run.
 - 2026-09-14: Phase 1 complete. The data layer fetches, normalizes, and anchors a pull request, and replays every
   fixture offline.
+- 2026-09-14: A check is known only from a run that was seen, so never-run means a run that registered and never
+  started, rather than a check the branch expects and never got. Nothing in the response lists the second kind. Case 4
+  is a name whose every run has no start and no conclusion, and case 5 drops the same name when it does not gate the
+  merge.
+- 2026-09-14: Check rows sort by attention rather than by name, and the check block scrolls inside the header with a
+  count of what it holds above it. Measured on `cli/cli#14429`, where 10 of 21 names report stale from bot workflows
+  that run on `pull_request_target` and not on every push. Ordering by name puts the row that needs acting on below
+  the fold.
+- 2026-09-14: Collapsed description lines render one per row with wrapping off and a trailing ellipsis, rather than
+  wrapped inside a clipped box. This keeps the source-line count and the rows on screen the same number. Input for the
+  layout gate: `bodyText` lines are paragraphs, and the first line of `rust-lang/rust#137944` is 253 characters, so 8
+  lines of source is a much taller block than 8 lines suggests.
 
 ## References
 

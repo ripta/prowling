@@ -8,9 +8,13 @@
     "start": "bun run src/main.ts"
   },
   "dependencies": {
-    "@prowling/core": "workspace:*"
+    "@opentui/core": "0.5.11",
+    "@opentui/react": "0.5.11",
+    "@prowling/core": "workspace:*",
+    "react": "^19.2.0"
   },
   "devDependencies": {
+    "@types/react": "^19",
     "bun-types": "^1.4.2"
   }
 }

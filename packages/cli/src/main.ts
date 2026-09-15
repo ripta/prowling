@@ -19,6 +19,7 @@ import {
 
 import { MissingTokenError, resolveToken } from "./auth";
 import { createFileRecorder } from "./recorder";
+import { ensureTerminal, NotATerminalError } from "./tui/terminal";
 
 const USAGE =
   "usage: prowling [--record <dir> | --replay <dir>] [--json] <owner/repo#N | pull request URL>";
@@ -91,29 +92,31 @@ async function buildTransport(mode: Mode): Promise<Transport> {
   }
 }
 
-// The summary stands in for the TUI. It proves the fetch worked without dumping the model.
-export function summarize(pullRequest: PullRequest): string {
-  const unresolved = pullRequest.threads.filter((thread) => !thread.isResolved).length;
-  const checks = [...pullRequest.commits, ...pullRequest.droppedCommits]
-    .flatMap((commit) => commit.checkSuites)
-    .reduce((total, suite) => total + suite.checks.length, 0);
+export type Launch = (pullRequest: PullRequest) => Promise<number>;
 
-  return (
-    `#${pullRequest.number} ${pullRequest.title} [${pullRequest.state}] ` +
-    `${pullRequest.timeline.length} timeline items, ` +
-    `${pullRequest.threads.length} threads (${unresolved} unresolved), ` +
-    `${pullRequest.revisions.length} revisions, ${pullRequest.commits.length} commits, ${checks} checks`
-  );
-}
+// Loaded at the point of use. The renderer brings a native library with it, and nothing that fails
+// before a frame is drawn has any use for one. The terminal check comes first for that reason: a
+// redirected stdout is the case most likely to reach here, and it needs no renderer to answer.
+const launchTui: Launch = async (pullRequest) => {
+  ensureTerminal();
 
-export async function main(argv: string[]): Promise<number> {
+  const { runTui } = await import("./tui/run");
+
+  return runTui(pullRequest);
+};
+
+export async function main(argv: string[], launch: Launch = launchTui): Promise<number> {
   try {
     const options = parseOptions(argv);
     const transport = await buildTransport(options.mode);
     const pullRequest = await fetchPullRequest(transport, options.ref);
 
-    console.log(options.json ? JSON.stringify(pullRequest, null, 2) : summarize(pullRequest));
-    return 0;
+    if (options.json) {
+      console.log(JSON.stringify(pullRequest, null, 2));
+      return 0;
+    }
+
+    return await launch(pullRequest);
   } catch (error) {
     if (error instanceof GitHubAuthError) {
       console.error(error.message);
@@ -125,6 +128,7 @@ export async function main(argv: string[]): Promise<number> {
       error instanceof UsageError ||
       error instanceof InvalidPullRequestRefError ||
       error instanceof MissingTokenError ||
+      error instanceof NotATerminalError ||
       error instanceof ReplayMissError ||
       error instanceof GitHubHttpError ||
       error instanceof GraphQLRequestError ||

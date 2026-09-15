@@ -48,3 +48,22 @@ export {
   withRecording,
   withReplay,
 } from "./transport";
+
+export {
+  type CheckCommit,
+  type CheckRow,
+  type CheckRowKind,
+  type CheckRowsInput,
+  type CheckRun,
+  deriveCheckRows,
+  revisionIndexByOid,
+  rowRank,
+  type StaleRef,
+} from "./view/checks";
+
+export {
+  DEFAULT_COLLAPSED_ROWS,
+  deriveDescription,
+  type DescriptionOptions,
+  type DescriptionView,
+} from "./view/description";

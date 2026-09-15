@@ -2,7 +2,7 @@
 
 **Goal:** Render the state header and the revision-grouped timeline in OpenTUI against live pull requests, then hold
 for the layout gate.
-**Status:** PLANNED
+**Status:** IN PROGRESS
 **Complexity:** HIGH
 **Dependencies:** Phase 1
 
@@ -45,7 +45,7 @@ the gate does not wait for all of it.
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
-| 2.1 | PRW-001 M2 | App shell, state header with check rows, description region with collapse and scrollbox | NOT STARTED |
+| 2.1 | PRW-001 M2 | App shell, state header with check rows, description region with collapse and scrollbox | IN PROGRESS |
 | 2.2 | PRW-001 M2 | Revision-grouped timeline, expansion rules, keyboard navigation. Settles issue-comment placement. Layout gate | NOT STARTED |
 
 Deferred questions from PRW-001 milestone 2 owned here:
@@ -62,16 +62,27 @@ Each gets recorded in PRW-001's Decision Log before its milestone is DONE.
 
 ### Files to Create
 
-1. `packages/cli/src/tui/app.tsx` - root layout, focus, key dispatch
-2. `packages/cli/src/tui/header.tsx` - state header, check rows with staleness
-3. `packages/cli/src/tui/description.tsx` - collapse, remaining count, scrollbox
-4. `packages/cli/src/tui/timeline.tsx` - revision groups and expansion state
-5. `packages/cli/src/tui/revision.tsx` - one revision and its items
-6. `packages/cli/src/tui/keys.ts` - key bindings
+1. `packages/core/src/view/checks.ts` - check-row derivation, the six cases and staleness
+2. `packages/core/src/view/description.ts` - line counting and collapse
+3. `packages/cli/src/tui/run.tsx` - renderer lifecycle, resolves when the user quits
+4. `packages/cli/src/tui/app.tsx` - root layout, focus, key dispatch
+5. `packages/cli/src/tui/header.tsx` - state header, check rows with staleness
+6. `packages/cli/src/tui/description.tsx` - collapse, remaining count, scrollbox
+7. `packages/cli/src/tui/keys.ts` - key bindings
+8. `packages/cli/src/tui/theme.ts` - glyphs, colors, column widths
+9. `packages/cli/src/tui/terminal.ts` - the check for a terminal to draw on, and the error when there is none
+10. `packages/cli/src/tui/timeline.tsx` - revision groups and expansion state
+11. `packages/cli/src/tui/revision.tsx` - one revision and its items
+
+The derivation sits in core rather than beside the components. It reads the model and produces plain data, which is
+what the extension needs too.
 
 ### Files to Modify
 
 1. `packages/cli/src/main.ts` - launch the TUI when `--json` is absent
+2. `packages/cli/tsconfig.json` - JSX options for the reconciler
+3. `packages/cli/package.json` - OpenTUI and React
+4. `packages/core/src/index.ts` - export the view modules
 
 ### Changes Required
 
@@ -84,19 +95,37 @@ Each gets recorded in PRW-001's Decision Log before its milestone is DONE.
 5. Keyboard navigation across revisions and items, expand and collapse.
 6. Hands-on review against live pull requests, with findings recorded.
 
+## OpenTUI Friction
+
+Kept as it is met, so the checkpoint write-up in Phase 3 has the record rather than a memory.
+
+- `overflow: "hidden"` on a fixed-height box does not clip a child that wraps past its row. The overflow is drawn over
+  the rows below it, and the result reads as two paragraphs interleaved character by character. Collapsed lines now
+  render one per row with wrapping off, which is a better fit for a line count anyway.
+- `truncate` on a text node cuts from the middle and keeps both ends. On prose that splices two unrelated fragments,
+  which looks like the corruption above. Trimming to width in advance gives the ordinary trailing ellipsis.
+- Tearing a test renderer down updates the React tree, so a teardown outside `act` warns on every test. Wrapping the
+  teardown settles it.
+
+None of these blocked the milestone. Each cost a cycle to find, because the failure showed up as rendered output
+rather than as an error.
+
 ## Acceptance Criteria
 
 ### Phase 2.1
 
-- [ ] The TUI launches against a replayed fixture with no network
-- [ ] State header shows review decision, unresolved thread count, mergeability, and requested reviewers
-- [ ] Check rows follow all six cases from PRW-001, including `REQUIRED, never run` and omission of non-required
+- [x] The TUI launches against a replayed fixture with no network
+- [x] State header shows review decision, unresolved thread count, mergeability, and requested reviewers
+- [x] Check rows follow all six cases from PRW-001, including `REQUIRED, never run` and omission of non-required
       never-run checks
-- [ ] Description collapses to N lines with the remaining count shown, N starting at 8
-- [ ] Expanding swaps to a `<scrollbox>` capped near half the viewport, with the header and timeline still visible
-- [ ] Empty description shows a dim placeholder
+- [x] Description collapses to N lines with the remaining count shown, N starting at 8
+- [x] Expanding swaps to a `<scrollbox>` capped near half the viewport, with the header and timeline still visible
+- [x] Empty description shows a dim placeholder
 - [ ] Collapse height reviewed against real pull requests, and the chosen value recorded in PRW-001
-- [ ] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+- [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+
+The collapse height is the one criterion code cannot meet. It ships at 8 as `DEFAULT_COLLAPSED_ROWS`, and the
+milestone stays IN PROGRESS until the hands-on pass rules on the value.
 
 ### Phase 2.2
 

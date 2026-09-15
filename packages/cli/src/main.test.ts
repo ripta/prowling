@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, type Mock, spyOn, test } from "bun:test";
 import { join } from "node:path";
 
+import type { PullRequest } from "@prowling/core";
+
 import { main, parseOptions, UsageError } from "./main";
 import { FIXTURES_DIR } from "./record-fixtures";
+import { NotATerminalError } from "./tui/terminal";
 
 const FIXTURE = join(FIXTURES_DIR, "cli-cli-14349");
 
@@ -62,14 +65,27 @@ describe("main", () => {
     expect(model.timeline.map((item: { kind: string }) => item.kind)).toEqual(["commit", "force-push"]);
   });
 
-  test("prints a one-line summary without --json", async () => {
-    const code = await main(["--replay", FIXTURE, "cli/cli#14349"]);
+  test("hands the replayed model to the TUI without --json", async () => {
+    let seen: PullRequest | undefined;
 
-    expect(code).toBe(0);
-    expect(printed(log)).toBe(
-      "#14349 Refactor git graph tests to use real repositories [OPEN] " +
-        "2 timeline items, 0 threads (0 unresolved), 2 revisions, 1 commits, 23 checks",
-    );
+    const code = await main(["--replay", FIXTURE, "cli/cli#14349"], async (pullRequest) => {
+      seen = pullRequest;
+
+      return 3;
+    });
+
+    expect(code).toBe(3);
+    expect(seen?.number).toBe(14349);
+    expect(log).not.toHaveBeenCalled();
+  });
+
+  test("reports a terminal it cannot draw on with exit 1", async () => {
+    const code = await main(["--replay", FIXTURE, "cli/cli#14349"], () => {
+      throw new NotATerminalError("prowling needs a terminal. Use --json when output is redirected.");
+    });
+
+    expect(code).toBe(1);
+    expect(printed(error)).toContain("needs a terminal");
   });
 
   test("reports usage and reference errors on stderr with exit 1", async () => {
