@@ -69,6 +69,8 @@ export {
   type DescriptionView,
 } from "./view/description";
 
+export { stripHtmlComments } from "./view/markdown";
+
 export {
   type ChecksEntry,
   type CommentEntry,

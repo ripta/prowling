@@ -526,6 +526,21 @@ milestone 1, and issue-comment placement under milestone 2.
   draws the window its cursor sits in rather than using a `<scrollbox>`, which would scroll itself with keys the app has
   already claimed and leave two positions to reconcile. The header and description keep their scrollboxes untouched.
 
+- 2026-09-14: The detail pane renders through OpenTUI's own `<markdown>`. The evidence this proposal cited against it
+  was measured on `@opentui/core` 0.4.5 and the 0.1.x regression, and does not describe the pinned 0.5.11, where the
+  component parses with `marked`, highlights fences through tree-sitter, and conceals markers by default. Rendered
+  against a thread body from `cli/cli#14354`, a fenced block keeps its shape. The `marked` AST fallback is unbuilt and
+  stays cheap to reach: `marked` is already in the tree, and `renderNode` overrides one token kind without a
+  hand-rolled renderer.
+- 2026-09-14: Timeline entries now carry `body` alongside `bodyText`. The pane is fed by the cursor, which resolves to
+  an entry, and the entries carried only the flattened text. `body` was already fetched, normalized, and on the model.
+- 2026-09-14: The pane is modal and sits outside the tab ring. It covers the timeline rather than shrinking it, and
+  claims only the keys that close it, so nothing acts on a region the reader cannot see. Enter opens what the cursor is
+  on and falls back to collapsing the revision where there is nothing to open, which keeps closing a group from inside
+  it on the same key.
+- 2026-09-14: Phase 3 began before the layout gate was ruled, at the user's explicit direction. The gate remains
+  unruled, and Phase 2.1's collapse height and Phase 2.2's layout gate are both still open.
+
 ## References
 
 - ADR-01: why timeline items anchor to a revision chain built from push records rather than to timestamps.

@@ -14,6 +14,7 @@ export type Action =
   | "focus-next"
   | "focus-prev"
   | "activate"
+  | "close-detail"
   | "item-next"
   | "item-prev"
   | "revision-next"
@@ -22,7 +23,9 @@ export type Action =
 // Tab walks this order. Phase work that adds a region appends to it and nothing else changes.
 export const REGIONS = ["header", "description", "timeline"] as const;
 
-export type RegionId = (typeof REGIONS)[number];
+// The detail pane is a mode rather than a tab stop. It exists only while an item is open, so putting
+// it in the tab order would cycle focus onto a region that is not on screen.
+export type RegionId = (typeof REGIONS)[number] | "detail";
 
 // The shape of a key press, narrowed to what the mapping reads. KeyEvent satisfies it, so this
 // module imports nothing from the terminal and its test needs no renderer.
@@ -43,12 +46,19 @@ const SHARED: readonly Hint[] = [
 const TIMELINE: readonly Hint[] = [
   { keys: "jk", label: "move" },
   { keys: "np", label: "revision" },
-  { keys: "enter", label: "expand" },
+  { keys: "enter", label: "open" },
 ];
 
 // What the focused region does, rather than every binding the app has. A bar listing all of them
 // spends the width on keys that would do nothing where the focus is.
 export function hintsFor(region: RegionId): readonly Hint[] {
+  if (region === "detail") {
+    return [
+      { keys: "esc/q", label: "close" },
+      { keys: "↑↓", label: "scroll" },
+    ];
+  }
+
   if (region === "timeline") {
     return [...TIMELINE, ...SHARED];
   }
@@ -59,6 +69,15 @@ export function hintsFor(region: RegionId): readonly Hint[] {
 export function resolveAction(key: Key, region: RegionId): Action | undefined {
   if (key.ctrl) {
     return key.name === "c" ? "quit" : undefined;
+  }
+
+  // The pane is modal, so it claims only the keys that close it and leaves the rest to its
+  // scrollbox. Toggling the description underneath it, or tabbing to a region it covers, would act
+  // on something the reader cannot see.
+  //
+  // `q` closes rather than quits here, which is the pager idiom. Ctrl-C still leaves the app.
+  if (region === "detail") {
+    return key.name === "escape" || key.name === "q" ? "close-detail" : undefined;
   }
 
   switch (key.name) {

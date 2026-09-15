@@ -12,6 +12,7 @@ import {
 } from "@prowling/core";
 import { useMemo, useState } from "react";
 
+import { Detail, type DetailEntry, openable } from "./detail";
 import { Description, descriptionHeight } from "./description";
 import { Header, headerHeight } from "./header";
 import { hintsFor, REGIONS, type RegionId, resolveAction } from "./keys";
@@ -51,6 +52,10 @@ export function App({ pullRequest, onQuit, collapsedRows = DEFAULT_COLLAPSED_ROW
     group: Math.max(0, groups.length - 1),
     entry: ON_HEADER,
   }));
+
+  // The open item, held rather than derived from the cursor. The pane covers the timeline, so the
+  // cursor may not move while it is open, and holding it keeps the pane showing what was opened.
+  const [detail, setDetail] = useState<DetailEntry | null>(null);
 
   const timelineRows = useMemo(() => flattenRows(groups, open), [groups, open]);
   const cursors = useMemo(() => cursorsOf(timelineRows), [timelineRows]);
@@ -102,6 +107,26 @@ export function App({ pullRequest, onQuit, collapsedRows = DEFAULT_COLLAPSED_ROW
     setCursor({ group: next, entry: ON_HEADER });
   };
 
+  // Reports whether anything opened. A revision header has no item under it, and a checks entry
+  // counts runs and holds no prose, so neither has a pane to show.
+  const openDetail = (): boolean => {
+    const row = timelineRows.find((candidate) => candidate.kind === "entry" && sameCursor(candidate.at, cursor));
+
+    if (row?.kind !== "entry" || !openable(row.entry)) {
+      return false;
+    }
+
+    setDetail(row.entry);
+    setFocus("detail");
+
+    return true;
+  };
+
+  const closeDetail = () => {
+    setDetail(null);
+    setFocus("timeline");
+  };
+
   useKeyboard((key) => {
     switch (resolveAction(key, focus)) {
       case "quit":
@@ -111,20 +136,25 @@ export function App({ pullRequest, onQuit, collapsedRows = DEFAULT_COLLAPSED_ROW
         toggleDescription();
         break;
       case "focus-next":
-        setFocus((current) => REGIONS[(REGIONS.indexOf(current) + 1) % REGIONS.length]);
+        setFocus((current) => step(current, 1));
         break;
       case "focus-prev":
-        setFocus((current) => REGIONS[(REGIONS.indexOf(current) + REGIONS.length - 1) % REGIONS.length]);
+        setFocus((current) => step(current, -1));
         break;
       case "activate":
         if (focus === "description") {
           toggleDescription();
         }
 
-        if (focus === "timeline") {
+        // The key opens whatever the cursor is on. Where there is nothing to open it falls back to
+        // the group, which keeps collapsing a revision from inside it on the same key.
+        if (focus === "timeline" && !openDetail()) {
           toggleRevision();
         }
 
+        break;
+      case "close-detail":
+        closeDetail();
         break;
       case "item-next":
         moveCursor(1);
@@ -158,17 +188,37 @@ export function App({ pullRequest, onQuit, collapsedRows = DEFAULT_COLLAPSED_ROW
         expandedHeight={expandedHeight(height)}
         width={width}
       />
-      <Timeline
-        rows={timelineRows}
-        cursor={cursor}
-        focused={focus === "timeline"}
-        height={timelineHeight(pullRequest, rows, view, expanded, height)}
-        width={width}
-      />
+      {detail === null ? (
+        <Timeline
+          rows={timelineRows}
+          cursor={cursor}
+          focused={focus === "timeline"}
+          height={timelineHeight(pullRequest, rows, view, expanded, height)}
+          width={width}
+        />
+      ) : (
+        <Detail
+          entry={detail}
+          focused={focus === "detail"}
+          height={timelineHeight(pullRequest, rows, view, expanded, height)}
+          width={width}
+        />
+      )}
       <box style={{ flexGrow: 1 }} />
       <StatusBar region={focus} />
     </box>
   );
+}
+
+// One step around the tab ring.
+//
+// The detail pane sits outside the ring, so it reports no position and a step from there lands
+// wherever the arithmetic falls. That never happens: the pane claims no key that resolves to focus
+// movement, and closing it puts the focus back on the timeline itself.
+function step(current: RegionId, delta: number): RegionId {
+  const at = REGIONS.findIndex((region) => region === current);
+
+  return REGIONS[(at + delta + REGIONS.length) % REGIONS.length];
 }
 
 function Title({ pullRequest }: { pullRequest: PullRequest }) {

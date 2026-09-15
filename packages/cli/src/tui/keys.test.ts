@@ -61,6 +61,36 @@ describe("the timeline cursor", () => {
   });
 });
 
+// The pane is modal, and it is not on the tab ring, so it is absent from `regions` above and none of
+// the shared assertions reach it.
+describe("the detail pane", () => {
+  test("esc and q both close it", () => {
+    expect(resolveAction(key("escape"), "detail")).toBe("close-detail");
+    expect(resolveAction(key("q"), "detail")).toBe("close-detail");
+  });
+
+  test("ctrl-c still leaves the app", () => {
+    expect(resolveAction(key("c", { ctrl: true }), "detail")).toBe("quit");
+  });
+
+  test("scrolling reaches its scrollbox", () => {
+    for (const name of ["up", "down", "pageup", "pagedown", "home", "end"]) {
+      expect(resolveAction(key(name), "detail")).toBeUndefined();
+    }
+  });
+
+  // Acting on a region the pane covers would move something the reader cannot see.
+  test("it claims nothing that works on the regions behind it", () => {
+    expect(resolveAction(key("d"), "detail")).toBeUndefined();
+    expect(resolveAction(key("tab"), "detail")).toBeUndefined();
+    expect(resolveAction(key("n"), "detail")).toBeUndefined();
+  });
+
+  test("it advertises the way out", () => {
+    expect(hintsFor("detail").map((hint) => hint.keys)).toContain("esc/q");
+  });
+});
+
 describe("hints", () => {
   test("the timeline advertises its cursor, and a scrollbox its scrolling", () => {
     expect(hintsFor("timeline").map((hint) => hint.keys)).toContain("jk");

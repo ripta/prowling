@@ -1,7 +1,7 @@
 # Phase 3: Detail pane
 
 **Goal:** Add the detail pane with rendered markdown, and write up the OpenTUI checkpoint.
-**Status:** PLANNED
+**Status:** IN PROGRESS
 **Complexity:** MEDIUM
 **Dependencies:** Phase 2. Held until the layout gate at the end of Phase 2 is ruled.
 
@@ -37,7 +37,7 @@ ruling on whether to keep OpenTUI is made with the user and recorded in PRW-001'
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
-| 3.1 | PRW-001 M2 | Detail pane with markdown rendering. Settles the pane renderer. OpenTUI checkpoint write-up | NOT STARTED |
+| 3.1 | PRW-001 M2 | Detail pane with markdown rendering. Settles the pane renderer. OpenTUI checkpoint write-up | IN PROGRESS |
 
 Deferred questions from PRW-001 milestone 2 owned here:
 
@@ -52,12 +52,13 @@ Both get recorded in PRW-001's Decision Log before the milestone is DONE.
 
 1. `packages/cli/src/tui/detail.tsx` - detail pane
 2. `packages/cli/src/tui/markdown.tsx` - pane renderer behind one component
+3. `packages/core/src/view/markdown.ts` - HTML comment stripping
 
 ### Files to Modify
 
 1. `packages/cli/src/tui/app.tsx` - pane region and focus
 2. `packages/cli/src/tui/keys.ts` - open and close the pane
-3. `packages/cli/src/tui/revision.tsx` - open an item into the pane
+3. `packages/core/src/view/timeline.ts` - carry `body` on the entries that have one
 
 ### Changes Required
 
@@ -65,14 +66,63 @@ Both get recorded in PRW-001's Decision Log before the milestone is DONE.
 2. Open from a timeline item, close back to the timeline.
 3. Checkpoint write-up.
 
+`revision.tsx` needed no change. The cursor already resolves to a `TimelineEntry` through `flattenRows`, so the app
+opens the pane without the row components knowing the pane exists.
+
+`packages/core/src/view/timeline.ts` was not in the original list and had to be. The entry types carried `bodyText`
+only, so the pane had nothing rich to render. `body` is fetched, normalized, and on the model already; the view layer
+was dropping it.
+
+## OpenTUI Checkpoint
+
+The account the ruling needs. Phase 2's friction log is the record for that phase; this adds what Phase 3 met and
+weighs the whole.
+
+### What Phase 3 met
+
+- `<markdown>` requires `syntaxStyle`, and it is not optional. Building one calls into the native render library, so
+  it cannot be a module constant: at import time the renderer has not booted. It is built on first use instead.
+- `mockInput.pressEscape()` delivers no escape that `useKeyboard` sees. The parser is not at fault, and
+  `parseKeypress("\x1b")` returns `name: "escape"` as expected. This is the same shape as the Phase 2 note about
+  `pressKey("tab")`, and worse: here the named helper exists and still does not arrive. The esc binding is covered in
+  the key map's own test, which needs no renderer.
+
+### What the proposal feared and what is actually true
+
+PRW-001 rated the markdown component OpenTUI's weakest surface, on reports against `@opentui/core` 0.4.5 printing
+raw `**bold**`, and a 0.1.79 to 0.1.88 regression. This project is pinned to 0.5.11, and that evidence no longer
+describes it. `MarkdownRenderable` there parses with `marked`, highlights fences through tree-sitter, conceals
+markers by default, and handles tables, blockquotes, and nested lists. Rendered against a real thread body from
+`cli/cli#14354`, the fenced block keeps its shape and its contents.
+
+So the fallback PRW-001 budgeted for, mapping a `marked` AST onto text nodes by hand, is not needed. It also stays
+cheap to reach if that changes: `marked` is already in the tree as an OpenTUI dependency, and `renderNode` offers a
+per-token override short of a full hand-rolled renderer.
+
+### The weight of it
+
+Across both phases the friction is consistent in kind. Nothing blocked a milestone. Every item cost a cycle to find,
+because the failure arrived as wrong pixels rather than as an error: overflow drawn over neighbouring rows, a
+truncation that cut from the middle, a row that compressed instead of clipping, a key helper that typed its own name.
+The two Phase 3 items are both of that family.
+
+Set against that, the layout work OpenTUI has actually carried is substantial: a scrolling header, a collapsing
+description, a windowed timeline, and now a markdown pane, none of which needed a workaround that survived into the
+code.
+
+Recommendation: keep OpenTUI. The ruling is the user's, and it is not recorded until they make it.
+
 ## Acceptance Criteria
 
 ### Phase 3.1
 
-- [ ] A timeline item opens into the detail pane, and the pane closes back to the timeline
-- [ ] Detail pane renders `body` with HTML comments stripped
-- [ ] Fenced code blocks and lists keep their shape in the pane
-- [ ] Pane renderer settled and recorded in PRW-001
+- [x] A timeline item opens into the detail pane, and the pane closes back to the timeline
+- [x] Detail pane renders `body` with HTML comments stripped
+- [x] Fenced code blocks and lists keep their shape in the pane
+- [x] Pane renderer settled and recorded in PRW-001
 - [ ] Checkpoint write-up lists every point of OpenTUI friction met in Phases 2 and 3, and the ruling is recorded in
       PRW-001
-- [ ] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+- [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+
+The write-up is above. The ruling on whether to keep OpenTUI is the one criterion code cannot meet, the way the
+collapse height and the layout gate are for Phase 2. The milestone stays IN PROGRESS until the user rules on it.

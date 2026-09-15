@@ -277,6 +277,64 @@ describe("moving around the timeline", () => {
   });
 });
 
+// Walks the cursor up until it is sitting on a row the pane can open, so a test says which item it
+// wants rather than how many rows away the fixture happens to put it. The cursor starts on the
+// newest revision, which is the last one, so everything else is above it.
+async function onEntry(screen: Screen, glyph: string): Promise<void> {
+  for (let step = 0; step < 40; step += 1) {
+    if (screen.draw().includes(`▎  ${glyph} `)) {
+      return;
+    }
+
+    await screen.press("k");
+  }
+
+  throw new Error(`no ${glyph} row under the cursor after 40 rows`);
+}
+
+describe("the detail pane", () => {
+  // Closing is driven with q here rather than esc. The mock input delivers no escape the hook can
+  // see, so the esc binding is covered in the key map's own test instead.
+  test("enter opens the item under the cursor, and q closes back to the timeline", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14354"));
+
+    await onEntry(screen, "◆");
+    await screen.press("\r");
+
+    expect(screen.draw()).toContain("detail");
+    expect(screen.draw()).toContain("esc/q close");
+
+    await screen.press("q");
+
+    expect(screen.draw()).toContain("timeline");
+    expect(screen.draw()).toContain("jk move");
+  });
+
+  test("renders the body it was opened on, keeping the shape bodyText drops", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14354"));
+
+    await onEntry(screen, "◆");
+    await screen.press("\r");
+
+    const drawn = screen.draw();
+
+    expect(drawn).toContain("◆ @babakks  acceptance/user_capability_test.go:56  unresolved, 1 reply");
+    expect(drawn).toContain("# directive1:");
+    expect(drawn).toContain("# rest of the file");
+  });
+
+  // A checks entry counts runs and holds no prose, so the key falls back to closing the group.
+  test("enter on a checks row closes its revision instead of opening a pane", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14429"));
+
+    await screen.press("j");
+    await screen.press("\r");
+
+    expect(screen.draw()).toContain("▎▸ a9d9d84");
+    expect(screen.draw()).not.toContain("esc/q close");
+  });
+});
+
 // The fixtures all pass their checks, so a failure has to be made. Flipping one conclusion leaves
 // everything else about the recording alone.
 function withFailure(pullRequest: PullRequest, name: string): PullRequest {

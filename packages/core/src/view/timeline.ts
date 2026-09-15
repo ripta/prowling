@@ -62,6 +62,7 @@ export type ReviewEntry = {
   author: Actor | null;
   state: ReviewState;
   bodyText: string;
+  body: string;
   at: string | null;
   url: string;
   isMinimized: boolean;
@@ -74,6 +75,7 @@ export type ThreadEntry = {
   id: string;
   author: Actor | null;
   bodyText: string;
+  body: string;
   at: string;
   path: string;
   line: number | null;
@@ -87,6 +89,7 @@ export type CommentEntry = {
   id: string;
   author: Actor | null;
   bodyText: string;
+  body: string;
   at: string;
   url: string;
   isMinimized: boolean;
@@ -134,6 +137,7 @@ export function deriveTimeline(input: TimelineInput): TimelineGroup[] {
         author: item.author,
         state: item.state,
         bodyText: item.bodyText,
+        body: item.body,
         at: item.submittedAt,
         url: item.url,
         isMinimized: item.isMinimized,
@@ -146,6 +150,7 @@ export function deriveTimeline(input: TimelineInput): TimelineGroup[] {
         id: item.id,
         author: item.author,
         bodyText: item.bodyText,
+        body: item.body,
         at: item.createdAt,
         url: item.url,
         isMinimized: item.isMinimized,
@@ -172,6 +177,7 @@ export function deriveTimeline(input: TimelineInput): TimelineGroup[] {
       id: thread.id,
       author: first.author,
       bodyText: first.bodyText,
+      body: first.body,
       at: first.createdAt,
       path: thread.path,
       line: thread.line ?? thread.originalLine,
