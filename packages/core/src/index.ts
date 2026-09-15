@@ -56,6 +56,7 @@ export {
   type CheckRowsInput,
   type CheckRun,
   deriveCheckRows,
+  isFailingConclusion,
   revisionIndexByOid,
   rowRank,
   type StaleRef,
@@ -67,3 +68,15 @@ export {
   type DescriptionOptions,
   type DescriptionView,
 } from "./view/description";
+
+export {
+  type ChecksEntry,
+  type CommentEntry,
+  deriveTimeline,
+  type FailedRun,
+  type ReviewEntry,
+  type ThreadEntry,
+  type TimelineEntry,
+  type TimelineGroup,
+  type TimelineInput,
+} from "./view/timeline";

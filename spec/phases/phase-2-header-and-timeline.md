@@ -41,18 +41,36 @@ decision the review contradicts is reopened there. No later phase begins until t
 grouping first keeps them from being built on something that turns out to be wrong. Seeing some real data is enough;
 the gate does not wait for all of it.
 
+### The timeline draws its own window
+
+**Decision:** the timeline region computes the rows its cursor sits in and draws those. It does not use a
+`<scrollbox>`, which the header and the description both do.
+
+**Rationale:** the cursor owns the movement keys in this region, so a scrollbox would be scrolling itself with keys the
+app has already claimed. That leaves a cursor position and a scroll position to reconcile on every key press. Drawing
+the window keeps one position. It also uses only `box` and `text`, which the collapsed description already proved
+behave.
+
+### The key map takes the focused region
+
+**Decision:** `resolveAction(key, region)`. Arrows and `j`/`k` move the cursor in the timeline, and stay unclaimed
+everywhere else.
+
+**Rationale:** the rule that an unclaimed key reaches the focused scrollbox still holds for the two regions that have
+one. The timeline has nothing to hand those keys to, so it takes them.
+
 ## Milestones
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
 | 2.1 | PRW-001 M2 | App shell, state header with check rows, description region with collapse and scrollbox | IN PROGRESS |
-| 2.2 | PRW-001 M2 | Revision-grouped timeline, expansion rules, keyboard navigation. Settles issue-comment placement. Layout gate | NOT STARTED |
+| 2.2 | PRW-001 M2 | Revision-grouped timeline, expansion rules, keyboard navigation. Settles issue-comment placement. Layout gate | IN PROGRESS |
 
 Deferred questions from PRW-001 milestone 2 owned here:
 
 - Phase 2.1 tunes the description collapse height, starting at 8 lines.
 - Phase 2.2 settles where issue comments render: inline in the revision, in a separate discussion section, or in a
-  parallel lane.
+  parallel lane. Settled inline, and recorded in PRW-001's Decision Log.
 
 The detail pane's markdown renderer and the OpenTUI checkpoint are owned by Phase 3.
 
@@ -64,15 +82,16 @@ Each gets recorded in PRW-001's Decision Log before its milestone is DONE.
 
 1. `packages/core/src/view/checks.ts` - check-row derivation, the six cases and staleness
 2. `packages/core/src/view/description.ts` - line counting and collapse
-3. `packages/cli/src/tui/run.tsx` - renderer lifecycle, resolves when the user quits
-4. `packages/cli/src/tui/app.tsx` - root layout, focus, key dispatch
-5. `packages/cli/src/tui/header.tsx` - state header, check rows with staleness
-6. `packages/cli/src/tui/description.tsx` - collapse, remaining count, scrollbox
-7. `packages/cli/src/tui/keys.ts` - key bindings
-8. `packages/cli/src/tui/theme.ts` - glyphs, colors, column widths
-9. `packages/cli/src/tui/terminal.ts` - the check for a terminal to draw on, and the error when there is none
-10. `packages/cli/src/tui/timeline.tsx` - revision groups and expansion state
-11. `packages/cli/src/tui/revision.tsx` - one revision and its items
+3. `packages/core/src/view/timeline.ts` - revision groups, their entries, and the expansion default
+4. `packages/cli/src/tui/run.tsx` - renderer lifecycle, resolves when the user quits
+5. `packages/cli/src/tui/app.tsx` - root layout, focus, key dispatch
+6. `packages/cli/src/tui/header.tsx` - state header, check rows with staleness
+7. `packages/cli/src/tui/description.tsx` - collapse, remaining count, scrollbox
+8. `packages/cli/src/tui/keys.ts` - key bindings, the tab order, and the hints per region
+9. `packages/cli/src/tui/theme.ts` - glyphs, colors, column widths
+10. `packages/cli/src/tui/terminal.ts` - the check for a terminal to draw on, and the error when there is none
+11. `packages/cli/src/tui/timeline.tsx` - the region, the row window, and the overflow counts
+12. `packages/cli/src/tui/revision.tsx` - one revision and its items
 
 The derivation sits in core rather than beside the components. It reads the model and produces plain data, which is
 what the extension needs too.
@@ -106,6 +125,13 @@ Kept as it is met, so the checkpoint write-up in Phase 3 has the record rather t
   which looks like the corruption above. Trimming to width in advance gives the ordinary trailing ellipsis.
 - Tearing a test renderer down updates the React tree, so a teardown outside `act` warns on every test. Wrapping the
   teardown settles it.
+- A row whose fragments ask for more columns than its box has does not clip the last one. The whole row compresses, and
+  its columns stop lining up with the rows above and below it. Each row now subtracts the marker, the indent, the glyph,
+  and the author column before it trims the text that follows.
+- Trimming counts code units, and a terminal draws in columns. A bot comment opening with an emoji ends one column short
+  of its neighbours. Cosmetic, and it would take grapheme width measurement to fix.
+- `mockInput.pressKey("tab")` types the letters t, a, b. The named helpers, `pressTab` and `pressEnter`, are what send
+  the key. A test that gets this wrong still passes its render, and simply asserts against a screen nothing happened to.
 
 None of these blocked the milestone. Each cost a cycle to find, because the failure showed up as rendered output
 rather than as an error.
@@ -129,11 +155,14 @@ milestone stays IN PROGRESS until the hands-on pass rules on the value.
 
 ### Phase 2.2
 
-- [ ] Timeline groups items under revisions from the chain
-- [ ] The newest revision and any revision holding an unresolved thread start expanded, all others collapsed
-- [ ] Review comments, reviews, and check runs render under the revision they anchor to
-- [ ] Issue-comment placement settled and recorded in PRW-001
-- [ ] Keyboard navigation moves between revisions and items and toggles expansion
+- [x] Timeline groups items under revisions from the chain
+- [x] The newest revision and any revision holding an unresolved thread start expanded, all others collapsed
+- [x] Review comments, reviews, and check runs render under the revision they anchor to
+- [x] Issue-comment placement settled and recorded in PRW-001
+- [x] Keyboard navigation moves between revisions and items and toggles expansion
 - [ ] Layout gate: the TUI reviewed hands-on against at least three live pull requests, including one with
       force-pushes, with findings and any reopened decisions recorded in PRW-001's Decision Log
-- [ ] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+- [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+
+The layout gate is the one criterion code cannot meet, the way the collapse height is for Phase 2.1. The milestone stays
+IN PROGRESS until the hands-on pass rules on it.

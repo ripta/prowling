@@ -142,6 +142,13 @@ force-push. Each revision holds the review comments and CI runs that targeted it
 The newest revision starts expanded, as does any older revision holding an unresolved thread. Everything else starts
 collapsed. Expansion is independent of perspective.
 
+A thread holds no anchor of its own, so the revision it opens is the one its first comment anchors to. That is the code
+the feedback was written against. A reply that lands after a later push does not open the revision it fell in.
+
+A revision reports its checks as one count line, with the failing runs named under it. The state header already answers
+the latest result per check name. Repeating every run under every revision would push the conversation off screen on any
+repository with a serious CI matrix.
+
 The perspective boundary is drawn as a divider in the timeline rather than by expanding revisions. The two mechanisms
 answer different things. Expansion surfaces what still needs action. The divider says where you left off.
 
@@ -181,7 +188,8 @@ no CI at all produces no push records. Milestone 1 measures how often this happe
 then.
 
 Whether issue comments render inline, in a separate discussion section, or in a parallel lane is a rendering choice. It
-does not touch this data model. Settled under milestone 2.
+does not touch this data model. Settled under milestone 2: they render inline, in the revision they fall in, ordered by
+time among the code feedback.
 
 ### Classification
 
@@ -380,8 +388,8 @@ and should be recorded there.
 
 ## Design Decisions (Open)
 
-None. Two questions are deferred with revisit hooks, both recorded above: the fallback for commits with no push record
-under milestone 1, and issue-comment placement under milestone 2.
+None. Both deferred questions are now settled and recorded above: the fallback for commits with no push record under
+milestone 1, and issue-comment placement under milestone 2.
 
 ## Risks
 
@@ -505,6 +513,18 @@ under milestone 1, and issue-comment placement under milestone 2.
   wrapped inside a clipped box. This keeps the source-line count and the rows on screen the same number. Input for the
   layout gate: `bodyText` lines are paragraphs, and the first line of `rust-lang/rust#137944` is 253 characters, so 8
   lines of source is a much taller block than 8 lines suggests.
+- 2026-09-14: Issue comments render inline in the revision they fall in, ordered by time among the code feedback. A
+  separate discussion section spends vertical rows a terminal does not have, and a parallel lane spends horizontal
+  columns the check names already compete for. Both also drop the one thing a timestamp anchor buys, which is what was
+  being discussed while that revision was head.
+- 2026-09-14: A revision's checks render as one count line with the failing runs named under it. Measured on
+  `cli/cli#14354`, where a revision carries 18 runs. Listing them per revision buries the conversation the view exists
+  to show, and repeats what the state header already answers per name.
+- 2026-09-14: An unresolved thread opens the revision its first comment anchors to. A thread carries no anchor of its
+  own, and its replies can land on later revisions after a push.
+- 2026-09-14: The timeline cursor owns the movement keys, so the key map now takes the focused region. The timeline
+  draws the window its cursor sits in rather than using a `<scrollbox>`, which would scroll itself with keys the app has
+  already claimed and leave two positions to reconcile. The header and description keep their scrollboxes untouched.
 
 ## References
 

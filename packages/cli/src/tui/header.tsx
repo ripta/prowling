@@ -3,6 +3,7 @@
 import { type CheckRow, type PullRequest, rowRank } from "@prowling/core";
 
 import {
+  BORDER,
   clamp,
   colorFor,
   COLORS,
@@ -23,9 +24,20 @@ export type HeaderProps = {
   width: number;
 };
 
+// Rows the region takes once drawn, border included. The regions below it are laid out against
+// what is left, so the arithmetic lives with the component that decides it.
+export function headerHeight(pullRequest: PullRequest, rows: CheckRow[], height: number): number {
+  const fields = 5 + (pullRequest.degradations.length > 0 ? 1 : 0);
+
+  return BORDER + fields + (rows.length > 0 ? listHeight(rows, height) : 0);
+}
+
+function listHeight(rows: CheckRow[], height: number): number {
+  return Math.max(1, Math.min(rows.length, height));
+}
+
 export function Header({ pullRequest, rows, focused, height, width }: HeaderProps) {
   const unresolved = pullRequest.threads.filter((thread) => !thread.isResolved).length;
-  const listHeight = Math.max(1, Math.min(rows.length, height));
 
   return (
     <box
@@ -62,7 +74,7 @@ export function Header({ pullRequest, rows, focused, height, width }: HeaderProp
           focused={focused}
           scrollY
           viewportCulling
-          style={{ height: listHeight, marginLeft: LABEL_WIDTH }}
+          style={{ height: listHeight(rows, height), marginLeft: LABEL_WIDTH }}
         >
           {rows.map((row) => (
             <CheckLine key={row.name} row={row} width={nameWidth(rows, width)} />

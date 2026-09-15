@@ -19,6 +19,9 @@ The layout gate sits at the end of Phase 2. The user reviews the header and time
 requests before anything else is built on top of them. Phases 3 through 6 are held until the gate is ruled. The ruling
 and any reopened decisions are recorded in PRW-001's Decision Log.
 
+Phase 2 is now waiting on that pass. Both its milestones are built and stay IN PROGRESS, because the two criteria left
+are ones code cannot meet: the description collapse height and the gate itself.
+
 Phases 4, 5, and 6 depend on Phases 1 and 2 only. They do not depend on each other or on Phase 3, and can run in any
 order once the gate is ruled.
 

@@ -1,12 +1,22 @@
 // Colors, glyphs, and the column widths the header lines up on.
 
-import type { CheckRow } from "@prowling/core";
+import { type CheckRow, isFailingConclusion, type TimelineEntry } from "@prowling/core";
 
 // Field labels sit in their own column, so the check rows start where the proposal's sketch puts
 // them: under the value, not under the label.
 export const LABEL_WIDTH = 9;
 export const RESULT_WIDTH = 19;
 export const NAME_WIDTH_CAP = 44;
+
+// The rows a region's own border takes, top and bottom.
+export const BORDER = 2;
+
+// A revision's items sit under its header, and a failing check sits under the line that counted it.
+export const ENTRY_INDENT = 2;
+export const NESTED_INDENT = 6;
+
+export const OPEN = "▾";
+export const CLOSED = "▸";
 
 export const COLORS = {
   text: "#c9d1d9",
@@ -64,6 +74,59 @@ export function clamp(value: string, width: number): string {
   return value.length <= width ? value : `${value.slice(0, Math.max(0, width - 1))}…`;
 }
 
+// A filled mark is feedback on the code, a hollow one is everything else. The kind reads from the
+// shape, and the color says what state it is in.
+export function entryGlyph(entry: TimelineEntry): string {
+  switch (entry.kind) {
+    case "checks":
+      if (entry.failing.length > 0) {
+        return "⚠";
+      }
+
+      return entry.pending > 0 ? "●" : "✓";
+    case "review":
+      return "●";
+    case "thread":
+      return "◆";
+    case "comment":
+      return "◇";
+  }
+}
+
+export function entryColor(entry: TimelineEntry): string {
+  switch (entry.kind) {
+    case "checks":
+      if (entry.failing.length > 0) {
+        return COLORS.bad;
+      }
+
+      if (entry.pending > 0) {
+        return COLORS.accent;
+      }
+
+      return entry.passing > 0 ? COLORS.ok : COLORS.dim;
+    case "review":
+      return reviewColor(entry.state);
+    case "thread":
+      return entry.isResolved ? COLORS.dim : COLORS.bad;
+    case "comment":
+      return COLORS.dim;
+  }
+}
+
+function reviewColor(state: string): string {
+  switch (state) {
+    case "APPROVED":
+      return COLORS.ok;
+    case "CHANGES_REQUESTED":
+      return COLORS.bad;
+    case "COMMENTED":
+      return COLORS.text;
+    default:
+      return COLORS.dim;
+  }
+}
+
 function conclusionGlyph(row: CheckRow): string {
   switch (row.conclusion) {
     case "SUCCESS":
@@ -96,5 +159,5 @@ function conclusionColor(row: CheckRow): string {
 }
 
 function failed(row: CheckRow): boolean {
-  return row.conclusion !== null && !["SUCCESS", "SKIPPED", "NEUTRAL", "CANCELLED"].includes(row.conclusion);
+  return isFailingConclusion(row.conclusion);
 }

@@ -71,6 +71,12 @@ const FAILING: ReadonlySet<CheckConclusion> = new Set<CheckConclusion>([
   "STALE",
 ]);
 
+// What counts as a result worth acting on. Shared with the timeline and the renderer, so a
+// conclusion added to the set reaches every surface that sorts or colors by it.
+export function isFailingConclusion(conclusion: CheckConclusion | null): boolean {
+  return conclusion !== null && FAILING.has(conclusion);
+}
+
 const MUTED: ReadonlySet<CheckConclusion> = new Set<CheckConclusion>(["NEUTRAL", "CANCELLED"]);
 
 type Run = {
@@ -132,7 +138,7 @@ export function revisionIndexByOid(revisions: readonly Pick<Revision, "headOid" 
 // Attention first. Ten of the twenty-one names on a real pull request report stale, so ordering by
 // name buries the one row that needs acting on below the fold of a scrollbox.
 export function rowRank(row: CheckRow): number {
-  if (row.conclusion !== null && FAILING.has(row.conclusion)) {
+  if (isFailingConclusion(row.conclusion)) {
     return 0;
   }
 

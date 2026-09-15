@@ -44,16 +44,61 @@ afterEach(async () => {
   });
 });
 
-async function frame(pullRequest: PullRequest, collapsedRows = 8): Promise<string> {
+type Screen = {
+  draw: () => string;
+  press: (key: string) => Promise<void>;
+  tab: () => Promise<void>;
+};
+
+// The timeline takes the rows the regions above it leave, so a test that wants to read more than a
+// couple of its rows asks for a taller terminal.
+const TALL = 60;
+
+async function mount(pullRequest: PullRequest, collapsedRows = 8, height = 40): Promise<Screen> {
   const setup = await testRender(<App pullRequest={pullRequest} onQuit={() => {}} collapsedRows={collapsedRows} />, {
     width: 100,
-    height: 40,
+    height,
   });
 
   destroy = () => setup.renderer.destroy();
   await setup.renderOnce();
 
-  return setup.captureCharFrame();
+  // A key press updates the React tree, so the test owns it the same way the teardown does.
+  const settle = async (send: () => void): Promise<void> => {
+    await act(async () => {
+      send();
+    });
+
+    await setup.renderOnce();
+  };
+
+  return {
+    draw: () => setup.captureCharFrame(),
+    press: (key) => settle(() => setup.mockInput.pressKey(key)),
+    tab: () => settle(() => setup.mockInput.pressTab()),
+  };
+}
+
+async function frame(pullRequest: PullRequest, collapsedRows = 8): Promise<string> {
+  const screen = await mount(pullRequest, collapsedRows);
+
+  return screen.draw();
+}
+
+async function timelineFrame(pullRequest: PullRequest): Promise<string> {
+  const screen = await mount(pullRequest, 8, TALL);
+
+  return screen.draw();
+}
+
+// Tab walks header, description, timeline.
+async function onTimeline(pullRequest: PullRequest): Promise<Screen> {
+  const screen = await mount(pullRequest, 8, TALL);
+
+  await screen.tab();
+  await screen.tab();
+
+  return screen;
 }
 
 describe("the state header", () => {
@@ -109,3 +154,142 @@ describe("the description", () => {
     expect(drawn).toContain("no description");
   });
 });
+
+describe("the timeline", () => {
+  test("groups under revisions, naming the head, the pusher, and what it carried", async () => {
+    const drawn = await timelineFrame(await fixture("cli-cli-14429"));
+
+    expect(drawn).toContain("98cb293");
+    expect(drawn).toContain("a9d9d84");
+    expect(drawn).toContain("williammartin");
+    expect(drawn).toContain("4 revisions");
+  });
+
+  test("opens the newest revision and leaves the rest closed", async () => {
+    const drawn = await timelineFrame(await fixture("cli-cli-14429"));
+
+    expect(drawn).toContain("▾ a9d9d84");
+    expect(drawn).toContain("▸ 98cb293");
+    expect(drawn).toContain("▸ dc6221e");
+  });
+
+  test("says which push was a force-push", async () => {
+    const drawn = await timelineFrame(await fixture("cli-cli-14349"));
+
+    expect(drawn).toContain("force-push");
+  });
+
+  test("counts the checks that ran on the revision", async () => {
+    const drawn = await timelineFrame(await fixture("cli-cli-14429"));
+
+    expect(drawn).toContain("checks  11 · 11 passing");
+  });
+
+  test("names a failing run under the count that holds it", async () => {
+    const pullRequest = await fixture("cli-cli-14429");
+    const drawn = await timelineFrame(withFailure(pullRequest, "CodeQL"));
+
+    expect(drawn).toContain("1 failing");
+    expect(drawn).toContain("⚠ CodeQL");
+  });
+
+  test("opens a revision holding an unresolved thread, and says how many", async () => {
+    const drawn = await timelineFrame(await fixture("cli-cli-14354"));
+
+    expect(drawn).toContain("1 unresolved thread");
+    expect(drawn).toContain("acceptance/user_capability_test.go:56");
+    expect(drawn).toContain("unresolved, 1 reply");
+  });
+
+  test("renders reviews alongside the threads they arrived with", async () => {
+    const drawn = await timelineFrame(await fixture("cli-cli-14354"));
+
+    expect(drawn).toContain("● @babakks  APPROVED");
+    expect(drawn).toContain("◆ @babakks");
+  });
+
+  // The placement decision: an issue comment reads in the revision it was written against, among
+  // the code feedback, rather than in a section of its own.
+  test("puts issue comments inline in the revision they fall in", async () => {
+    const drawn = await timelineFrame(await fixture("rust-lang-rust-137944"));
+
+    expect(drawn).toContain("◇ @bors");
+    expect(drawn).toContain("◇ @rust-timer");
+  });
+
+  test("reports what it is holding off screen", async () => {
+    const drawn = await timelineFrame(await fixture("rust-lang-rust-137944"));
+
+    expect(drawn).toContain("66 revisions");
+    expect(drawn).toMatch(/↑ \d+/);
+  });
+});
+
+describe("moving around the timeline", () => {
+  test("tab reaches it, and the hints say what it does", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14429"));
+
+    expect(screen.draw()).toContain("jk move");
+    expect(screen.draw()).toContain("np revision");
+    expect(screen.draw()).toContain("▎▾ a9d9d84");
+  });
+
+  test("k walks back through the items and j returns", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14429"));
+
+    await screen.press("j");
+    expect(screen.draw()).toContain("▎  ✓ checks");
+
+    await screen.press("k");
+    expect(screen.draw()).toContain("▎▾ a9d9d84");
+  });
+
+  test("p moves to the revision before, and n comes back", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14429"));
+
+    await screen.press("p");
+    expect(screen.draw()).toContain("▎▸ dc6221e");
+
+    await screen.press("n");
+    expect(screen.draw()).toContain("▎▾ a9d9d84");
+  });
+
+  test("enter opens the revision under the cursor and closes it again", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14429"));
+
+    await screen.press("p");
+    await screen.press("\r");
+    expect(screen.draw()).toContain("▎▾ dc6221e");
+
+    await screen.press("\r");
+    expect(screen.draw()).toContain("▎▸ dc6221e");
+  });
+
+  // Closing a revision takes its items away, so a cursor left inside one would point at a row that
+  // no longer exists.
+  test("closing a revision from inside it brings the cursor back to its header", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14429"));
+
+    await screen.press("j");
+    await screen.press("\r");
+
+    expect(screen.draw()).toContain("▎▸ a9d9d84");
+  });
+});
+
+// The fixtures all pass their checks, so a failure has to be made. Flipping one conclusion leaves
+// everything else about the recording alone.
+function withFailure(pullRequest: PullRequest, name: string): PullRequest {
+  return {
+    ...pullRequest,
+    commits: pullRequest.commits.map((commit) => ({
+      ...commit,
+      checkSuites: commit.checkSuites.map((suite) => ({
+        ...suite,
+        checks: suite.checks.map((check) =>
+          check.name === name ? { ...check, conclusion: "FAILURE" as const } : check,
+        ),
+      })),
+    })),
+  };
+}

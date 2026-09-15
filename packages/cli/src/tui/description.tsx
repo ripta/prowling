@@ -3,10 +3,24 @@
 
 import type { DescriptionView } from "@prowling/core";
 
-import { clamp, COLORS } from "./theme";
+import { BORDER, clamp, COLORS } from "./theme";
 
 // The border and the padding either side of the text.
 const CHROME = 4;
+
+// Rows the region takes once drawn, border included. The timeline is laid out against what is left,
+// so the arithmetic lives with the component that decides it.
+export function descriptionHeight(view: DescriptionView, expanded: boolean, expandedHeight: number): number {
+  if (view.isEmpty) {
+    return BORDER + 1;
+  }
+
+  if (expanded) {
+    return BORDER + expandedHeight;
+  }
+
+  return BORDER + view.head.length + (view.remaining > 0 ? 1 : 0);
+}
 
 export type DescriptionProps = {
   view: DescriptionView;
