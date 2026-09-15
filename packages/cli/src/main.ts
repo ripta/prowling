@@ -94,7 +94,7 @@ async function buildTransport(mode: Mode): Promise<Transport> {
 // The summary stands in for the TUI. It proves the fetch worked without dumping the model.
 export function summarize(pullRequest: PullRequest): string {
   const unresolved = pullRequest.threads.filter((thread) => !thread.isResolved).length;
-  const checks = pullRequest.commits
+  const checks = [...pullRequest.commits, ...pullRequest.droppedCommits]
     .flatMap((commit) => commit.checkSuites)
     .reduce((total, suite) => total + suite.checks.length, 0);
 
@@ -102,7 +102,7 @@ export function summarize(pullRequest: PullRequest): string {
     `#${pullRequest.number} ${pullRequest.title} [${pullRequest.state}] ` +
     `${pullRequest.timeline.length} timeline items, ` +
     `${pullRequest.threads.length} threads (${unresolved} unresolved), ` +
-    `${pullRequest.commits.length} commits, ${checks} checks`
+    `${pullRequest.revisions.length} revisions, ${pullRequest.commits.length} commits, ${checks} checks`
   );
 }
 

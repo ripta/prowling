@@ -26,6 +26,17 @@ export { normalizePullRequest } from "./normalize";
 export { fetchPullRequest } from "./pull-request";
 
 export {
+  buildRevisionChain,
+  type ChainInput,
+  CROSS_CHECK_TOLERANCE_MS,
+  droppedHeadOids,
+  type ForcePushEvent,
+  type PushRecord,
+  type RevisionChain,
+  ZERO_OID,
+} from "./revisions";
+
+export {
   createTransport,
   hashRequest,
   type RecordedRequest,

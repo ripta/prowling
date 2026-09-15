@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import type { Transport } from "../transport";
 import {
   CHECK_RUN_STEPS_QUERY,
+  droppedCommitsQuery,
   fetchPullRequestData,
   MORE_CHECK_RUN_STEPS_QUERY,
   MORE_CHECK_RUNS_QUERY,
@@ -173,6 +174,17 @@ function timelineCommit(id: string): RawTimelineItem {
   return { __typename: "PullRequestCommit", id, commit: { oid: `${id}0000` } };
 }
 
+function forcePush(id: string, before: string, after: string): RawTimelineItem {
+  return {
+    __typename: "HeadRefForcePushedEvent",
+    id,
+    actor: null,
+    createdAt: "2025-01-01T00:00:00Z",
+    beforeCommit: { oid: before },
+    afterCommit: { oid: after },
+  };
+}
+
 function pullRequest(overrides: Partial<RawPullRequest>): RawPullRequest {
   return {
     id: "PR_1",
@@ -209,7 +221,11 @@ function pullRequest(overrides: Partial<RawPullRequest>): RawPullRequest {
 // requests over two pages, a thread whose comments spill, a commit whose suites spill, a suite
 // whose runs spill across three pages into 150 Actions runs so steps batch as 100 then 50, and one
 // run whose steps spill. A generic suite proves non-Actions runs are left out of the step fetch.
-function scenario() {
+//
+// The second timeline page repeats t1, the way GitHub's time-based cursor can, and carries a
+// force-push from X, which is not on the branch. X resolves as a dropped commit with one Actions
+// run, which reaches a step fetch of its own.
+function scenario(dropped: Handler = droppedCommit) {
   const s1Runs = [checkRuns("s1", 50), checkRuns("s1", 100).slice(50), checkRuns("s1", 150).slice(100)];
 
   return server({
@@ -230,8 +246,10 @@ function scenario() {
     }),
 
     MoreTimelineItems: () => ({
-      node: { timelineItems: page([timelineCommit("t2"), timelineCommit("t3")]) },
+      node: { timelineItems: page([timelineCommit("t1"), timelineCommit("t2"), forcePush("fp1", "X0000", "A0000"), timelineCommit("t3")]) },
     }),
+
+    DroppedCommits: dropped,
 
     MoreReviewThreads: () => ({
       node: { reviewThreads: page([thread("th2", page([]))]) },
@@ -268,6 +286,12 @@ function scenario() {
   });
 }
 
+function droppedCommit(): unknown {
+  const resolved = commit("X", page([suite("s3", "github-actions", page([checkRun("s3-1")]))])).commit;
+
+  return { repository: { c0: { __typename: "Commit", ...resolved } } };
+}
+
 describe("fetchPullRequestData", () => {
   test("drains every connection through its owning node", async () => {
     const transport = scenario();
@@ -280,8 +304,8 @@ describe("fetchPullRequestData", () => {
     expect(present(pr.reviewRequests?.nodes ?? []).map((request) => request.id)).toEqual(["rr1", "rr2"]);
     expect(pr.reviewRequests?.pageInfo.hasNextPage).toBe(false);
 
-    expect(pr.timelineItems.nodes).toHaveLength(4);
-    expect(present(pr.timelineItems.nodes).map((item) => item.id)).toEqual(["t1", "t2", "t3"]);
+    expect(pr.timelineItems.nodes).toHaveLength(5);
+    expect(present(pr.timelineItems.nodes).map((item) => item.id)).toEqual(["t1", "t2", "fp1", "t3"]);
 
     const threads = present(pr.reviewThreads.nodes);
     expect(threads.map((item) => item.id)).toEqual(["th1", "th2"]);
@@ -301,23 +325,55 @@ describe("fetchPullRequestData", () => {
     ]);
   });
 
+  test("resolves the heads a force-push dropped, with their suites", async () => {
+    const transport = scenario();
+
+    const { data, degradations } = await fetchPullRequestData(transport, REF);
+
+    const lookup = transport.calls.find((call) => call.operation === "DroppedCommits");
+    expect(lookup?.variables).toEqual({ owner: "cli", repo: "cli", number: 14354, o0: "X0000" });
+
+    expect(Object.keys(data.droppedCommits)).toEqual(["X0000"]);
+    const dropped = data.droppedCommits.X0000;
+    expect(dropped?.oid).toBe("X0000");
+    expect(present(dropped?.checkSuites?.nodes ?? []).map((item) => item.id)).toEqual(["s3"]);
+    expect(degradations).toHaveLength(1);
+  });
+
+  test("records null and a degradation for a head that does not resolve", async () => {
+    const transport = scenario(() => ({
+      data: { repository: { c0: null } },
+      errors: [{ message: "gone", path: ["repository", "c0"] }],
+    }));
+
+    const { data, degradations } = await fetchPullRequestData(transport, REF);
+
+    expect(data.droppedCommits).toEqual({ X0000: null });
+    expect(degradations).toEqual([
+      { path: ["node", "comments", "nodes", 1], message: "one comment hidden" },
+      { path: ["droppedCommits", "X0000"], message: "gone" },
+      { path: ["droppedCommits", "X0000"], message: expect.stringContaining("did not resolve") },
+    ]);
+  });
+
   test("fetches steps for Actions runs only, in batches of 100, and pages an overflowing run", async () => {
     const transport = scenario();
 
     const { data } = await fetchPullRequestData(transport, REF);
 
     const stepCalls = transport.calls.filter((call) => call.operation === "CheckRunSteps");
-    expect(stepCalls.map((call) => (call.variables.ids as string[]).length)).toEqual([100, 50]);
+    expect(stepCalls.map((call) => (call.variables.ids as string[]).length)).toEqual([100, 50, 1]);
 
     const requested = stepCalls.flatMap((call) => call.variables.ids as string[]);
     expect(requested).not.toContain("s2-1");
-    expect(new Set(requested).size).toBe(150);
+    expect(new Set(requested).size).toBe(151);
 
-    expect(Object.keys(data.steps)).toHaveLength(150);
+    expect(Object.keys(data.steps)).toHaveLength(151);
     expect(data.steps["s2-1"]).toBeUndefined();
     expect(present(data.steps["s1-1"].nodes).map((item) => item.number)).toEqual([1]);
     expect(present(data.steps["s1-7"].nodes).map((item) => item.number)).toEqual([1, 2, 3]);
     expect(data.steps["s1-7"].pageInfo.hasNextPage).toBe(false);
+    expect(present(data.steps["s3-1"].nodes).map((item) => item.number)).toEqual([1]);
   });
 
   test("sends the expected sequence of operations and cursors", async () => {
@@ -337,8 +393,10 @@ describe("fetchPullRequestData", () => {
       ["MoreCheckSuites", "A", "s-cursor"],
       ["MoreCheckRuns", "s1", "r-cursor-1"],
       ["MoreCheckRuns", "s1", "r-cursor-2"],
+      ["DroppedCommits", null, null],
       ["CheckRunSteps", null, null],
       ["MoreCheckRunSteps", "s1-7", "st-cursor"],
+      ["CheckRunSteps", null, null],
       ["CheckRunSteps", null, null],
     ]);
 
@@ -361,6 +419,7 @@ describe("fetchPullRequestData", () => {
 
     expect(transport.calls).toHaveLength(1);
     expect(data.steps).toEqual({});
+    expect(data.droppedCommits).toEqual({});
     expect(degradations).toEqual([]);
   });
 
@@ -411,6 +470,7 @@ describe("documents", () => {
     MORE_CHECK_RUNS_QUERY,
     CHECK_RUN_STEPS_QUERY,
     MORE_CHECK_RUN_STEPS_QUERY,
+    DROPPED_COMMITS_QUERY: droppedCommitsQuery(2),
   };
 
   test("define every fragment they spread and spread every fragment they define", () => {

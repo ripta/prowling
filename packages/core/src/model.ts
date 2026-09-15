@@ -64,8 +64,46 @@ export type PullRequest = {
   reviewRequests: ReviewRequest[];
   timeline: TimelineItem[];
   threads: ReviewThread[];
+  // The commits on the branch now, base to head.
   commits: Commit[];
+  // Heads that a force-push removed from the branch, resolved by oid. Chain order, oldest first.
+  droppedCommits: Commit[];
+  // Oldest first. The last revision is the current head. Never empty.
+  revisions: Revision[];
   degradations: Degradation[];
+};
+
+export type RevisionOrigin = "push" | "force-push" | "inferred";
+
+// One state of the head ref. A push record or a force-push event establishes it with a timestamp.
+// An inferred revision is a state that only shows up as another revision's predecessor, so its
+// time is unknown.
+export type Revision = {
+  headOid: string;
+  // The API's forty-zero oid is kept verbatim: the branch was created by this push.
+  //
+  // null means nobody recorded the predecessor. That is every inferred revision, and a force-push
+  // whose before commit is gone.
+  previousOid: string | null;
+  pushedAt: string | null;
+  pusher: Actor | null;
+  origin: RevisionOrigin;
+  pushId: string | null;
+  eventId: string | null;
+  // Oids whose data belongs here: the surviving commits this revision introduced, in branch order,
+  // or the resolved head itself when it is no longer on the branch. Check runs anchor through this
+  // list, since a check run belongs to its commit.
+  commits: string[];
+};
+
+// Where an item sits in the revision chain. revision indexes PullRequest.revisions. Two revisions
+// can share a head oid when a force-push moved away and back, so the index is the identity.
+//
+// by records the signal used: the item's own commit oid, its timestamp against the revision that
+// was head at that moment, or neither, in which case it lands on the newest revision.
+export type Anchor = {
+  revision: number;
+  by: "commit" | "timestamp" | "fallback";
 };
 
 export type Viewer = {
@@ -92,8 +130,9 @@ export type Reviewer = {
   login: string;
 };
 
-// Timeline items keep the order the API returns them in. Anchoring them to revisions is a separate
-// step over this list.
+// Timeline items keep the order the API returns them in. That order is by committedDate for
+// commits, which is not when they reached the branch, so each item also carries its anchor into the
+// revision chain.
 export type TimelineItem = CommitItem | ReviewItem | CommentItem | ForcePushItem;
 
 // The full commit lives in PullRequest.commits. This item marks where it sits in the timeline, and
@@ -102,8 +141,11 @@ export type CommitItem = {
   kind: "commit";
   id: string;
   oid: string;
+  anchor: Anchor;
 };
 
+// commitOid is the head when the review was submitted. Its comments carry originalCommitOid, the
+// head when each was drafted, so a review and its own comments can anchor to different revisions.
 export type ReviewItem = {
   kind: "review";
   id: string;
@@ -115,6 +157,7 @@ export type ReviewItem = {
   commitOid: string | null;
   url: string;
   isMinimized: boolean;
+  anchor: Anchor;
 };
 
 export type CommentItem = {
@@ -127,8 +170,10 @@ export type CommentItem = {
   url: string;
   isMinimized: boolean;
   minimizedReason: string | null;
+  anchor: Anchor;
 };
 
+// Anchors to the revision the push created.
 export type ForcePushItem = {
   kind: "force-push";
   id: string;
@@ -136,6 +181,7 @@ export type ForcePushItem = {
   createdAt: string;
   beforeOid: string | null;
   afterOid: string | null;
+  anchor: Anchor;
 };
 
 export type ReviewThread = {
@@ -170,6 +216,7 @@ export type ReviewComment = {
   reviewId: string | null;
   replyToId: string | null;
   isMinimized: boolean;
+  anchor: Anchor;
 };
 
 export type Commit = {

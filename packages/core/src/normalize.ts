@@ -1,5 +1,8 @@
 // Raw response to model. A pure mapping over drained pages: every connection has already been
 // paged to the end, so this reads nodes and skips the null holes.
+//
+// The revision chain is built first, from the commits and the force-push events, so every item
+// receives its anchor as it is constructed.
 
 import type { Degradation } from "./github/errors";
 import {
@@ -37,6 +40,7 @@ import type {
   Step,
   TimelineItem,
 } from "./model";
+import { buildRevisionChain, type ForcePushEvent, type PushRecord, type RevisionChain } from "./revisions";
 
 const CLOUD_BUILD_APP_SLUG = "google-cloud-build";
 
@@ -45,6 +49,21 @@ export function normalizePullRequest(
   degradations: Degradation[],
 ): PullRequest {
   const raw = data.pullRequest;
+
+  const commits = present(raw.commits.nodes).map((item) => commit(item.commit, data.steps));
+  const resolved = Object.values(data.droppedCommits)
+    .filter((item): item is RawCommit => item !== null)
+    .map((item) => commit(item, data.steps));
+
+  const chain = buildRevisionChain({
+    headRefOid: raw.headRefOid,
+    commits: commits.map((item) => item.oid),
+    pushes: pushRecords([...commits, ...resolved]),
+    events: nodes(raw.timelineItems).flatMap(forcePushEvent),
+    resolved: new Set(resolved.map((item) => item.oid)),
+  });
+
+  const timeline = nodes(raw.timelineItems).map((item) => timelineItem(item, chain));
 
   return {
     id: raw.id,
@@ -81,15 +100,69 @@ export function normalizePullRequest(
             },
     },
     reviewRequests: nodes(raw.reviewRequests).map(reviewRequest),
-    timeline: nodes(raw.timelineItems).map(timelineItem),
-    threads: nodes(raw.reviewThreads).map(reviewThread),
-    commits: present(raw.commits.nodes).map((item) => commit(item.commit, data.steps)),
-    degradations,
+    timeline,
+    threads: nodes(raw.reviewThreads).map((thread) => reviewThread(thread, chain)),
+    commits,
+    droppedCommits: inChainOrder(resolved, chain),
+    revisions: chain.revisions,
+    degradations: [...degradations, ...chain.degradations, ...strayCommitItems(timeline)],
   };
 }
 
 function nodes<T>(page: RawPage<T> | null): T[] {
   return page === null ? [] : present(page.nodes);
+}
+
+function pushRecords(commits: Commit[]): PushRecord[] {
+  return commits.flatMap((item) =>
+    item.checkSuites.flatMap((suite) =>
+      suite.push === null ? [] : [{ ...suite.push, createdAt: suite.createdAt, commitOid: item.oid }],
+    ),
+  );
+}
+
+function forcePushEvent(raw: RawTimelineItem): ForcePushEvent[] {
+  if (raw.__typename !== "HeadRefForcePushedEvent") {
+    return [];
+  }
+
+  return [
+    {
+      id: raw.id,
+      beforeOid: raw.beforeCommit?.oid ?? null,
+      afterOid: raw.afterCommit?.oid ?? null,
+      createdAt: raw.createdAt,
+      actor: actor(raw.actor),
+    },
+  ];
+}
+
+// Dropped commits are listed in the order their revisions appear. A head pushed away and back has
+// two revisions and is listed once.
+function inChainOrder(resolved: Commit[], chain: RevisionChain): Commit[] {
+  const byOid = new Map(resolved.map((item) => [item.oid, item] as const));
+  const ordered: Commit[] = [];
+
+  for (const revision of chain.revisions) {
+    const item = byOid.get(revision.headOid);
+
+    if (item !== undefined) {
+      ordered.push(item);
+      byOid.delete(revision.headOid);
+    }
+  }
+
+  return ordered;
+}
+
+// A commit item names a commit that is neither on the branch nor a known head. That happens when
+// the commit list and the timeline disagree, and the item has no timestamp to fall back on.
+function strayCommitItems(timeline: TimelineItem[]): Degradation[] {
+  return timeline.flatMap((item, index) =>
+    item.kind === "commit" && item.anchor.by === "fallback"
+      ? [{ path: ["timeline", index], message: `Commit ${item.oid.slice(0, 7)} in the timeline is not on the branch.` }]
+      : [],
+  );
 }
 
 function actor(raw: RawActor | null): Actor | null {
@@ -110,10 +183,10 @@ function reviewRequest(raw: RawReviewRequest): ReviewRequest {
   return { id: raw.id, reviewer: { kind: reviewer.__typename, login: reviewer.login } };
 }
 
-function timelineItem(raw: RawTimelineItem): TimelineItem {
+function timelineItem(raw: RawTimelineItem, chain: RevisionChain): TimelineItem {
   switch (raw.__typename) {
     case "PullRequestCommit":
-      return { kind: "commit", id: raw.id, oid: raw.commit.oid };
+      return { kind: "commit", id: raw.id, oid: raw.commit.oid, anchor: chain.anchor(raw.commit.oid, null) };
 
     case "PullRequestReview":
       return {
@@ -127,6 +200,7 @@ function timelineItem(raw: RawTimelineItem): TimelineItem {
         commitOid: raw.commit?.oid ?? null,
         url: raw.url,
         isMinimized: raw.isMinimized,
+        anchor: chain.anchor(raw.commit?.oid ?? null, raw.submittedAt),
       };
 
     case "IssueComment":
@@ -140,6 +214,7 @@ function timelineItem(raw: RawTimelineItem): TimelineItem {
         url: raw.url,
         isMinimized: raw.isMinimized,
         minimizedReason: raw.minimizedReason,
+        anchor: chain.anchor(null, raw.createdAt),
       };
 
     case "HeadRefForcePushedEvent":
@@ -150,11 +225,12 @@ function timelineItem(raw: RawTimelineItem): TimelineItem {
         createdAt: raw.createdAt,
         beforeOid: raw.beforeCommit?.oid ?? null,
         afterOid: raw.afterCommit?.oid ?? null,
+        anchor: chain.anchor(raw.afterCommit?.oid ?? null, raw.createdAt),
       };
   }
 }
 
-function reviewThread(raw: RawReviewThread): ReviewThread {
+function reviewThread(raw: RawReviewThread, chain: RevisionChain): ReviewThread {
   return {
     id: raw.id,
     path: raw.path,
@@ -167,11 +243,11 @@ function reviewThread(raw: RawReviewThread): ReviewThread {
     isOutdated: raw.isOutdated,
     isCollapsed: raw.isCollapsed,
     resolvedBy: actor(raw.resolvedBy),
-    comments: present(raw.comments.nodes).map(reviewComment),
+    comments: present(raw.comments.nodes).map((comment) => reviewComment(comment, chain)),
   };
 }
 
-function reviewComment(raw: RawReviewComment): ReviewComment {
+function reviewComment(raw: RawReviewComment, chain: RevisionChain): ReviewComment {
   return {
     id: raw.id,
     author: actor(raw.author),
@@ -189,6 +265,7 @@ function reviewComment(raw: RawReviewComment): ReviewComment {
     reviewId: raw.pullRequestReview?.id ?? null,
     replyToId: raw.replyTo?.id ?? null,
     isMinimized: raw.isMinimized,
+    anchor: chain.anchor(raw.originalCommit?.oid ?? null, raw.createdAt),
   };
 }
 

@@ -1,7 +1,7 @@
 # Phase 1: Data layer
 
 **Goal:** Fetch one pull request and normalize it into a revision-anchored model, with no terminal involved.
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 **Complexity:** HIGH
 **Dependencies:** None
 
@@ -67,17 +67,56 @@ through `nodes(ids:)`. Only check runs under a GitHub Actions suite are asked fo
 suites, and runs would score around 250 points per fetch. The batched follow-up scores about 1 point per 100 runs.
 Measured: the main query costs 6 points, the step batch 1, and each follow-up page 1. Only Actions produces steps.
 
+### Dropped commits are looked up by oid after the main query
+
+**Decision:** Every head a push record or force-push event names, minus the commits still on the branch, is fetched
+through aliased `repository.object(oid:)` fields in batches of 25, with the oids as variables and sorted. Each resolved
+commit drains its suites and runs like a surviving one, and its Actions runs get a step fetch of their own. One hop
+only: push records found on the resolved commits add nothing further to fetch. `headRefOid` is never looked up. When
+it is not the last commit on the branch, the commit list is stale, which a lookup would not fix.
+
+**Rationale:** the existing documents stay untouched, so every recording made before this lookup existed remains
+valid. Variables keep the document a function of batch size alone. A separate step fetch matters for the same reason:
+appending the dropped runs to the surviving list would refill its last batch and change that request's replay key.
+
+### Revisions are identified by index and ordered by chain links
+
+**Decision:** an anchor names a revision by its index in `revisions`. Ordering follows `previousOid` links first, and
+timestamps only to sort the segments those links form. A push record and a force-push event for the same head are
+cross-checked on predecessor and on time, with 60 seconds of tolerance against the earliest suite on the push.
+
+**Rationale:** a force-push away from a head and back gives one oid two revisions, which oid identity cannot express.
+The push record is exact where the suite timestamp lags. Measured on `cli/cli#14354`: the earliest suite on a push
+lands within a second of the force-push event, and the latest lags by 58 minutes.
+
+### A push predecessor infers a revision only when it survives on the branch
+
+**Decision:** a head that only appears as a predecessor becomes an inferred revision with no timestamp. For a
+force-push event's `before` that is unconditional. For a push record's `previousSha` it holds only when the oid is a
+surviving commit.
+
+**Rationale:** a branch created in the web UI records a base-branch commit as the first push's predecessor. Inferring
+a revision for it, and fetching it as a dropped commit, would leak base history into the chain.
+
+### Fixtures are extended by filling misses
+
+**Decision:** `record-fixtures.ts --fill` replays what is recorded and records only what is missing. A server error is
+never written to a recording.
+
+**Rationale:** a pull request keeps moving after it is recorded. Re-recording everything for one new request would
+change what the existing recordings say. A 502 recorded mid-fetch replayed on every later run until it was deleted.
+
 ## Milestones
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
 | 1.1 | PRW-001 M1 | Workspace, transport seam, auth, record and replay, partial-error classification | DONE |
 | 1.2 | PRW-001 M1 | GraphQL query, normalized model with node IDs, JSON dump | DONE |
-| 1.3 | PRW-001 M1 | Revision chain and anchoring. Settles the no-push-record fallback. Validates a fork PR | NOT STARTED |
+| 1.3 | PRW-001 M1 | Revision chain and anchoring. Settles the no-push-record fallback. Validates a fork PR | DONE |
 
-Phase 1.3 owns two questions PRW-001 deferred to milestone 1: the fallback ordering for a commit with neither a check
+Phase 1.3 owned two questions PRW-001 deferred to milestone 1: the fallback ordering for a commit with neither a check
 suite nor a covering force-push event, and whether fork pull requests keep head-commit check suites off the base
-repository. Both get settled and recorded in the proposal's Decision Log before the milestone is DONE.
+repository. Both are settled in the proposal's Decision Log under 2026-09-14.
 
 ## Implementation
 
@@ -149,13 +188,13 @@ repository. Both get settled and recorded in the proposal's Decision Log before 
 
 ### Phase 1.3
 
-- [ ] Revision chain built from `CheckSuite.push`, deduplicated on `push.id`, timestamped by `CheckSuite.createdAt`
-- [ ] Chain cross-checked against `HeadRefForcePushedEvent`, with disagreement surfaced as a degradation
-- [ ] Review comments anchor by `originalCommit.oid`, reviews by `commit.oid`, check runs by their commit, issue
+- [x] Revision chain built from `CheckSuite.push`, deduplicated on `push.id`, timestamped by `CheckSuite.createdAt`
+- [x] Chain cross-checked against `HeadRefForcePushedEvent`, with disagreement surfaced as a degradation
+- [x] Review comments anchor by `originalCommit.oid`, reviews by `commit.oid`, check runs by their commit, issue
       comments by timestamp
-- [ ] Commits dropped by a force-push are resolved through `beforeCommit` and `repository.object(oid:)`
-- [ ] A fixture reproduces the `rust-lang/rust#137944` case, and a test proves the 27 commits anchor to the later
+- [x] Commits dropped by a force-push are resolved through `beforeCommit` and `repository.object(oid:)`
+- [x] A fixture reproduces the `rust-lang/rust#137944` case, and a test proves the 27 commits anchor to the later
       revision
-- [ ] The fork PR fixture is measured, and the result is recorded in PRW-001's Decision Log
-- [ ] The fallback for a commit with no push record and no force-push event is settled and recorded in PRW-001
-- [ ] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+- [x] The fork PR fixture is measured, and the result is recorded in PRW-001's Decision Log
+- [x] The fallback for a commit with no push record and no force-push event is settled and recorded in PRW-001
+- [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log

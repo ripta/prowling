@@ -394,8 +394,9 @@ under milestone 1, and issue-comment placement under milestone 2.
   `@opentui/core` 0.4.5 and the 0.1.79 to 0.1.88 regression are the evidence.
 - **Fork PRs may keep head-commit check suites in the head repository, leaving no push record on the base repo** —
   likelihood: medium, impact: medium. Mitigation: force-push events live on the base repo's pull request either way,
-  so the force-push chain survives. Milestone 1 tests a fork PR explicitly. Measured on `rust-lang/rust#137944`, where
-  head commits returned no check suites.
+  so the force-push chain survives. Measured under milestone 1 on `rust-lang/rust#137944`: neither repository holds
+  suites for its head commits, and the base repository resolves every dropped head by oid. See the Decision Log under
+  2026-09-14 for what that measurement does and does not show.
 - **A pull request with no CI produces no push records, so revision boundaries are unknown** — likelihood: low,
   impact: low. Mitigation: force-push events still bound revisions. A pull request with no CI also has no check output
   to group, so the timeline degrades to a flat list rather than breaking. Fallback ordering settled under milestone 1.
@@ -468,6 +469,30 @@ under milestone 1, and issue-comment placement under milestone 2.
   `@opentui/react`.
 - 2026-09-13: Layout gate added at the end of the header-and-timeline phase. The detail pane becomes its own phase,
   and classification, CI, and perspective shift to Phases 4, 5, and 6. All are held until the gate is ruled.
+- 2026-09-14: Settled the fallback for a commit with no push record and no covering force-push event. A surviving
+  commit joins the revision of the first head at or after it on the branch, so a push of several commits is one
+  revision. A head that only appears as another revision's predecessor becomes an inferred revision with no
+  timestamp, ordered right before its successor. Issue comments anchor by time against revisions with a known time;
+  the first revision owns everything earlier. Measured: none of the 7 surviving commits across the three `cli/cli`
+  fixtures fall in this case. On the fork, 29 of 30 do, and they collapse into the head revision, which is the
+  27-commit case ADR-01 describes.
+- 2026-09-14: Measured the fork PR. `rust-lang/rust#137944` returns no check suites for any of its 30 head commits
+  from the base repository. A probe of the head repository `davidtwco/rust` on the head, a dropped head, and a
+  non-head commit found none there either. The pull request is fifteen months old, past Actions' default 90-day run
+  retention, so this does not show where a fresh fork PR keeps its suites. The base repository resolves all 65 dropped
+  heads by oid. The chain is bounded by the 63 force-push events, with 2 gaps where ordinary pushes on the fork left
+  no trace. A head-repository lookup stays out of scope until a fresh fork PR shows suites there.
+- 2026-09-14: Revisions are identified by index, since a force-push away and back gives one oid two revisions. The
+  chain orders by `previousOid` links first and by time second. The earliest suite on a push lands within a second of
+  the force-push event; the latest lags by up to 58 minutes. Where a dropped commit resolves with its suites, its push
+  record turns the opening head from an inferred revision into a real push with a timestamp, measured on
+  `cli/cli#14354` and `cli/cli#14349`.
+- 2026-09-14: A push record's `previousSha` infers a revision only when it names a surviving commit. A branch created
+  in the web UI records a base-branch commit there, and inferring or fetching it would leak base history into the
+  chain.
+- 2026-09-14: A server error is never written to a recording. A 502 recorded mid-fetch replayed on every later run.
+- 2026-09-14: Phase 1 complete. The data layer fetches, normalizes, and anchors a pull request, and replays every
+  fixture offline.
 
 ## References
 

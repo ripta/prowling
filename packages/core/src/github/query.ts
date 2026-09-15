@@ -7,9 +7,14 @@
 // Fetching them afterwards with nodes(ids:) in batches of 100 check runs scores about 1 point per
 // batch. Only Actions produces steps, so only Actions check runs are batched.
 //
+// Commits a force-push removed from the branch are the other exception. They are absent from
+// pullRequest.commits, so their oids are collected from push records and force-push events and
+// looked up by oid afterwards, in batches of aliased repository.object fields.
+//
 // The document text is part of the request body, and the body is part of the replay key. Editing
 // any document, even its whitespace, invalidates every recorded fixture.
 
+import { droppedHeadOids } from "../revisions";
 import type { Transport } from "../transport";
 import type { Degradation } from "./errors";
 import { graphql } from "./graphql";
@@ -24,6 +29,7 @@ export const CHECK_SUITE_PAGE_SIZE = 10;
 export const CHECK_RUN_PAGE_SIZE = 50;
 export const STEP_PAGE_SIZE = 50;
 export const STEP_BATCH_SIZE = 100;
+export const DROPPED_COMMIT_BATCH_SIZE = 25;
 
 export const ACTIONS_APP_SLUG = "github-actions";
 
@@ -184,6 +190,9 @@ export type RawPullRequestCommit = {
   commit: RawCommit;
 };
 
+// repository.object returns any git object. Only a commit carries the fields asked for.
+export type RawGitObject = ({ __typename: "Commit" } & RawCommit) | { __typename: "Blob" | "Tag" | "Tree" };
+
 export type RawStep = {
   number: number;
   name: string;
@@ -235,11 +244,13 @@ type RawRoot = {
 
 // Everything fetchPullRequestData returns. Every page inside pullRequest has been drained: nodes
 // holds every node and hasNextPage is false. Steps sit apart, keyed by check run id, because the
-// main query never asks for them.
+// main query never asks for them. Dropped commits sit apart too, keyed by oid, with null where the
+// lookup found nothing. Their pages are drained like the surviving commits'.
 export type PullRequestData = {
   viewer: { login: string };
   pullRequest: RawPullRequest;
   steps: Record<string, RawPage<RawStep>>;
+  droppedCommits: Record<string, RawCommit | null>;
 };
 
 export class PullRequestNotFoundError extends Error {
@@ -705,6 +716,27 @@ query MoreCheckRunSteps($id: ID!, $cursor: String!) {
   [StepsPage],
 );
 
+// One aliased object field per oid. The oids travel as variables, so the text depends on the
+// batch size alone and the test server sees which commits were asked for. Declares $number
+// because CommitFields reaches isRequired.
+export function droppedCommitsQuery(count: number): string {
+  const indices = Array.from({ length: count }, (_, index) => index);
+  const declarations = indices.map((index) => `$o${index}: GitObjectID!`).join(", ");
+  const fields = indices
+    .map((index) => `    c${index}: object(oid: $o${index}) { __typename ... on Commit { ...CommitFields } }`)
+    .join("\n");
+
+  return compose(
+    `
+query DroppedCommits($owner: String!, $repo: String!, $number: Int!, ${declarations}) {
+  repository(owner: $owner, name: $repo) {
+${fields}
+  }
+}`,
+    [CommitFields],
+  );
+}
+
 // A connection's nodes list can hold null where a node was inaccessible. The error for it is
 // already a degradation, so readers skip the hole.
 export function present<T>(nodes: (T | null)[]): T[] {
@@ -764,35 +796,56 @@ export async function fetchPullRequestData(
     nodePage(run, MORE_COMMITS_QUERY, { id, cursor, number }, (node: RawPullRequest) => node.commits),
   );
 
-  for (const { commit } of present(pullRequest.commits.nodes)) {
-    if (commit.checkSuites === null) {
+  const commits = present(pullRequest.commits.nodes).map((node) => node.commit);
+
+  for (const commit of commits) {
+    await drainCheckSuites(run, commit, number);
+  }
+
+  const droppedCommits = await fetchDroppedCommits(transport, run, ref, pullRequest, commits, degradations);
+  const resolved = Object.values(droppedCommits).filter((commit): commit is RawCommit => commit !== null);
+
+  // Two step fetches rather than one over the combined id list. Appending the dropped commits'
+  // runs to the surviving list would refill its last batch and change that request's replay key.
+  const steps = {
+    ...(await fetchSteps(run, actionsCheckRunIds(commits))),
+    ...(await fetchSteps(run, actionsCheckRunIds(resolved))),
+  };
+
+  return { data: { viewer: root.viewer, pullRequest, steps, droppedCommits }, degradations };
+}
+
+async function drainCheckSuites(run: Run, commit: RawCommit, number: number): Promise<void> {
+  if (commit.checkSuites === null) {
+    return;
+  }
+
+  await drain(commit.checkSuites, (cursor) =>
+    nodePage(run, MORE_CHECK_SUITES_QUERY, { id: commit.id, cursor, number }, (node: RawCommit) => node.checkSuites),
+  );
+
+  for (const suite of present(commit.checkSuites.nodes)) {
+    if (suite.checkRuns === null) {
       continue;
     }
 
-    await drain(commit.checkSuites, (cursor) =>
-      nodePage(run, MORE_CHECK_SUITES_QUERY, { id: commit.id, cursor, number }, (node: RawCommit) => node.checkSuites),
+    await drain(suite.checkRuns, (cursor) =>
+      nodePage(run, MORE_CHECK_RUNS_QUERY, { id: suite.id, cursor, number }, (node: RawCheckSuite) => node.checkRuns),
     );
-
-    for (const suite of present(commit.checkSuites.nodes)) {
-      if (suite.checkRuns === null) {
-        continue;
-      }
-
-      await drain(suite.checkRuns, (cursor) =>
-        nodePage(run, MORE_CHECK_RUNS_QUERY, { id: suite.id, cursor, number }, (node: RawCheckSuite) => node.checkRuns),
-      );
-    }
   }
-
-  const steps = await fetchSteps(run, actionsCheckRunIds(pullRequest));
-
-  return { data: { viewer: root.viewer, pullRequest, steps }, degradations };
 }
 
 // drain fills a page in place. After it returns, nodes holds every node across all pages and
 // pageInfo reports no next page. The raw types keep their wire shape, and the normalizer reads
 // nodes without knowing pages existed.
+//
+// A node already present is not added again. GitHub's timeline cursor is time-based, and when
+// neighbours share a timestamp a page boundary can repeat an item. Measured on
+// rust-lang/rust#137944: two commits came back twice at the 300 mark, and two others never came
+// back at all. The repeats are dropped here. The skips cannot be recovered.
 async function drain<T>(page: RawPage<T>, next: (cursor: string) => Promise<RawPage<T>>): Promise<void> {
+  const seen = new Set(page.nodes.map(nodeId).filter((id) => id !== undefined));
+
   while (page.pageInfo.hasNextPage) {
     const cursor = page.pageInfo.endCursor;
     if (cursor === null) {
@@ -800,9 +853,31 @@ async function drain<T>(page: RawPage<T>, next: (cursor: string) => Promise<RawP
     }
 
     const more = await next(cursor);
-    page.nodes.push(...more.nodes);
+
+    for (const node of more.nodes) {
+      const id = nodeId(node);
+
+      if (id !== undefined) {
+        if (seen.has(id)) {
+          continue;
+        }
+
+        seen.add(id);
+      }
+
+      page.nodes.push(node);
+    }
+
     page.pageInfo = more.pageInfo;
   }
+}
+
+function nodeId(node: unknown): string | undefined {
+  if (typeof node === "object" && node !== null && "id" in node && typeof node.id === "string") {
+    return node.id;
+  }
+
+  return undefined;
 }
 
 // A follow-up page reaches its connection through node(id:). A null node means the object vanished
@@ -825,10 +900,91 @@ function exhausted<T>(): RawPage<T> {
   return { pageInfo: { hasNextPage: false, endCursor: null }, nodes: [] };
 }
 
-function actionsCheckRunIds(pullRequest: RawPullRequest): string[] {
+// Resolves every head a force-push removed from the branch. The oids come from push records and
+// force-push events already fetched. A head that does not resolve, because the object is gone or
+// is not a commit, records null and a degradation. One hop only: push records on the resolved
+// commits are not followed further.
+//
+// Runs through graphql rather than run, so the degradations can be re-pathed from the alias to
+// the oid before they join the list.
+async function fetchDroppedCommits(
+  transport: Transport,
+  run: Run,
+  ref: PullRequestRef,
+  pullRequest: RawPullRequest,
+  commits: RawCommit[],
+  degradations: Degradation[],
+): Promise<Record<string, RawCommit | null>> {
+  const oids = droppedHeadOids({
+    commits: commits.map((commit) => commit.oid),
+    pushes: commits.flatMap((commit) =>
+      present(commit.checkSuites?.nodes ?? []).flatMap((suite) =>
+        suite.push === null ? [] : [{ nextSha: suite.push.nextSha, commitOid: commit.oid }],
+      ),
+    ),
+    events: present(pullRequest.timelineItems.nodes).flatMap((item) =>
+      item.__typename === "HeadRefForcePushedEvent"
+        ? [{ beforeOid: item.beforeCommit?.oid ?? null, afterOid: item.afterCommit?.oid ?? null }]
+        : [],
+    ),
+  });
+
+  const dropped: Record<string, RawCommit | null> = {};
+
+  for (let start = 0; start < oids.length; start += DROPPED_COMMIT_BATCH_SIZE) {
+    const batch = oids.slice(start, start + DROPPED_COMMIT_BATCH_SIZE);
+    const variables: Record<string, unknown> = { owner: ref.owner, repo: ref.repo, number: ref.number };
+
+    batch.forEach((oid, index) => {
+      variables[`o${index}`] = oid;
+    });
+
+    const result = await graphql<{ repository: Record<string, RawGitObject | null> | null }>(
+      transport,
+      droppedCommitsQuery(batch.length),
+      variables,
+    );
+
+    degradations.push(...result.degradations.map((degradation) => repathAlias(degradation, batch)));
+
+    for (const [index, oid] of batch.entries()) {
+      const object = result.data.repository?.[`c${index}`] ?? null;
+
+      if (object === null || object.__typename !== "Commit") {
+        dropped[oid] = null;
+        degradations.push({
+          path: ["droppedCommits", oid],
+          message: `Commit ${oid.slice(0, 7)} did not resolve on the base repository.`,
+        });
+
+        continue;
+      }
+
+      await drainCheckSuites(run, object, ref.number);
+      dropped[oid] = object;
+    }
+  }
+
+  return dropped;
+}
+
+// ["repository", "c3", ...] becomes ["droppedCommits", oid, ...]. Any other path is left alone.
+function repathAlias(degradation: Degradation, batch: string[]): Degradation {
+  const [root, alias, ...rest] = degradation.path;
+  const match = typeof alias === "string" ? /^c(\d+)$/.exec(alias) : null;
+
+  if (root !== "repository" || match === null) {
+    return degradation;
+  }
+
+  const oid = batch[Number(match[1])];
+  return oid === undefined ? degradation : { ...degradation, path: ["droppedCommits", oid, ...rest] };
+}
+
+function actionsCheckRunIds(commits: RawCommit[]): string[] {
   const ids: string[] = [];
 
-  for (const { commit } of present(pullRequest.commits.nodes)) {
+  for (const commit of commits) {
     for (const suite of present(commit.checkSuites?.nodes ?? [])) {
       if (suite.app?.slug !== ACTIONS_APP_SLUG) {
         continue;

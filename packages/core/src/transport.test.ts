@@ -140,6 +140,17 @@ describe("withRecording", () => {
     expect(recording?.response.headers["x-ratelimit-remaining"]).toBe("4999");
   });
 
+  test("passes a server error through without recording it", async () => {
+    const recorder = memoryRecorder();
+    const inner: Transport = async () => new Response("<html>bad gateway</html>", { status: 502 });
+
+    const transport = withRecording(inner, recorder);
+    const response = await transport(new Request("https://api.github.com/graphql", { method: "POST", body: "{}" }));
+
+    expect(response.status).toBe(502);
+    expect(recorder.store.size).toBe(0);
+  });
+
   test("shows the token to fetch and not to the recorder when wrapping the base transport", async () => {
     let seen: Request | undefined;
     fetchSpy.mockImplementation(async (input) => {

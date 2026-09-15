@@ -68,7 +68,7 @@ describe("main", () => {
     expect(code).toBe(0);
     expect(printed(log)).toBe(
       "#14349 Refactor git graph tests to use real repositories [OPEN] " +
-        "2 timeline items, 0 threads (0 unresolved), 1 commits, 8 checks",
+        "2 timeline items, 0 threads (0 unresolved), 2 revisions, 1 commits, 23 checks",
     );
   });
 

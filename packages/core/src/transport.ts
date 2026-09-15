@@ -61,12 +61,20 @@ export function createTransport(token: string): Transport {
   };
 }
 
+// A server error is not recorded. Replaying one would fail the same way every time, long after
+// the server recovered, and a gateway timeout recorded mid-fetch once poisoned a fixture that way.
+//
+// Client errors are recorded. A not-found or a denied request is a response worth replaying.
 export function withRecording(transport: Transport, recorder: Recorder): Transport {
   return async (request) => {
     const body = await requestBody(request);
     const key = await hashRequest(request.method, request.url, body);
 
     const response = await transport(request);
+
+    if (response.status >= 500) {
+      return response;
+    }
 
     const recording: Recording = {
       request: {
