@@ -52,17 +52,27 @@ remedy. A later renderer decides how to place a degradation marker.
 
 ### Pagination
 
-**Decision:** Every connection in the query pages until exhausted. Cursors are followed inside core.
+**Decision:** Every connection in the query pages until exhausted. Cursors are followed inside core. A follow-up page
+reaches its connection through `node(id:)` on the owning object, so it never refetches the rest of the pull request.
 
 **Rationale:** the measured query used `first:100`. Long pull requests exceed that on commits and on timeline items.
 A model built from the first page only is silently wrong.
+
+### Steps are fetched after the main query
+
+**Decision:** The main query stops at check runs. Steps come from a second document that takes up to 100 check run IDs
+through `nodes(ids:)`. Only check runs under a GitHub Actions suite are asked for steps.
+
+**Rationale:** GitHub scores a query by its `first` arguments, not by what comes back. Steps nested under commits,
+suites, and runs would score around 250 points per fetch. The batched follow-up scores about 1 point per 100 runs.
+Measured: the main query costs 6 points, the step batch 1, and each follow-up page 1. Only Actions produces steps.
 
 ## Milestones
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
 | 1.1 | PRW-001 M1 | Workspace, transport seam, auth, record and replay, partial-error classification | DONE |
-| 1.2 | PRW-001 M1 | GraphQL query, normalized model with node IDs, JSON dump | NOT STARTED |
+| 1.2 | PRW-001 M1 | GraphQL query, normalized model with node IDs, JSON dump | DONE |
 | 1.3 | PRW-001 M1 | Revision chain and anchoring. Settles the no-push-record fallback. Validates a fork PR | NOT STARTED |
 
 Phase 1.3 owns two questions PRW-001 deferred to milestone 1: the fallback ordering for a commit with neither a check
@@ -78,16 +88,21 @@ repository. Both get settled and recorded in the proposal's Decision Log before 
 3. `packages/core/tsconfig.json` - no Bun or Node types
 4. `packages/core/src/transport.ts` - fetch seam, recorder interface, key hashing
 5. `packages/core/src/github/errors.ts` - partial-error classification
-6. `packages/core/src/github/query.ts` - the GraphQL document and pagination
-7. `packages/core/src/model.ts` - types with node IDs, Check and Step shape
-8. `packages/core/src/normalize.ts` - raw response to model
-9. `packages/core/src/revisions.ts` - chain construction and anchoring
-10. `packages/cli/package.json` - depends on core and `bun-types`
-11. `packages/cli/tsconfig.json`
-12. `packages/cli/src/auth.ts` - `gh auth token` and `GITHUB_TOKEN`
-13. `packages/cli/src/recorder.ts` - file-backed recorder
-14. `packages/cli/src/main.ts` - entry point, `--record`, `--replay`, `--json`
-15. `.gitignore` - recordings directory
+6. `packages/core/src/github/graphql.ts` - request execution, HTTP errors, and classification of the response
+7. `packages/core/src/github/ref.ts` - pull request reference parsing, URL and `owner/repo#N` forms
+8. `packages/core/src/github/query.ts` - the GraphQL documents, raw types, and pagination
+9. `packages/core/src/model.ts` - types with node IDs, Check and Step shape
+10. `packages/core/src/normalize.ts` - raw response to model
+11. `packages/core/src/pull-request.ts` - fetch and normalize in one call
+12. `packages/core/src/revisions.ts` - chain construction and anchoring
+13. `packages/core/fixtures/pulls/` - manifest and recordings for the fixture pull requests
+14. `packages/cli/package.json` - depends on core and `bun-types`
+15. `packages/cli/tsconfig.json`
+16. `packages/cli/src/auth.ts` - `gh auth token` and `GITHUB_TOKEN`
+17. `packages/cli/src/recorder.ts` - file-backed recorder
+18. `packages/cli/src/main.ts` - entry point, `--record`, `--replay`, `--json`
+19. `packages/cli/src/record-fixtures.ts` - re-records every fixture in the manifest
+20. `.gitignore` - recordings directory
 
 ### Changes Required
 
@@ -101,7 +116,7 @@ repository. Both get settled and recorded in the proposal's Decision Log before 
 7. JSON dump of the normalized model.
 8. Revision chain from `CheckSuite.push`, cross-checked against `HeadRefForcePushedEvent`.
 9. Anchoring per item kind, including the `repository.object(oid:)` lookup for dropped commits.
-10. Fixtures recorded from three real pull requests: ordinary pushes only, force-pushes, and a fork.
+10. Fixtures recorded from four real pull requests: ordinary pushes only, two with force-pushes, and a fork.
 
 ## Acceptance Criteria
 
@@ -120,16 +135,17 @@ repository. Both get settled and recorded in the proposal's Decision Log before 
 
 ### Phase 1.2
 
-- [ ] One query fetches the pull request, timeline items, review threads with resolution state, commits with check
+- [x] One query fetches the pull request, timeline items, review threads with resolution state, commits with check
       suites and push records, check runs with steps and `isRequired`, and `viewerLatestReview`
-- [ ] Every connection pages until exhausted
-- [ ] Every model object carries its GraphQL node ID
-- [ ] Review threads stay threads, with `isResolved`, `isOutdated`, and their comments
-- [ ] Check runs normalize to the Check and Step shape, with Actions steps populated and generic providers carrying
+- [x] Every connection pages until exhausted
+- [x] Every model object carries its GraphQL node ID
+- [x] Review threads stay threads, with `isResolved`, `isOutdated`, and their comments
+- [x] Check runs normalize to the Check and Step shape, with Actions steps populated and generic providers carrying
       `summaryText`
-- [ ] `--json` prints the normalized model
-- [ ] Fixtures exist for three real pull requests, and the normalizer's tests run against them
-- [ ] Tracking updated: this document, `spec/phases/index.md`
+- [x] `--json` prints the normalized model
+- [x] Fixtures exist for four real pull requests (`cli/cli#14429`, `cli/cli#14354`, `cli/cli#14349`,
+      `rust-lang/rust#137944`), and the normalizer's tests run against them
+- [x] Tracking updated: this document, `spec/phases/index.md`
 
 ### Phase 1.3
 

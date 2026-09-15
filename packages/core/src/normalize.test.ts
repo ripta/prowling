@@ -1,0 +1,261 @@
+import { describe, expect, test } from "bun:test";
+import { join } from "node:path";
+
+import manifest from "../fixtures/pulls/manifest.json";
+
+import { parsePullRequestRef } from "./github/ref";
+import type { PullRequest } from "./model";
+import { fetchPullRequest } from "./pull-request";
+import { type Recorder, type Recording, withReplay } from "./transport";
+
+const FIXTURES_DIR = join(import.meta.dir, "..", "fixtures", "pulls");
+
+// Fixtures are read-only. A put would mean a request the recording does not cover, which is the
+// situation replay exists to catch.
+function fixtureRecorder(dir: string): Recorder {
+  return {
+    async get(key) {
+      const file = Bun.file(join(dir, `${key}.json`));
+      return (await file.exists()) ? ((await file.json()) as Recording) : undefined;
+    },
+    async put() {
+      throw new Error("fixtures are read-only");
+    },
+  };
+}
+
+const loaded = new Map<string, Promise<PullRequest>>();
+
+function fixture(name: string): Promise<PullRequest> {
+  let pending = loaded.get(name);
+
+  if (pending === undefined) {
+    const entry = manifest.find((candidate) => candidate.name === name);
+    if (entry === undefined) {
+      throw new Error(`no manifest entry named ${name}`);
+    }
+
+    const transport = withReplay(fixtureRecorder(join(FIXTURES_DIR, name)));
+    pending = fetchPullRequest(transport, parsePullRequestRef(entry.ref));
+    loaded.set(name, pending);
+  }
+
+  return pending;
+}
+
+type Identified = { id: string };
+
+function everyNode(pullRequest: PullRequest): Identified[] {
+  const nodes: Identified[] = [pullRequest, ...pullRequest.reviewRequests, ...pullRequest.timeline];
+
+  if (pullRequest.viewer.latestReview !== null) {
+    nodes.push(pullRequest.viewer.latestReview);
+  }
+
+  for (const thread of pullRequest.threads) {
+    nodes.push(thread, ...thread.comments);
+  }
+
+  for (const commit of pullRequest.commits) {
+    nodes.push(commit);
+
+    for (const suite of commit.checkSuites) {
+      nodes.push(suite, ...suite.checks);
+
+      if (suite.push !== null) {
+        nodes.push(suite.push);
+      }
+
+      if (suite.workflowRun !== null) {
+        nodes.push(suite.workflowRun);
+      }
+    }
+  }
+
+  return nodes;
+}
+
+function checks(pullRequest: PullRequest) {
+  return pullRequest.commits.flatMap((commit) => commit.checkSuites).flatMap((suite) => suite.checks);
+}
+
+function pushPairs(pullRequest: PullRequest): string[] {
+  const pairs = new Map<string, string>();
+
+  for (const suite of pullRequest.commits.flatMap((commit) => commit.checkSuites)) {
+    if (suite.push !== null) {
+      pairs.set(suite.push.id, `${suite.push.previousSha?.slice(0, 7)}->${suite.push.nextSha?.slice(0, 7)}`);
+    }
+  }
+
+  return [...pairs.values()];
+}
+
+describe("every fixture", () => {
+  for (const entry of manifest) {
+    test(`${entry.ref} replays cleanly and every node carries a current-format id`, async () => {
+      const pullRequest = await fixture(entry.name);
+
+      expect(pullRequest.degradations).toEqual([]);
+      expect(pullRequest.viewer.login).toBe("ripta");
+
+      const nodes = everyNode(pullRequest);
+      expect(nodes.length).toBeGreaterThan(0);
+
+      for (const node of nodes) {
+        expect(node.id).toMatch(/^[A-Za-z]+_[A-Za-z0-9_-]+$/);
+      }
+    });
+  }
+});
+
+describe("cli/cli#14429, ordinary pushes", () => {
+  test("carries the pull request state the header needs", async () => {
+    const pullRequest = await fixture("cli-cli-14429");
+
+    expect(pullRequest.number).toBe(14429);
+    expect(pullRequest.state).toBe("MERGED");
+    expect(pullRequest.isCrossRepository).toBe(false);
+    expect(pullRequest.headRepository).toBe("cli/cli");
+    expect(pullRequest.author).toEqual({ login: "williammartin", kind: "User" });
+    expect(pullRequest.reviewDecision).toBe("APPROVED");
+    expect(pullRequest.reviewRequests).toHaveLength(1);
+    expect(pullRequest.viewer).toEqual({ login: "ripta", didAuthor: false, latestReview: null });
+  });
+
+  test("keeps the timeline in API order with commits and reviews", async () => {
+    const pullRequest = await fixture("cli-cli-14429");
+
+    expect(pullRequest.timeline.map((item) => item.kind)).toEqual([
+      "commit",
+      "review",
+      "commit",
+      "commit",
+      "review",
+      "commit",
+    ]);
+    expect(pullRequest.threads).toEqual([]);
+  });
+
+  test("reconstructs the four push records ADR-01 measured", async () => {
+    const pullRequest = await fixture("cli-cli-14429");
+
+    expect(pullRequest.commits).toHaveLength(4);
+    expect(pushPairs(pullRequest)).toEqual([
+      "0000000->98cb293",
+      "98cb293->26fc6d4",
+      "26fc6d4->dc6221e",
+      "dc6221e->a9d9d84",
+    ]);
+  });
+
+  test("normalizes Actions runs with steps and generic runs with summary text", async () => {
+    const pullRequest = await fixture("cli-cli-14429");
+    const all = checks(pullRequest);
+
+    expect(all).toHaveLength(94);
+
+    const actions = all.filter((check) => check.provider === "actions");
+    const generic = all.filter((check) => check.provider === "generic");
+    expect(actions).toHaveLength(90);
+    expect(generic).toHaveLength(4);
+
+    const withSteps = all.filter((check) => check.steps.length > 0);
+    expect(withSteps).toHaveLength(42);
+    expect(withSteps.every((check) => check.provider === "actions")).toBe(true);
+
+    expect(generic.every((check) => check.steps.length === 0)).toBe(true);
+    expect(generic.every((check) => check.summaryText !== null)).toBe(true);
+
+    expect(all.filter((check) => check.isRequired)).toHaveLength(12);
+
+    const step = withSteps[0].steps[0];
+    expect(step.number).toBe(1);
+    expect(step.status).toBe("COMPLETED");
+    expect(typeof step.durationSeconds).toBe("number");
+  });
+});
+
+describe("cli/cli#14354, force-pushes", () => {
+  test("keeps every force-push event and the surviving push records", async () => {
+    const pullRequest = await fixture("cli-cli-14354");
+
+    const forcePushes = pullRequest.timeline.filter((item) => item.kind === "force-push");
+    expect(forcePushes).toHaveLength(17);
+    expect(pullRequest.timeline).toHaveLength(22);
+
+    const last = forcePushes[forcePushes.length - 1];
+    expect(last.kind === "force-push" && last.beforeOid?.slice(0, 7)).toBe("f6e0d8f");
+    expect(last.kind === "force-push" && last.afterOid?.slice(0, 7)).toBe("6dc60bf");
+
+    expect(pullRequest.commits).toHaveLength(2);
+    expect(pushPairs(pullRequest)).toEqual(["f6e0d8f->6dc60bf", "6dc60bf->7901e7e"]);
+  });
+
+  test("keeps review threads as threads with resolution state and anchored comments", async () => {
+    const pullRequest = await fixture("cli-cli-14354");
+
+    expect(pullRequest.threads).toHaveLength(6);
+    expect(pullRequest.threads.filter((thread) => thread.isResolved)).toHaveLength(5);
+    expect(pullRequest.threads.filter((thread) => thread.isOutdated)).toHaveLength(5);
+
+    const comments = pullRequest.threads.flatMap((thread) => thread.comments);
+    expect(comments).toHaveLength(10);
+    expect(comments.every((comment) => comment.originalCommitOid !== null)).toBe(true);
+    expect(comments.every((comment) => comment.reviewId !== null)).toBe(true);
+    expect(comments.every((comment) => comment.diffHunk.length > 0)).toBe(true);
+
+    const resolved = pullRequest.threads.find((thread) => thread.isResolved);
+    expect(resolved?.resolvedBy?.login).toBeString();
+  });
+});
+
+describe("cli/cli#14349, one force-push", () => {
+  test("agrees between the force-push event and the push record", async () => {
+    const pullRequest = await fixture("cli-cli-14349");
+
+    expect(pullRequest.state).toBe("OPEN");
+    expect(pullRequest.mergeable).toBe("MERGEABLE");
+    expect(pullRequest.reviewDecision).toBe("REVIEW_REQUIRED");
+
+    expect(pullRequest.timeline.map((item) => item.kind)).toEqual(["commit", "force-push"]);
+
+    const forcePush = pullRequest.timeline[1];
+    expect(forcePush.kind === "force-push" && forcePush.beforeOid?.slice(0, 7)).toBe("4e10fe3");
+    expect(forcePush.kind === "force-push" && forcePush.afterOid?.slice(0, 7)).toBe("091f872");
+
+    expect(pullRequest.commits).toHaveLength(1);
+    expect(pushPairs(pullRequest)).toEqual(["4e10fe3->091f872"]);
+
+    const all = checks(pullRequest);
+    expect(all).toHaveLength(8);
+    expect(all.every((check) => check.provider === "actions" && check.steps.length > 0)).toBe(true);
+  });
+});
+
+describe("rust-lang/rust#137944, fork", () => {
+  test("pages timeline items and threads to the end", async () => {
+    const pullRequest = await fixture("rust-lang-rust-137944");
+
+    expect(pullRequest.isCrossRepository).toBe(true);
+    expect(pullRequest.headRepository).toBe("davidtwco/rust");
+
+    expect(pullRequest.timeline).toHaveLength(330);
+    expect(pullRequest.timeline.filter((item) => item.kind === "comment")).toHaveLength(210);
+    expect(pullRequest.timeline.filter((item) => item.kind === "force-push")).toHaveLength(63);
+    expect(pullRequest.timeline.filter((item) => item.kind === "review")).toHaveLength(27);
+    expect(pullRequest.timeline.filter((item) => item.kind === "commit")).toHaveLength(30);
+
+    expect(pullRequest.threads).toHaveLength(84);
+    expect(pullRequest.threads.every((thread) => thread.isResolved)).toBe(true);
+    expect(pullRequest.threads.filter((thread) => thread.isOutdated)).toHaveLength(73);
+    expect(pullRequest.threads.flatMap((thread) => thread.comments)).toHaveLength(188);
+  });
+
+  test("returns no check suites for head commits on the base repository", async () => {
+    const pullRequest = await fixture("rust-lang-rust-137944");
+
+    expect(pullRequest.commits).toHaveLength(30);
+    expect(pullRequest.commits.every((commit) => commit.checkSuites.length === 0)).toBe(true);
+  });
+});
