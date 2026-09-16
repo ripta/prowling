@@ -71,6 +71,8 @@ silent swap.
 Rationale: OpenTUI is worth evaluating for its rendering speed and richer layouts. Rendering is kept separate from the
 data model so a swap stays contained. The checkpoint is validated under milestone 2.
 
+Ruled on 2026-09-15: keep OpenTUI. The friction it met is in the Decision Log.
+
 The front end is `@opentui/react`. Ink is React-only, so a swap ports components rather than rewriting them.
 
 ### Layout gate
@@ -557,6 +559,11 @@ milestone 1, and issue-comment placement under milestone 2.
   startup. The theme rules name a role rather than a color, and the component drawing the row resolves it. Raised by a
   hands-on pass on a light terminal, where the single dark palette left the title, the description, and every check
   name illegible: `#c9d1d9` on white is about 1.3:1. Dark stays the default for a terminal that answers no query.
+- 2026-09-15: OpenTUI checkpoint ruled. Keep OpenTUI. Eight points of friction across Phases 2 and 3 are written up in
+  the phase document. None blocked a milestone, and each cost a cycle because the failure arrived as wrong pixels
+  rather than as an error. Against that, OpenTUI carried a scrolling header, a collapsing description, a windowed
+  timeline, and a markdown pane, with no workaround surviving into the code. The Ink swap this proposal budgeted for is
+  not taken.
 
 ## References
 

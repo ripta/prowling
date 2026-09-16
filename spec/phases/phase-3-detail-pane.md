@@ -1,7 +1,7 @@
 # Phase 3: Detail pane
 
 **Goal:** Add the detail pane with rendered markdown, and write up the OpenTUI checkpoint.
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 **Complexity:** MEDIUM
 **Dependencies:** Phase 2. Held until the layout gate at the end of Phase 2 is ruled.
 
@@ -37,7 +37,7 @@ ruling on whether to keep OpenTUI is made with the user and recorded in PRW-001'
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
-| 3.1 | PRW-001 M2 | Detail pane with markdown rendering. Settles the pane renderer. OpenTUI checkpoint write-up | IN PROGRESS |
+| 3.1 | PRW-001 M2 | Detail pane with markdown rendering. Settles the pane renderer. OpenTUI checkpoint write-up | DONE |
 
 Deferred questions from PRW-001 milestone 2 owned here:
 
@@ -110,7 +110,9 @@ Set against that, the layout work OpenTUI has actually carried is substantial: a
 description, a windowed timeline, and now a markdown pane, none of which needed a workaround that survived into the
 code.
 
-Recommendation: keep OpenTUI. The ruling is the user's, and it is not recorded until they make it.
+Recommendation: keep OpenTUI.
+
+Ruled 2026-09-15: keep OpenTUI. Recorded in PRW-001's Decision Log.
 
 ## Acceptance Criteria
 
@@ -120,9 +122,6 @@ Recommendation: keep OpenTUI. The ruling is the user's, and it is not recorded u
 - [x] Detail pane renders `body` with HTML comments stripped
 - [x] Fenced code blocks and lists keep their shape in the pane
 - [x] Pane renderer settled and recorded in PRW-001
-- [ ] Checkpoint write-up lists every point of OpenTUI friction met in Phases 2 and 3, and the ruling is recorded in
+- [x] Checkpoint write-up lists every point of OpenTUI friction met in Phases 2 and 3, and the ruling is recorded in
       PRW-001
 - [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
-
-The write-up is above. The ruling on whether to keep OpenTUI is the one criterion code cannot meet, the way the
-collapse height and the layout gate are for Phase 2. The milestone stays IN PROGRESS until the user rules on it.
