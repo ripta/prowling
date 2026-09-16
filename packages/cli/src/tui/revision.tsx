@@ -48,12 +48,18 @@ export function RevisionLine({
 
   parts.push(count(revision.commits.length, "commit"));
 
+  // The commit count describes the revision, not the fold. A commit produces no entry of its own, so
+  // a row saying "1 commit" and nothing else promises content that opening it never shows.
+  if (group.entries.length > 0) {
+    parts.push(count(group.entries.length, "item"));
+  }
+
   const threads = group.unresolved > 0 ? `  ${count(group.unresolved, "unresolved thread")}` : "";
   const budget = inner(width, 0) - GLYPH - threads.length;
 
   return (
     <Row selected={selected} width={width}>
-      <text fg={selected ? palette.accent : palette.dim} wrapMode="none">{`${expanded ? OPEN : CLOSED} `}</text>
+      <text fg={selected ? palette.accent : palette.dim} wrapMode="none">{marker(group, expanded)}</text>
       <text fg={palette.text} wrapMode="none">{clamp(parts.join("  "), budget)}</text>
       {threads !== "" && (
         <text fg={palette.bad} wrapMode="none">
@@ -88,6 +94,16 @@ export function EntryLine({
       </text>
     </Row>
   );
+}
+
+// A revision holding nothing has no fold, so it draws no glyph and nothing invites a press that
+// would change only the glyph. The column is still paid for, which keeps the rows lining up.
+function marker(group: TimelineGroup, expanded: boolean): string {
+  if (group.entries.length === 0) {
+    return " ".repeat(GLYPH);
+  }
+
+  return `${expanded ? OPEN : CLOSED} `;
 }
 
 // The selected row marks its left edge rather than inverting the whole line. An inverted row fights

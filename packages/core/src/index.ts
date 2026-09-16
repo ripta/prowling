@@ -76,6 +76,7 @@ export { stripHtmlComments } from "./view/markdown";
 export {
   type CommentEntry,
   deriveTimeline,
+  openingRevision,
   type ReviewEntry,
   type ThreadEntry,
   type TimelineEntry,

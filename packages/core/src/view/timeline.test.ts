@@ -18,7 +18,7 @@ import type {
 import { fetchPullRequest } from "../pull-request";
 import { type Recorder, type Recording, withReplay } from "../transport";
 
-import { deriveTimeline, type TimelineGroup, type TimelineInput } from "./timeline";
+import { deriveTimeline, openingRevision, type TimelineGroup, type TimelineInput } from "./timeline";
 
 const T0 = "2025-01-01T00:00:00Z";
 const T1 = "2025-01-01T01:00:00Z";
@@ -223,10 +223,23 @@ describe("grouping", () => {
 });
 
 describe("expansion", () => {
-  test("the newest revision starts expanded and the rest do not", () => {
+  // A pull request is usually pushed once more after the last review lands, so opening on the newest
+  // revision opens on a row with nothing under it.
+  test("opens on the newest revision holding conversation, not the newest overall", () => {
+    const groups = derive({
+      revisions: chain("a", "b", "c"),
+      timeline: [review("R_1", 1, T0)],
+    });
+
+    expect(groups.map((group) => group.startsExpanded)).toEqual([false, true, false]);
+    expect(openingRevision(groups)).toBe(1);
+  });
+
+  test("falls back to the newest revision when no revision holds anything", () => {
     const groups = derive({ revisions: chain("a", "b", "c") });
 
     expect(groups.map((group) => group.startsExpanded)).toEqual([false, false, true]);
+    expect(openingRevision(groups)).toBe(2);
   });
 
   test("a revision where an unresolved thread started starts expanded", () => {
@@ -235,13 +248,16 @@ describe("expansion", () => {
       threads: [thread("T_1", false, reply("PRRC_1", 0, T0))],
     });
 
-    expect(groups.map((group) => group.startsExpanded)).toEqual([true, false, true]);
+    expect(groups.map((group) => group.startsExpanded)).toEqual([true, false, false]);
     expect(groups[0].unresolved).toBe(1);
   });
 
+  // The newer comment is what keeps the opening rule off revision a, so what the assertion turns on
+  // is the thread being resolved rather than it being the only conversation on the chain.
   test("a resolved thread leaves its revision collapsed", () => {
     const groups = derive({
       revisions: chain("a", "b"),
+      timeline: [comment("IC_1", 1, T1)],
       threads: [thread("T_1", true, reply("PRRC_1", 0, T0))],
     });
 
@@ -255,7 +271,11 @@ describe("expansion", () => {
       threads: [thread("T_1", false, reply("PRRC_1", 0, T0), reply("PRRC_2", 1, T2))],
     });
 
-    expect(groups.map((group) => group.startsExpanded)).toEqual([true, false, true]);
+    expect(groups.map((group) => group.startsExpanded)).toEqual([true, false, false]);
+  });
+
+  test("opens at the first revision when the chain is empty", () => {
+    expect(openingRevision([])).toBe(0);
   });
 });
 
@@ -315,6 +335,29 @@ describe("against a recorded pull request", () => {
     const pullRequest = await fixture("rust-lang-rust-137944");
     const groups = deriveTimeline(pullRequest);
 
+    expect(groups.at(-1)?.entries.length).toBeGreaterThan(0);
     expect(groups.at(-1)?.startsExpanded).toBe(true);
+  });
+
+  // Seventeen of this pull request's nineteen revisions are force-pushes nobody commented on, which
+  // is the ordinary shape rather than an unusual one.
+  test("skips past the empty revisions a pull request ends on", async () => {
+    const pullRequest = await fixture("cli-cli-14354");
+    const groups = deriveTimeline(pullRequest);
+    const opens = openingRevision(groups);
+
+    expect(groups.at(-1)?.entries).toHaveLength(0);
+    expect(groups.at(-1)?.startsExpanded).toBe(false);
+    expect(opens).toBeLessThan(groups.length - 1);
+    expect(groups[opens]?.entries.length).toBeGreaterThan(0);
+    expect(groups[opens]?.startsExpanded).toBe(true);
+  });
+
+  // Neither revision here carries any conversation, so there is no better place to open than the end.
+  test("opens at the newest revision when a pull request has no conversation anywhere", async () => {
+    const groups = deriveTimeline(await fixture("cli-cli-14349"));
+
+    expect(groups.flatMap(ids)).toHaveLength(0);
+    expect(openingRevision(groups)).toBe(groups.length - 1);
   });
 });

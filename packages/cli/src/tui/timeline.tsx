@@ -74,7 +74,8 @@ export function Timeline({ rows, cursor, focused, height, width }: TimelineProps
   const palette = usePalette();
   const visible = Math.max(1, height - BOX_CHROME);
   const rowWidth = Math.max(1, width - ROW_CHROME);
-  const top = useWindowTop(indexOf(rows, cursor), rows.length, visible);
+  const at = indexOf(rows, cursor);
+  const top = useWindowTop(at, revealThrough(rows, at), rows.length, visible);
   const shown = rows.slice(top, top + visible);
 
   return (
@@ -121,9 +122,12 @@ function Line({ row, cursor, width }: { row: TimelineRow; cursor: Cursor | null;
 // The scroll position follows the cursor, so it is derived rather than held as state. State would
 // render the region a second time on every key press, and nothing but the cursor can move it.
 //
-// The first frame opens at the end of the list. Revisions run oldest first, so the newest one and
-// the items it holds are the rows worth showing, and it is where the cursor starts.
-function useWindowTop(index: number, total: number, visible: number): number {
+// The first frame opens on the revision the cursor starts on, which is the newest one holding any
+// conversation. Revisions run oldest first, so that one and the pushes after it are what shows.
+//
+// Two rows pull on the window. `index` is the cursor's own row and always wins. `through` is the
+// last row its group runs to, and the window reaches for it only with what `index` leaves over.
+function useWindowTop(index: number, through: number, total: number, visible: number): number {
   const held = useRef<number | null>(null);
   const bottom = Math.max(0, total - visible);
   let top = Math.min(held.current ?? bottom, bottom);
@@ -136,9 +140,28 @@ function useWindowTop(index: number, total: number, visible: number): number {
     top = index - visible + 1;
   }
 
+  if (through >= top + visible) {
+    top = Math.min(index, through - visible + 1);
+  }
+
   held.current = top;
 
   return top;
+}
+
+// The last row the window should try to reach.
+//
+// A cursor resting on an open revision wants that revision's items on screen. Opening one sitting at
+// the bottom edge otherwise leaves every item it holds below the fold, and the only thing that moves
+// is the footer's count.
+function revealThrough(rows: TimelineRow[], index: number): number {
+  const row = rows[index];
+
+  if (row?.kind !== "revision" || !row.expanded) {
+    return index;
+  }
+
+  return index + row.group.entries.length;
 }
 
 function indexOf(rows: TimelineRow[], cursor: Cursor): number {

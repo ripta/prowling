@@ -347,12 +347,30 @@ describe("the timeline", () => {
     expect(drawn).toContain("4 revisions");
   });
 
-  test("opens the newest revision and leaves the rest closed", async () => {
+  // The last push usually lands after the last review, so the newest revision holds nothing on most
+  // pull requests. Opening there opened on a bare row.
+  test("opens the newest revision holding conversation and leaves the rest closed", async () => {
     const drawn = await timelineFrame(await fixture("cli-cli-14429"));
 
-    expect(drawn).toContain("▾ a9d9d84");
+    expect(drawn).toContain("▾ dc6221e");
     expect(drawn).toContain("▸ 98cb293");
-    expect(drawn).toContain("▸ dc6221e");
+  });
+
+  test("says how many items a revision holds before it is opened", async () => {
+    const drawn = await timelineFrame(await fixture("cli-cli-14429"));
+
+    expect(drawn).toContain("▸ 98cb293  09-11 12:17  williammartin  1 commit  1 item");
+  });
+
+  // A commit produces no entry, so a row saying "1 commit" and nothing else promised content that
+  // opening it never showed. Two of this pull request's four revisions hold nothing.
+  test("draws no glyph on a revision nobody commented on", async () => {
+    const drawn = await timelineFrame(await fixture("cli-cli-14429"));
+
+    expect(drawn).toContain("  a9d9d84  09-11 15:45  williammartin  1 commit");
+    expect(drawn).not.toContain("▾ a9d9d84");
+    expect(drawn).not.toContain("▸ a9d9d84");
+    expect(drawn).not.toContain("▸ 26fc6d4");
   });
 
   test("says which push was a force-push", async () => {
@@ -408,65 +426,129 @@ describe("moving around the timeline", () => {
 
     expect(screen.draw()).toContain("jk move");
     expect(screen.draw()).toContain("np revision");
-    expect(screen.draw()).toContain("▎▾ a9d9d84");
+    expect(screen.draw()).toContain("▎▾ dc6221e");
   });
 
-  test("k walks back through the items and j returns", async () => {
+  test("j walks down into the items and k walks back out", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14354"));
 
-    await screen.press("k");
-    expect(screen.draw()).toContain("▎  ● @babakks  APPROVED");
+    expect(screen.draw()).toContain("▎▾ 6dc60bf");
 
     await screen.press("j");
-    expect(screen.draw()).toContain("▎▾ 7901e7e");
+    expect(screen.draw()).toContain("▎  ◆ @copilot-pull-request-reviewer");
+
+    await screen.press("k");
+    expect(screen.draw()).toContain("▎▾ 6dc60bf");
+
+    await screen.press("k");
+    expect(screen.draw()).toContain("▎  f6e0d8f");
   });
 
   test("p moves to the revision before, and n comes back", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14429"));
 
     await screen.press("p");
-    expect(screen.draw()).toContain("▎▸ dc6221e");
+    expect(screen.draw()).toContain("▎  26fc6d4");
 
     await screen.press("n");
-    expect(screen.draw()).toContain("▎▾ a9d9d84");
+    expect(screen.draw()).toContain("▎▾ dc6221e");
+  });
+
+  // Movement ran off the cursor the render closed over, and a held key batches its presses into one
+  // render. Three arriving together moved the cursor a single revision.
+  test("p moves once per press, however many arrive at once", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14354"));
+
+    await screen.hold("p", 3);
+
+    expect(screen.draw()).toContain("▎  4c88a2e");
   });
 
   test("enter opens the revision under the cursor and closes it again", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14429"));
 
     await screen.press("p");
-    await screen.press("\r");
-    expect(screen.draw()).toContain("▎▾ dc6221e");
+    await screen.press("p");
+    expect(screen.draw()).toContain("▎▸ 98cb293");
 
     await screen.press("\r");
-    expect(screen.draw()).toContain("▎▸ dc6221e");
+    expect(screen.draw()).toContain("▎▾ 98cb293");
+
+    await screen.press("\r");
+    expect(screen.draw()).toContain("▎▸ 98cb293");
   });
 
-  // Closing a revision takes its items away, so a cursor left inside one would point at a row that
-  // no longer exists.
-  test("closing a revision from inside it brings the cursor back to its header", async () => {
+  // The fallback the activate key takes when the cursor is on a revision rather than an item. A
+  // revision holding nothing has no fold, so the key leaves the frame exactly as it found it.
+  test("enter on a revision holding nothing leaves the frame alone", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14429"));
 
-    await screen.press("j");
+    await screen.press("p");
+
+    const before = screen.draw();
+    expect(before).toContain("▎  26fc6d4");
+
     await screen.press("\r");
 
-    expect(screen.draw()).toContain("▎▸ a9d9d84");
+    expect(screen.draw()).toBe(before);
+  });
+
+  // Expanding a revision sitting at the bottom edge drew every item it holds below the fold. The
+  // glyph flipped, the footer's count moved, and nothing else on screen changed.
+  test("expanding a revision at the bottom of the window brings its items into view", async () => {
+    const screen = await onTimeline(await fixture("rust-lang-rust-137944"));
+
+    await screen.press("\r");
+    await onBottomRowHoldingItems(screen);
+    await screen.press("\r");
+
+    const rows = timelineRows(screen.draw());
+    const at = rows.findIndex((row) => row.includes("▎"));
+
+    expect(rows[at]).toContain("▾");
+    expect(rows[at + 1]).toMatch(/[●◆◇] @/);
   });
 });
 
-// Walks the cursor up until it is sitting on a row the pane can open, so a test says which item it
-// wants rather than how many rows away the fixture happens to put it. The cursor starts on the
-// newest revision, which is the last one, so everything else is above it.
-async function onEntry(screen: Screen, glyph: string): Promise<void> {
-  for (let step = 0; step < 40; step += 1) {
-    if (screen.draw().includes(`▎  ${glyph} `)) {
+// The timeline's own rows, between its border and its footer.
+function timelineRows(frame: string): string[] {
+  const rows = frame.split("\n");
+  const top = rows.findIndex((row) => row.includes("─ timeline "));
+  const footer = rows.findIndex((row) => row.includes(" revisions"));
+
+  return rows.slice(top + 1, footer).map((row) => row.replaceAll("│", "").trimEnd());
+}
+
+// Walks the cursor down to a revision holding items that the window has drawn on its last row. That
+// is the position where expanding has nowhere on screen to put what it opens.
+async function onBottomRowHoldingItems(screen: Screen): Promise<void> {
+  for (let step = 0; step < 80; step += 1) {
+    const rows = timelineRows(screen.draw());
+    const at = rows.findIndex((row) => row.includes("▎"));
+
+    if (at === rows.length - 1 && / \d+ items?\b/.test(rows[at] ?? "")) {
       return;
     }
 
-    await screen.press("k");
+    await screen.press("n");
   }
 
-  throw new Error(`no ${glyph} row under the cursor after 40 rows`);
+  throw new Error("the cursor never reached a bottom row holding items");
+}
+
+// Walks the cursor down until the row it sits on matches, so a test says which item it wants rather
+// than how many rows away the fixture happens to put it. The cursor starts on the revision the view
+// opens on, and that revision's items run below it.
+async function onRow(screen: Screen, match: string): Promise<void> {
+  for (let step = 0; step < 40; step += 1) {
+    if (screen.draw().includes(`▎  ${match}`)) {
+      return;
+    }
+
+    await screen.press("j");
+  }
+
+  throw new Error(`no row matching ${match} under the cursor after 40 rows`);
 }
 
 describe("the detail pane", () => {
@@ -475,7 +557,7 @@ describe("the detail pane", () => {
   test("enter opens the item under the cursor, and q closes back to the timeline", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14354"));
 
-    await onEntry(screen, "◆");
+    await onRow(screen, "◆ @babakks");
     await screen.press("\r");
 
     expect(screen.draw()).toContain("detail");
@@ -490,7 +572,7 @@ describe("the detail pane", () => {
   test("renders the body it was opened on, keeping the shape bodyText drops", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14354"));
 
-    await onEntry(screen, "◆");
+    await onRow(screen, "◆ @babakks");
     await screen.press("\r");
 
     const drawn = screen.draw();
@@ -510,21 +592,26 @@ describe("the detail pane", () => {
   test.todo("renders the prose around the fence, not just the fence", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14354"));
 
-    await onEntry(screen, "◆");
+    await onRow(screen, "◆ @babakks");
     await screen.press("\r");
 
     expect(screen.draw()).toContain("nitpick:");
   });
 
-  // A checks entry counts runs and holds no prose, so the key falls back to closing the group.
-  test("enter on a checks row closes its revision instead of opening a pane", async () => {
+  // The activate key opens whatever the cursor is on and only falls back to the group when there is
+  // nothing there to open. Every item is openable, so it leaves the revision behind it alone.
+  test("enter on an item opens the pane rather than closing its revision", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14429"));
 
     await screen.press("j");
     await screen.press("\r");
 
-    expect(screen.draw()).toContain("▎▸ a9d9d84");
-    expect(screen.draw()).not.toContain("esc/q close");
+    expect(screen.draw()).toContain("esc/q close");
+
+    await screen.press("q");
+
+    expect(screen.draw()).toContain("▎  ● @BagToad");
+    expect(screen.draw()).toContain("▾ dc6221e");
   });
 });
 

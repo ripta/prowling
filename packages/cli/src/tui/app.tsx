@@ -8,6 +8,7 @@ import {
   deriveCheckRows,
   deriveDescription,
   deriveTimeline,
+  openingRevision,
   type PullRequest,
 } from "@prowling/core";
 import { useMemo, useState } from "react";
@@ -58,7 +59,7 @@ export function App({
     () => new Set(groups.filter((group) => group.startsExpanded).map((group) => group.index)),
   );
   const [cursor, setCursor] = useState<Cursor>(() => ({
-    group: Math.max(0, groups.length - 1),
+    group: openingRevision(groups),
     entry: ON_HEADER,
   }));
 
@@ -78,9 +79,16 @@ export function App({
     setExpanded((was) => !was);
   };
 
-  // Collapsing a revision takes its items away, so the cursor comes back to the revision it was
-  // inside of rather than to a row that no longer exists.
+  // Collapsing a revision takes its items away, so the cursor lands back on the header rather than
+  // on a row that no longer exists.
+  //
+  // A revision holding nothing has no fold at all. Its row draws no glyph, and the key does nothing
+  // rather than flipping a state the reader has no way to see.
   const toggleRevision = () => {
+    if ((groups[cursor.group]?.entries.length ?? 0) === 0) {
+      return;
+    }
+
     setOpen((was) => {
       const next = new Set(was);
 
@@ -94,25 +102,26 @@ export function App({
     setCursor({ group: cursor.group, entry: ON_HEADER });
   };
 
+  // Both movers step from the cursor the updater is handed rather than the one this render closed
+  // over. A held key batches its presses into a single render, and reading the closure moved the
+  // cursor one step however many arrived.
   const moveCursor = (delta: number) => {
-    const at = cursors.findIndex((candidate) => sameCursor(candidate, cursor));
+    setCursor((was) => {
+      const at = cursors.findIndex((candidate) => sameCursor(candidate, was));
 
-    if (at === -1) {
-      setCursor({ group: cursor.group, entry: ON_HEADER });
-      return;
-    }
+      if (at === -1) {
+        return { group: was.group, entry: ON_HEADER };
+      }
 
-    const next = cursors[Math.min(cursors.length - 1, Math.max(0, at + delta))];
-
-    if (next !== undefined) {
-      setCursor(next);
-    }
+      return cursors[Math.min(cursors.length - 1, Math.max(0, at + delta))] ?? was;
+    });
   };
 
   const moveRevision = (delta: number) => {
-    const next = Math.min(groups.length - 1, Math.max(0, cursor.group + delta));
-
-    setCursor({ group: next, entry: ON_HEADER });
+    setCursor((was) => ({
+      group: Math.min(groups.length - 1, Math.max(0, was.group + delta)),
+      entry: ON_HEADER,
+    }));
   };
 
   // Reports whether anything opened. A revision header has no item under it, so it has no pane to

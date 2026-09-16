@@ -68,8 +68,8 @@ export type TimelineGroup = {
   revision: Revision;
   // In the order it happened.
   entries: TimelineEntry[];
-  // The default the view opens with, not live state. The newest revision, and any revision where an
-  // unresolved thread started.
+  // The default the view opens with, not live state. The revision the view opens on, and any
+  // revision where an unresolved thread started.
   startsExpanded: boolean;
   // Unresolved threads that started here.
   unresolved: number;
@@ -158,15 +158,36 @@ export function deriveTimeline(input: TimelineInput): TimelineGroup[] {
     }
   }
 
-  const newest = drafts.length - 1;
+  const opens = newestHolding(drafts.map((draft) => draft.items.length));
 
   return drafts.map((draft) => ({
     index: draft.index,
     revision: draft.revision,
     entries: [...draft.items].sort(byTime),
-    startsExpanded: draft.index === newest || draft.unresolved > 0,
+    startsExpanded: draft.index === opens || draft.unresolved > 0,
     unresolved: draft.unresolved,
   }));
+}
+
+// The revision the view opens on, and where its cursor starts.
+//
+// Most revisions carry no conversation. A push that nobody commented on produces a group with
+// nothing in it, and a pull request is usually pushed once more after the last review lands. So
+// opening on the newest revision opens on an empty one most of the time.
+//
+// A pull request with no conversation anywhere has nothing better to offer, and opens at the newest.
+export function openingRevision(groups: readonly TimelineGroup[]): number {
+  return newestHolding(groups.map((group) => group.entries.length));
+}
+
+function newestHolding(counts: readonly number[]): number {
+  for (let index = counts.length - 1; index >= 0; index -= 1) {
+    if ((counts[index] ?? 0) > 0) {
+      return index;
+    }
+  }
+
+  return Math.max(0, counts.length - 1);
 }
 
 function byTime(left: TimelineEntry, right: TimelineEntry): number {
