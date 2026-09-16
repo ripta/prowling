@@ -69,14 +69,13 @@ export function App({
   const timelineRows = useMemo(() => flattenRows(groups, open), [groups, open]);
   const cursors = useMemo(() => cursorsOf(timelineRows), [timelineRows]);
 
+  // Expanding leaves the focus alone, the same way cycling the check list does. Tab is the only
+  // thing that moves focus.
+  //
+  // Moving it from here also moved it once per queued press. A held key batches into a single
+  // render, so an even number of presses left the region collapsed with the focus on it anyway.
   const toggleDescription = () => {
-    setExpanded((was) => {
-      if (!was) {
-        setFocus("description");
-      }
-
-      return !was;
-    });
+    setExpanded((was) => !was);
   };
 
   // Collapsing a revision takes its items away, so the cursor comes back to the revision it was

@@ -10,10 +10,6 @@ import type { DescriptionView } from "@prowling/core";
 import { Markdown } from "./markdown";
 import { BORDER, usePalette } from "./theme";
 
-// The row the expand hint takes. Rendered rows cannot be counted ahead of the render, so the hint
-// says the key rather than how much is left.
-const HINT = 1;
-
 // Rows the region takes once drawn, border included. The timeline is laid out against what is left,
 // so the arithmetic lives with the component that decides it.
 export function descriptionHeight(view: DescriptionView, expanded: boolean, expandedHeight: number): number {
@@ -21,7 +17,19 @@ export function descriptionHeight(view: DescriptionView, expanded: boolean, expa
     return BORDER + 1;
   }
 
-  return BORDER + (expanded ? expandedHeight : view.rows + HINT);
+  return BORDER + (expanded ? expandedHeight : view.rows);
+}
+
+// The title says which state the region is in and the key out of it. Carrying it on the border
+// costs the timeline no rows, and the region answers the same question open or closed.
+//
+// An empty description has nothing to open, so it names itself and no key.
+function titleFor(view: DescriptionView, expanded: boolean): string {
+  if (view.isEmpty) {
+    return " description ";
+  }
+
+  return expanded ? " description (expanded, d to collapse) " : " description (collapsed, d to expand) ";
 }
 
 export type DescriptionProps = {
@@ -37,7 +45,7 @@ export function Description({ view, expanded, focused, expandedHeight }: Descrip
 
   return (
     <box
-      title=" description "
+      title={titleFor(view, expanded)}
       style={{
         flexDirection: "column",
         flexShrink: 0,
@@ -51,18 +59,15 @@ export function Description({ view, expanded, focused, expandedHeight }: Descrip
       {view.isEmpty ? (
         <text fg={palette.dim}>no description</text>
       ) : (
-        <>
-          {/* Scrolling belongs to the expanded state. Collapsed, the box is a window onto the top
-              of the body and the key that opens it is the way further in. */}
-          <scrollbox
-            focused={focused && expanded}
-            scrollY={expanded}
-            style={{ height: expanded ? expandedHeight : view.rows }}
-          >
-            <Markdown content={view.content} />
-          </scrollbox>
-          {!expanded && <text fg={palette.dim}>{"… d to expand"}</text>}
-        </>
+        /* Scrolling belongs to the expanded state. Collapsed, the box is a window onto the top of
+           the body and the key the title names is the way further in. */
+        <scrollbox
+          focused={focused && expanded}
+          scrollY={expanded}
+          style={{ height: expanded ? expandedHeight : view.rows }}
+        >
+          <Markdown content={view.content} />
+        </scrollbox>
       )}
     </box>
   );

@@ -603,9 +603,13 @@ milestone 1, and issue-comment placement under milestone 2.
   rather than as an error. Against that, OpenTUI carried a scrolling header, a collapsing description, a windowed
   timeline, and a markdown pane, with no workaround surviving into the code. The Ink swap this proposal budgeted for is
   not taken.
+- 2026-09-15: Tab is the only key that moves focus. A region shortcut changes that region's state and nothing else.
+  `d` had moved the focus onto the description and `c` had not, and the move was a side effect inside a state updater,
+  so holding the key moved the focus without leaving the region open. Codified in ADR-02.
 
 ## References
 
 - ADR-01: why timeline items anchor to a revision chain built from push records rather than to timestamps.
+- ADR-02: why tab is the only key that moves focus, and why a region shortcut never does.
 - `spec/research/extension.md`: research on serving a custom page from a Manifest V3 extension and reaching the GitHub
   API from it.

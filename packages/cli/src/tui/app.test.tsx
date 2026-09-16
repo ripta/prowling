@@ -49,6 +49,9 @@ afterEach(async () => {
 type Screen = {
   draw: () => string;
   press: (key: string) => Promise<void>;
+  // Several presses delivered before a render, which is what holding a key down does. React batches
+  // them into one pass, so a handler that is only correct once per render shows up here.
+  hold: (key: string, times: number) => Promise<void>;
   tab: () => Promise<void>;
 };
 
@@ -59,7 +62,44 @@ const TALL = 60;
 // The markdown renderable parses off the first frame and fills its text blocks after. Capturing
 // without waiting reads blank rows where the prose goes, and only fenced code is drawn synchronously
 // enough to survive it. So every frame this harness returns is taken after the parse has landed.
-const PARSE_MS = 50;
+//
+// How long that takes is load-dependent, so waiting a fixed span raced whenever the suite was busy.
+// The harness redraws until two frames come out identical instead. Stability alone is not enough of
+// a signal: the rows are blank before the parse starts, and blank is as steady as parsed. So a floor
+// rules out a frame the parse has not reached yet, and the stability check covers a parse slower
+// than the floor.
+//
+// Only a mount hands the renderable content it has not parsed before, so only a mount pays the
+// floor. A key press redraws what is already parsed, and waiting out the floor on every one of them
+// cost more than the whole suite.
+const PARSE_SLICE_MS = 25;
+const MOUNT_FLOOR_SLICES = 4;
+const PRESS_FLOOR_SLICES = 1;
+const PARSE_SLICES = 40;
+
+type Renderer = Awaited<ReturnType<typeof testRender>>;
+
+// Redraws until the frame comes out the same twice, so a capture taken after this reads the parsed
+// content rather than the blank rows it leaves behind.
+async function renderUntilStable(setup: Renderer, floor: number): Promise<void> {
+  let previous = "";
+
+  for (let slice = 0; slice < PARSE_SLICES; slice += 1) {
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, PARSE_SLICE_MS));
+    });
+
+    await setup.renderOnce();
+
+    const drawn = setup.captureCharFrame();
+
+    if (slice >= floor && drawn === previous) {
+      return;
+    }
+
+    previous = drawn;
+  }
+}
 
 async function mount(pullRequest: PullRequest, collapsedRows = 8, height = 40): Promise<Screen> {
   const setup = await testRender(<App pullRequest={pullRequest} onQuit={() => {}} collapsedRows={collapsedRows} />, {
@@ -70,20 +110,25 @@ async function mount(pullRequest: PullRequest, collapsedRows = 8, height = 40): 
   destroy = () => setup.renderer.destroy();
 
   // A key press updates the React tree, so the test owns it the same way the teardown does.
-  const settle = async (send: () => void): Promise<void> => {
+  const settle = async (send: () => void, floor = PRESS_FLOOR_SLICES): Promise<void> => {
     await act(async () => {
       send();
-      await new Promise((resolve) => setTimeout(resolve, PARSE_MS));
     });
 
-    await setup.renderOnce();
+    await renderUntilStable(setup, floor);
   };
 
-  await settle(() => {});
+  await settle(() => {}, MOUNT_FLOOR_SLICES);
 
   return {
     draw: () => setup.captureCharFrame(),
     press: (key) => settle(() => setup.mockInput.pressKey(key)),
+    hold: (key, times) =>
+      settle(() => {
+        for (let step = 0; step < times; step += 1) {
+          setup.mockInput.pressKey(key);
+        }
+      }),
     tab: () => settle(() => setup.mockInput.pressTab()),
   };
 }
@@ -119,6 +164,7 @@ describe("the state header", () => {
     expect(drawn).toContain("APPROVED");
     expect(drawn).toContain("@niik");
     expect(drawn).toContain("21  10 stale · 11 passing");
+    expect(drawn).toContain("state (collapsed, c to expand)");
     expect(drawn).not.toContain("build (macos-latest)");
   });
 
@@ -130,7 +176,7 @@ describe("the state header", () => {
     await screen.press("c");
 
     expect(screen.draw()).toContain("build (macos-latest)");
-    expect(screen.draw()).toContain("[all]");
+    expect(screen.draw()).toContain("state (all, c to collapse)");
 
     await screen.press("c");
 
@@ -144,13 +190,13 @@ describe("the state header", () => {
 
     await screen.press("c");
 
-    expect(screen.draw()).toContain("[attention]");
+    expect(screen.draw()).toContain("state (attention, c for all)");
     expect(screen.draw()).toContain("CodeQL");
     expect(screen.draw()).not.toContain("build (macos-latest)");
 
     await screen.press("c");
 
-    expect(screen.draw()).toContain("[all]");
+    expect(screen.draw()).toContain("state (all, c to collapse)");
     expect(screen.draw()).toContain("build (macos-latest)");
 
     await screen.press("c");
@@ -180,8 +226,40 @@ describe("the description", () => {
     const pullRequest = await fixture("cli-cli-14354");
     const drawn = await frame(pullRequest, 8);
 
-    expect(drawn).toContain("… d to expand");
+    expect(drawn).toContain("description (collapsed, d to expand)");
     expect(drawn).not.toContain("How did you test this change?");
+  });
+
+  test("d opens the rest, and the title then says which key closes it", async () => {
+    const screen = await mount(await fixture("cli-cli-14354"), 8, TALL);
+
+    await screen.press("d");
+
+    expect(screen.draw()).toContain("description (expanded, d to collapse)");
+    expect(screen.draw()).toContain("How did you test this change?");
+
+    await screen.press("d");
+
+    expect(screen.draw()).toContain("description (collapsed, d to expand)");
+  });
+
+  // Expansion ran through a state updater that moved the focus as a side effect. React runs that
+  // updater once per queued press, so an even number of presses landed back on collapsed with the
+  // focus moved anyway. The region then looked untouched and the movement keys were gone.
+  test("d leaves the focus where it was, however many presses arrive at once", async () => {
+    const screen = await mount(await fixture("cli-cli-14354"));
+
+    await screen.hold("d", 2);
+
+    expect(screen.draw()).toContain("description (collapsed, d to expand)");
+
+    // The focus starts on the header, which puts the timeline two stops away. One stop reaches it
+    // only if the description took the focus.
+    await screen.tab();
+    expect(screen.draw()).not.toContain("jk move");
+
+    await screen.tab();
+    expect(screen.draw()).toContain("jk move");
   });
 
   // What `bodyText` dropped. GitHub's flattening runs the paragraphs together and takes the heading
@@ -447,10 +525,7 @@ async function spans(pullRequest: PullRequest, palette?: Palette): Promise<Captu
 
   destroy = () => setup.renderer.destroy();
 
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, PARSE_MS));
-  });
-  await setup.renderOnce();
+  await renderUntilStable(setup, MOUNT_FLOOR_SLICES);
 
   return setup.captureSpans();
 }

@@ -68,6 +68,25 @@ function listHeight(rows: CheckRow[], height: number): number {
   return Math.max(1, Math.min(rows.length, height));
 }
 
+// The title says which mode the list is in and the key out of it. Carrying it on the border costs
+// the timeline no rows, and the region answers the same question in every mode.
+//
+// A pull request with no checks has nothing to open, so it names itself and no key.
+function titleFor(rows: CheckRow[], mode: ChecksMode): string {
+  if (rows.length === 0) {
+    return " state ";
+  }
+
+  switch (mode) {
+    case "summary":
+      return " state (collapsed, c to expand) ";
+    case "attention":
+      return " state (attention, c for all) ";
+    case "all":
+      return " state (all, c to collapse) ";
+  }
+}
+
 export function Header({ pullRequest, rows, mode, focused, height, width }: HeaderProps) {
   const palette = usePalette();
   const unresolved = pullRequest.threads.filter((thread) => !thread.isResolved).length;
@@ -75,7 +94,7 @@ export function Header({ pullRequest, rows, mode, focused, height, width }: Head
 
   return (
     <box
-      title=" state "
+      title={titleFor(rows, mode)}
       style={{
         flexDirection: "column",
         flexShrink: 0,
@@ -97,7 +116,7 @@ export function Header({ pullRequest, rows, mode, focused, height, width }: Head
       {pullRequest.degradations.length > 0 && (
         <Field label="" value={`! ${pullRequest.degradations.length} fields could not be read`} role="warn" />
       )}
-      <Field label="checks" value={summaryText(rows, mode)} role="dim" />
+      <Field label="checks" value={summaryText(rows)} role="dim" />
 
       {shown.length > 0 && (
         <scrollbox
@@ -153,7 +172,7 @@ function nameWidth(rows: CheckRow[], width: number): number {
 
 // A count of what the rows say, so a failure the list is not currently drawing is still announced.
 // This line is the whole region in summary mode, which is what lets the list be closed by default.
-function summaryText(rows: CheckRow[], mode: ChecksMode): string {
+function summaryText(rows: CheckRow[]): string {
   if (rows.length === 0) {
     return "none";
   }
@@ -174,9 +193,7 @@ function summaryText(rows: CheckRow[], mode: ChecksMode): string {
     counts.push({ label: "passing", total: passing });
   }
 
-  const shown = mode === "summary" ? "" : `  [${mode}]`;
-
-  return `${rows.length}  ${counts.map((count) => `${count.total} ${count.label}`).join(" · ")}${shown}`;
+  return `${rows.length}  ${counts.map((count) => `${count.total} ${count.label}`).join(" · ")}`;
 }
 
 function threadText(unresolved: number, total: number): string {
