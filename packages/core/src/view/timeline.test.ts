@@ -18,8 +18,7 @@ import type {
 import { fetchPullRequest } from "../pull-request";
 import { type Recorder, type Recording, withReplay } from "../transport";
 
-import type { CheckCommit, CheckRun } from "./checks";
-import { type ChecksEntry, deriveTimeline, type TimelineGroup, type TimelineInput } from "./timeline";
+import { deriveTimeline, type TimelineGroup, type TimelineInput } from "./timeline";
 
 const T0 = "2025-01-01T00:00:00Z";
 const T1 = "2025-01-01T01:00:00Z";
@@ -132,31 +131,11 @@ function thread(id: string, isResolved: boolean, ...comments: ReviewComment[]): 
   };
 }
 
-function run(name: string, overrides: Partial<CheckRun> = {}): CheckRun {
-  return {
-    id: `CR_${name}`,
-    name,
-    status: "COMPLETED",
-    conclusion: "SUCCESS",
-    startedAt: T0,
-    completedAt: T1,
-    detailsUrl: null,
-    isRequired: false,
-    ...overrides,
-  };
-}
-
-function ran(letter: string, ...checks: CheckRun[]): CheckCommit {
-  return { oid: oid(letter), checkSuites: [{ checks }] };
-}
-
 function derive(partial: Partial<TimelineInput>): TimelineGroup[] {
   return deriveTimeline({
     revisions: [],
     timeline: [],
     threads: [],
-    commits: [],
-    droppedCommits: [],
     ...partial,
   });
 }
@@ -166,7 +145,7 @@ function kinds(group: TimelineGroup): string[] {
 }
 
 function ids(group: TimelineGroup): string[] {
-  return group.entries.flatMap((entry) => (entry.kind === "checks" ? [] : [entry.id]));
+  return group.entries.map((entry) => entry.id);
 }
 
 describe("grouping", () => {
@@ -240,84 +219,6 @@ describe("grouping", () => {
 
     expect(ids(groups[0])).toEqual([]);
     expect(groups[0].unresolved).toBe(0);
-  });
-});
-
-describe("checks", () => {
-  function checks(group: TimelineGroup): ChecksEntry {
-    const entry = group.entries[0];
-
-    expect(entry.kind).toBe("checks");
-
-    return entry as ChecksEntry;
-  }
-
-  test("leads the group", () => {
-    const groups = derive({
-      revisions: chain("a"),
-      timeline: [comment("IC_1", 0, T0)],
-      commits: [ran("a", run("lint"))],
-    });
-
-    expect(kinds(groups[0])).toEqual(["checks", "comment"]);
-  });
-
-  test("counts what ran on the revision and names what failed", () => {
-    const groups = derive({
-      revisions: chain("a"),
-      commits: [
-        ran(
-          "a",
-          run("lint"),
-          run("e2e", { conclusion: "FAILURE" }),
-          run("integration", { status: "IN_PROGRESS", conclusion: null, completedAt: null }),
-          run("deploy", { conclusion: "SKIPPED" }),
-          run("noop", { conclusion: "NEUTRAL" }),
-        ),
-      ],
-    });
-
-    expect(checks(groups[0])).toMatchObject({
-      total: 5,
-      pending: 1,
-      passing: 1,
-      skipped: 1,
-      other: 1,
-    });
-    expect(checks(groups[0]).failing.map((failed) => failed.name)).toEqual(["e2e"]);
-    expect(checks(groups[0]).failing[0]).toMatchObject({ checkId: "CR_e2e", conclusion: "FAILURE" });
-  });
-
-  test("counts a name once, so a re-run replaces the result it stood in for", () => {
-    const groups = derive({
-      revisions: chain("a"),
-      commits: [
-        ran(
-          "a",
-          run("flaky", { conclusion: "FAILURE", completedAt: T1 }),
-          run("flaky", { conclusion: "SUCCESS", completedAt: T2 }),
-        ),
-      ],
-    });
-
-    expect(checks(groups[0])).toMatchObject({ total: 1, passing: 1 });
-    expect(checks(groups[0]).failing).toEqual([]);
-  });
-
-  test("reaches a run on a commit a force-push dropped", () => {
-    const groups = derive({
-      revisions: chain("a", "b"),
-      droppedCommits: [ran("a", run("e2e", { conclusion: "FAILURE" }))],
-    });
-
-    expect(checks(groups[0]).failing.map((failed) => failed.name)).toEqual(["e2e"]);
-  });
-
-  test("a revision nothing ran on gets no entry", () => {
-    const groups = derive({ revisions: chain("a", "b"), commits: [ran("b", run("lint"))] });
-
-    expect(kinds(groups[0])).toEqual([]);
-    expect(kinds(groups[1])).toEqual(["checks"]);
   });
 });
 
@@ -397,25 +298,23 @@ describe("against a recorded pull request", () => {
     expect(new Set(placed).size).toBe(placed.length);
   });
 
-  test("reports the checks that ran on each revision of a force-pushed pull request", async () => {
-    const pullRequest = await fixture("cli-cli-14349");
+  // The state header is the only surface that answers a check question. This pull request carries
+  // 21 of them, and none reaches the conversation.
+  test("carries no check into the groups of a pull request full of them", async () => {
+    const pullRequest = await fixture("cli-cli-14429");
     const groups = deriveTimeline(pullRequest);
-    const counted = groups.flatMap((group) =>
-      group.entries.filter((entry) => entry.kind === "checks").map((entry) => entry.total),
-    );
+    const placed = groups.flatMap(ids);
+    const expected =
+      pullRequest.timeline.filter((item) => item.kind === "review" || item.kind === "comment").length +
+      pullRequest.threads.length;
 
-    expect(counted.length).toBeGreaterThan(0);
-
-    for (const total of counted) {
-      expect(total).toBeGreaterThan(0);
-    }
+    expect(placed).toHaveLength(expected);
   });
 
-  test("a pull request with no checks gets no checks entry anywhere", async () => {
+  test("expands the newest revision on a pull request with no checks at all", async () => {
     const pullRequest = await fixture("rust-lang-rust-137944");
     const groups = deriveTimeline(pullRequest);
 
-    expect(groups.flatMap((group) => group.entries.filter((entry) => entry.kind === "checks"))).toEqual([]);
     expect(groups.at(-1)?.startsExpanded).toBe(true);
   });
 });

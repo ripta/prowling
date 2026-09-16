@@ -559,6 +559,41 @@ milestone 1, and issue-comment placement under milestone 2.
   startup. The theme rules name a role rather than a color, and the component drawing the row resolves it. Raised by a
   hands-on pass on a light terminal, where the single dark palette left the title, the description, and every check
   name illegible: `#c9d1d9` on white is about 1.3:1. Dark stays the default for a terminal that answers no query.
+- 2026-09-15: Layout gate ruled against live pull requests. The collapsed description stays at 8 lines. Four further
+  findings reopen settled decisions, each recorded below.
+- 2026-09-15: The description region renders `bodyText`, which is GitHub's own plaintext flattening and drops the
+  paragraph breaks the web view shows. Measured on `cli/cli#14354`: `bodyText` is 58 lines with 12 blank and runs three
+  consecutive paragraphs together with no separator between them. `body` is 130 lines with 39 blank, and keeps
+  `### Description` with the breaks around it. Reopens the decision that the description region reads `bodyText`.
+- 2026-09-15: The check list claims 35 percent of the viewport whenever any check exists. On `cli/cli#14354` that left
+  the timeline 4 rows to show 19 revisions. The list is to be collapsed by default. Reopens the decision that the check
+  block scrolls inside the header with a count above it.
+- 2026-09-15: The per-revision checks entry in the timeline reads as a second and contradictory answer to the header's
+  per-name rows. Reopens the decision that a revision's checks render as one count line with the failing runs named
+  under it.
+- 2026-09-15: Attention-first check ordering does not read as sensible on a green pull request. Measured on
+  `cli/cli#14354`: nothing is failing, so the top rows are 3 stale results and 7 skipped, and the three required builds
+  that gate the merge sort last. Reopens the decision that check rows sort by attention.
+- 2026-09-15: The description region renders `body` through the same markdown component the detail pane uses. The
+  blank lines and heading structure the web view shows are what `bodyText` drops. Links render as their text followed
+  by the URL in parentheses, so a link-heavy description costs more rows than it does today. The 8-line collapse counts
+  rendered lines from here.
+- 2026-09-15: The check list cycles on one key: a summary line alone, then the rows needing attention, then every row.
+  The attention state is skipped when nothing is failing, never run, or running, so a green pull request cycles between
+  collapsed and all. Collapsed by default is what gives the timeline its rows back.
+- 2026-09-15: The timeline drops its per-revision checks entry. The state header becomes the only surface that answers
+  a check question. Two surfaces answering it differently is what made the pair confusing.
+- 2026-09-15: Check rows sort failing, never run, running, required passing, passing, stale, skipped. Attention still
+  floats and the merge-gating checks come next. Stale and skipped sink, where the previous order had them above
+  everything that passed.
+- 2026-09-15: `<markdown>` does not ask for a redraw when its parse lands. Content present on the first frame is fine,
+  which is why the description renders. Content arriving later draws only its fenced blocks, and the prose around them
+  stays blank. Every body the detail pane opens arrives later, so the pane has been rendering fences over blank rows.
+  Reproduced against `<markdown>` alone, so it is not this view's layout. A forced second render pass flushes it.
+  Measured in the test harness; the behaviour against a live terminal's frame loop is not yet confirmed.
+- 2026-09-15: The pane's test asserted on two lines inside a fenced block, which are the only lines that render
+  synchronously. It passed throughout without ever exercising the prose path. This is what let the defect above ship,
+  and it is why the Phase 3 checkpoint read `<markdown>` as working.
 - 2026-09-15: OpenTUI checkpoint ruled. Keep OpenTUI. Eight points of friction across Phases 2 and 3 are written up in
   the phase document. None blocked a milestone, and each cost a cycle because the failure arrived as wrong pixels
   rather than as an error. Against that, OpenTUI carried a scrolling header, a collapsing description, a windowed

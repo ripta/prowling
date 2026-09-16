@@ -7,7 +7,7 @@ phase status changes.
 | Phase | Proposal | Description | Status | Progress |
 |-------|----------|-------------|--------|----------|
 | 1 | PRW-001 | Data layer: transport, model, revision chain | COMPLETE | 3/3 |
-| 2 | PRW-001 | Header and timeline, ending in the layout gate | IN PROGRESS | 0/2 |
+| 2 | PRW-001 | Header and timeline, ending in the layout gate | COMPLETE | 2/2 |
 | 3 | PRW-001 | Detail pane and OpenTUI checkpoint | COMPLETE | 1/1 |
 | 4 | PRW-001 | Classification and folding | PLANNED | 0/2 |
 | 5 | PRW-001 | CI providers: Actions logs, Cloud Build, generic | PLANNED | 0/2 |
@@ -19,15 +19,15 @@ The layout gate sits at the end of Phase 2. The user reviews the header and time
 requests before anything else is built on top of them. Phases 3 through 6 are held until the gate is ruled. The ruling
 and any reopened decisions are recorded in PRW-001's Decision Log.
 
-Phase 2 is now waiting on that pass. Both its milestones are built and stay IN PROGRESS, because the two criteria left
-are ones code cannot meet: the description collapse height and the gate itself.
+The gate was ruled on 2026-09-15. The grouping holds, and the collapsed description stays at 8 lines. Four findings
+reopened settled decisions and are recorded in PRW-001's Decision Log: the description's source text, the check
+block's share of the viewport, the timeline's checks entry against the header's, and the check sort order. That work
+is not yet promoted to a phase.
 
-Phase 3 was started ahead of that ruling, at the user's explicit direction, and is now complete. Its OpenTUI
-checkpoint was ruled on 2026-09-15: keep OpenTUI. The layout gate is a separate ruling and is still open, so the
-grouping Phases 4 through 6 build on has still not been judged against live pull requests.
+Phase 3's OpenTUI checkpoint was ruled the same day: keep OpenTUI.
 
 Phases 4, 5, and 6 depend on Phases 1 and 2 only. They do not depend on each other or on Phase 3, and can run in any
-order once the gate is ruled.
+order now that the gate is ruled.
 
 PRW-001 becomes `implemented` when Phase 6 completes. Its revisit hook for the first extension proposal fires then.
 

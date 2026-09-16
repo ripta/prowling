@@ -106,12 +106,6 @@ export function clamp(value: string, width: number): string {
 // shape, and the color says what state it is in.
 export function entryGlyph(entry: TimelineEntry): string {
   switch (entry.kind) {
-    case "checks":
-      if (entry.failing.length > 0) {
-        return "⚠";
-      }
-
-      return entry.pending > 0 ? "●" : "✓";
     case "review":
       return "●";
     case "thread":
@@ -123,16 +117,6 @@ export function entryGlyph(entry: TimelineEntry): string {
 
 export function entryColor(entry: TimelineEntry): Role {
   switch (entry.kind) {
-    case "checks":
-      if (entry.failing.length > 0) {
-        return "bad";
-      }
-
-      if (entry.pending > 0) {
-        return "accent";
-      }
-
-      return entry.passing > 0 ? "ok" : "dim";
     case "review":
       return reviewColor(entry.state);
     case "thread":

@@ -12,9 +12,9 @@ import {
 } from "@prowling/core";
 import { useMemo, useState } from "react";
 
-import { Detail, type DetailEntry, openable } from "./detail";
+import { Detail, type DetailEntry } from "./detail";
 import { Description, descriptionHeight } from "./description";
-import { Header, headerHeight } from "./header";
+import { type ChecksMode, Header, headerHeight, nextChecksMode } from "./header";
 import { hintsFor, REGIONS, type RegionId, resolveAction } from "./keys";
 import { type Cursor, ON_HEADER } from "./revision";
 import { DARK, type Palette, PaletteContext, usePalette } from "./theme";
@@ -45,11 +45,12 @@ export function App({
   const { width, height } = useTerminalDimensions();
   const [focus, setFocus] = useState<RegionId>("header");
   const [expanded, setExpanded] = useState(false);
+  const [checks, setChecks] = useState<ChecksMode>("summary");
 
   const rows = useMemo(() => deriveCheckRows(pullRequest), [pullRequest]);
   const view = useMemo(
-    () => deriveDescription(pullRequest.bodyText, { rows: collapsedRows }),
-    [pullRequest.bodyText, collapsedRows],
+    () => deriveDescription(pullRequest.body, { rows: collapsedRows }),
+    [pullRequest.body, collapsedRows],
   );
   const groups = useMemo(() => deriveTimeline(pullRequest), [pullRequest]);
 
@@ -115,12 +116,12 @@ export function App({
     setCursor({ group: next, entry: ON_HEADER });
   };
 
-  // Reports whether anything opened. A revision header has no item under it, and a checks entry
-  // counts runs and holds no prose, so neither has a pane to show.
+  // Reports whether anything opened. A revision header has no item under it, so it has no pane to
+  // show and the key falls through to collapsing the group.
   const openDetail = (): boolean => {
     const row = timelineRows.find((candidate) => candidate.kind === "entry" && sameCursor(candidate.at, cursor));
 
-    if (row?.kind !== "entry" || !openable(row.entry)) {
+    if (row?.kind !== "entry") {
       return false;
     }
 
@@ -142,6 +143,9 @@ export function App({
         break;
       case "toggle-description":
         toggleDescription();
+        break;
+      case "cycle-checks":
+        setChecks((was) => nextChecksMode(was, rows));
         break;
       case "focus-next":
         setFocus((current) => step(current, 1));
@@ -186,6 +190,7 @@ export function App({
         <Header
           pullRequest={pullRequest}
           rows={rows}
+          mode={checks}
           focused={focus === "header"}
           height={checkListHeight(height)}
           width={width}
@@ -195,21 +200,20 @@ export function App({
           expanded={expanded}
           focused={focus === "description"}
           expandedHeight={expandedHeight(height)}
-          width={width}
         />
         {detail === null ? (
           <Timeline
             rows={timelineRows}
             cursor={cursor}
             focused={focus === "timeline"}
-            height={timelineHeight(pullRequest, rows, view, expanded, height)}
+            height={timelineHeight(pullRequest, rows, checks, view, expanded, height)}
             width={width}
           />
         ) : (
           <Detail
             entry={detail}
             focused={focus === "detail"}
-            height={timelineHeight(pullRequest, rows, view, expanded, height)}
+            height={timelineHeight(pullRequest, rows, checks, view, expanded, height)}
             width={width}
           />
         )}
@@ -258,8 +262,9 @@ function StatusBar({ region }: { region: RegionId }) {
   );
 }
 
-// Twenty-one checks is an ordinary count on a busy repository, and they cannot all have a row. The
-// list takes about a third of the viewport and scrolls past that.
+// Twenty-one checks is an ordinary count on a busy repository, and they cannot all have a row. An
+// opened list takes about a third of the viewport and scrolls past that. It opens only when asked,
+// so the timeline keeps those rows the rest of the time.
 function checkListHeight(height: number): number {
   return Math.max(3, Math.floor(height * 0.35));
 }
@@ -275,13 +280,14 @@ function expandedHeight(height: number): number {
 function timelineHeight(
   pullRequest: PullRequest,
   rows: ReturnType<typeof deriveCheckRows>,
+  checks: ChecksMode,
   view: ReturnType<typeof deriveDescription>,
   expanded: boolean,
   height: number,
 ): number {
   const above =
     FRAME_ROWS +
-    headerHeight(pullRequest, rows, checkListHeight(height)) +
+    headerHeight(pullRequest, rows, checks, checkListHeight(height)) +
     descriptionHeight(view, expanded, expandedHeight(height));
 
   return Math.max(MIN_TIMELINE_ROWS, height - above);

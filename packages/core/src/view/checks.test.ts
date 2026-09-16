@@ -204,10 +204,10 @@ describe("ordering", () => {
       "failing",
       "missing",
       "pending",
+      "passing",
       "stale",
       "cancelled",
       "skipped",
-      "passing",
     ]);
   });
 
@@ -283,11 +283,14 @@ describe("against a recorded pull request", () => {
     });
   });
 
-  test("leads with the stale rows and trails with the passing ones", async () => {
+  // Nothing on this pull request is failing, so the passing rows lead and the stale ones sink. The
+  // 10 stale names here are what made the old order unreadable: they buried every check that
+  // actually ran on the head.
+  test("leads with the passing rows and trails with the stale ones", async () => {
     const pullRequest = await fixture("cli-cli-14429");
     const kinds = deriveCheckRows(pullRequest).map((row) => row.kind);
 
-    expect(kinds.indexOf("current")).toBe(kinds.lastIndexOf("stale") + 1);
+    expect(kinds.lastIndexOf("current")).toBe(kinds.indexOf("stale") - 1);
   });
 
   test("reports every name once, and none that never ran without being required", async () => {

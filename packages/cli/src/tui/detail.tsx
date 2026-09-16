@@ -4,17 +4,12 @@
 // The pane scrolls itself. It is a scrollbox for the same reason the header and the description are:
 // nothing here owns a cursor, so the movement keys can go straight to it.
 
-import { type ChecksEntry, stripHtmlComments, type TimelineEntry } from "@prowling/core";
+import { stripHtmlComments, type TimelineEntry } from "@prowling/core";
 
 import { Markdown } from "./markdown";
 import { clamp, entryColor, entryGlyph, usePalette } from "./theme";
 
-// A checks entry counts runs and holds no prose, so there is nothing for the pane to open.
-export type DetailEntry = Exclude<TimelineEntry, ChecksEntry>;
-
-export function openable(entry: TimelineEntry): entry is DetailEntry {
-  return entry.kind !== "checks";
-}
+export type DetailEntry = TimelineEntry;
 
 export type DetailProps = {
   entry: DetailEntry;

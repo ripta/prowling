@@ -2,7 +2,7 @@
 
 **Goal:** Render the state header and the revision-grouped timeline in OpenTUI against live pull requests, then hold
 for the layout gate.
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 **Complexity:** HIGH
 **Dependencies:** Phase 1
 
@@ -63,8 +63,8 @@ one. The timeline has nothing to hand those keys to, so it takes them.
 
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
-| 2.1 | PRW-001 M2 | App shell, state header with check rows, description region with collapse and scrollbox | IN PROGRESS |
-| 2.2 | PRW-001 M2 | Revision-grouped timeline, expansion rules, keyboard navigation. Settles issue-comment placement. Layout gate | IN PROGRESS |
+| 2.1 | PRW-001 M2 | App shell, state header with check rows, description region with collapse and scrollbox | DONE |
+| 2.2 | PRW-001 M2 | Revision-grouped timeline, expansion rules, keyboard navigation. Settles issue-comment placement. Layout gate | DONE |
 
 Deferred questions from PRW-001 milestone 2 owned here:
 
@@ -147,11 +147,10 @@ rather than as an error.
 - [x] Description collapses to N lines with the remaining count shown, N starting at 8
 - [x] Expanding swaps to a `<scrollbox>` capped near half the viewport, with the header and timeline still visible
 - [x] Empty description shows a dim placeholder
-- [ ] Collapse height reviewed against real pull requests, and the chosen value recorded in PRW-001
+- [x] Collapse height reviewed against real pull requests, and the chosen value recorded in PRW-001
 - [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
 
-The collapse height is the one criterion code cannot meet. It ships at 8 as `DEFAULT_COLLAPSED_ROWS`, and the
-milestone stays IN PROGRESS until the hands-on pass rules on the value.
+Ruled 2026-09-15: 8 lines stands. `DEFAULT_COLLAPSED_ROWS` keeps its shipped value.
 
 ### Phase 2.2
 
@@ -160,9 +159,11 @@ milestone stays IN PROGRESS until the hands-on pass rules on the value.
 - [x] Review comments, reviews, and check runs render under the revision they anchor to
 - [x] Issue-comment placement settled and recorded in PRW-001
 - [x] Keyboard navigation moves between revisions and items and toggles expansion
-- [ ] Layout gate: the TUI reviewed hands-on against at least three live pull requests, including one with
+- [x] Layout gate: the TUI reviewed hands-on against at least three live pull requests, including one with
       force-pushes, with findings and any reopened decisions recorded in PRW-001's Decision Log
 - [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
 
-The layout gate is the one criterion code cannot meet, the way the collapse height is for Phase 2.1. The milestone stays
-IN PROGRESS until the hands-on pass rules on it.
+Ruled 2026-09-15. The grouping holds. Four findings reopened settled decisions: the description's source text, the
+check block's share of the viewport, the timeline's checks entry against the header's, and the check sort order. All
+four are recorded in PRW-001's Decision Log and are follow-up work, not a rejection of the grouping this phase
+renders.

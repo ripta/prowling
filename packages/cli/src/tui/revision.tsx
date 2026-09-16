@@ -5,10 +5,10 @@
 // Each row spends its width before it draws anything. A fragment that overruns does not get clipped
 // on its own; the whole row compresses, and its columns stop lining up with the rows around it.
 
-import type { ChecksEntry, FailedRun, TimelineEntry, TimelineGroup } from "@prowling/core";
+import type { TimelineEntry, TimelineGroup } from "@prowling/core";
 import type { ReactNode } from "react";
 
-import { clamp, CLOSED, ENTRY_INDENT, entryColor, entryGlyph, NESTED_INDENT, OPEN, usePalette } from "./theme";
+import { clamp, CLOSED, ENTRY_INDENT, entryColor, entryGlyph, OPEN, usePalette } from "./theme";
 
 // The cursor sits on a revision header, or on one of its entries.
 export type Cursor = { group: number; entry: number };
@@ -75,18 +75,6 @@ export function EntryLine({
 }) {
   const palette = usePalette();
   const room = inner(width, ENTRY_INDENT) - GLYPH;
-
-  if (entry.kind === "checks") {
-    return (
-      <Row selected={selected} width={width} indent={ENTRY_INDENT}>
-        <text fg={palette[entryColor(entry)]} wrapMode="none">{`${entryGlyph(entry)} `}</text>
-        <text fg={palette.text} wrapMode="none">
-          {clamp(checksText(entry), room)}
-        </text>
-      </Row>
-    );
-  }
-
   const author = `${who(entry)}  `;
 
   return (
@@ -97,23 +85,6 @@ export function EntryLine({
       </text>
       <text fg={palette.text} wrapMode="none">
         {clamp(headline(entry), Math.max(1, room - author.length))}
-      </text>
-    </Row>
-  );
-}
-
-// A failing run sits under the line that counted it, so the count and the name it stands for read as
-// one thing.
-export function FailureLine({ run, width }: { run: FailedRun; width: number }) {
-  const palette = usePalette();
-  const result = run.conclusion ?? run.status;
-  const budget = inner(width, NESTED_INDENT) - GLYPH - result.length - 2;
-
-  return (
-    <Row selected={false} width={width} indent={NESTED_INDENT}>
-      <text fg={palette.bad} wrapMode="none">{`⚠ ${clamp(run.name, Math.max(1, budget))}  `}</text>
-      <text fg={palette.dim} wrapMode="none">
-        {result}
       </text>
     </Row>
   );
@@ -148,25 +119,13 @@ function inner(width: number, indent: number): number {
   return Math.max(1, width - MARKER - indent);
 }
 
-function checksText(entry: ChecksEntry): string {
-  const counts = [
-    { label: "failing", total: entry.failing.length },
-    { label: "running", total: entry.pending },
-    { label: "skipped", total: entry.skipped },
-    { label: "other", total: entry.other },
-    { label: "passing", total: entry.passing },
-  ].filter((count) => count.total > 0);
-
-  return `checks  ${entry.total} · ${counts.map((count) => `${count.total} ${count.label}`).join(" · ")}`;
-}
-
-function who(entry: Exclude<TimelineEntry, ChecksEntry>): string {
+function who(entry: TimelineEntry): string {
   return `@${entry.author?.login ?? "ghost"}`;
 }
 
 // What the row says about itself before its body: the review's verdict, or where in the code the
 // thread hangs. An issue comment has neither, so its body starts right away.
-function headline(entry: Exclude<TimelineEntry, ChecksEntry>): string {
+function headline(entry: TimelineEntry): string {
   const body = entry.bodyText.split("\n").find((line) => line.trim() !== "") ?? "";
 
   if (entry.kind === "review") {

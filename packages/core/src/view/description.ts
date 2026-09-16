@@ -1,57 +1,40 @@
-// The description region's collapsed view. The body arrives as bodyText, which has already had its
-// HTML comments stripped, so a pull request template leaves nothing behind here.
+// The description region's source text. The body arrives as markdown and the renderer draws it:
+// markers concealed, paragraphs wrapped to the width, links spelled out with their URL. So nothing
+// here can say how many rows it will take.
 //
-// Lines are source lines, not display lines. A terminal wraps a long paragraph across several rows,
-// and nothing here knows the width it will wrap at. Measuring display lines would mean
-// reimplementing the wrap or reading a height back after a layout pass, so the count stays exact
-// about the source and says nothing about the screen. The renderer clips the collapsed region to a
-// fixed height, which is what keeps a long paragraph from pushing the rest of the view off screen.
+// That is why the collapsed region clips to a fixed number of rendered rows rather than to a count
+// taken here. A source line count does not survive the render, and measuring the render would mean
+// reading a height back after a layout pass.
+//
+// `bodyText` used to feed this. It is GitHub's own plaintext flattening, and it drops the paragraph
+// breaks and heading markers the web view shows.
 
-// Where the collapse starts. A layout knob rather than a fixed rule, tuned against real pull
-// requests.
+import { stripHtmlComments } from "./markdown";
+
+// Where the collapse starts, in rendered rows. A layout knob rather than a fixed rule, tuned
+// against real pull requests.
 export const DEFAULT_COLLAPSED_ROWS = 8;
 
 export type DescriptionOptions = {
-  // How many lines the collapsed region shows.
+  // Rendered rows the collapsed region shows.
   rows: number;
 };
 
 export type DescriptionView = {
-  // The whole body, blank lines at either end removed.
-  lines: string[];
-  total: number;
-  // The prefix the collapsed region shows.
-  head: string[];
-  // Lines the collapsed region leaves out. Never negative.
-  remaining: number;
+  // Ready for the markdown renderer: HTML comments gone, blank edges trimmed.
+  content: string;
+  // Rendered rows the collapsed region shows.
+  rows: number;
   // A body of nothing but whitespace reads as empty, since it renders as empty.
   isEmpty: boolean;
 };
 
-export function deriveDescription(bodyText: string, options: DescriptionOptions): DescriptionView {
-  const lines = trimBlankEdges(bodyText.replace(/\r\n?/g, "\n").split("\n"));
-  const head = lines.slice(0, Math.max(0, options.rows));
+export function deriveDescription(body: string, options: DescriptionOptions): DescriptionView {
+  const content = stripHtmlComments(body);
 
   return {
-    lines,
-    total: lines.length,
-    head,
-    remaining: lines.length - head.length,
-    isEmpty: lines.length === 0,
+    content,
+    rows: Math.max(0, options.rows),
+    isEmpty: content === "",
   };
-}
-
-function trimBlankEdges(lines: string[]): string[] {
-  let start = 0;
-  let end = lines.length;
-
-  while (start < end && lines[start].trim() === "") {
-    start += 1;
-  }
-
-  while (end > start && lines[end - 1].trim() === "") {
-    end -= 1;
-  }
-
-  return lines.slice(start, end);
 }

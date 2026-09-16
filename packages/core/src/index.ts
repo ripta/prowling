@@ -57,6 +57,8 @@ export {
   type CheckRun,
   deriveCheckRows,
   isFailingConclusion,
+  needsAttention,
+  RANK,
   revisionIndexByOid,
   rowRank,
   type StaleRef,
@@ -72,10 +74,8 @@ export {
 export { stripHtmlComments } from "./view/markdown";
 
 export {
-  type ChecksEntry,
   type CommentEntry,
   deriveTimeline,
-  type FailedRun,
   type ReviewEntry,
   type ThreadEntry,
   type TimelineEntry,

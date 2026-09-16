@@ -11,6 +11,7 @@
 export type Action =
   | "quit"
   | "toggle-description"
+  | "cycle-checks"
   | "focus-next"
   | "focus-prev"
   | "activate"
@@ -38,6 +39,7 @@ export type Key = {
 export type Hint = { keys: string; label: string };
 
 const SHARED: readonly Hint[] = [
+  { keys: "c", label: "checks" },
   { keys: "d", label: "description" },
   { keys: "tab", label: "focus" },
   { keys: "q", label: "quit" },
@@ -83,6 +85,8 @@ export function resolveAction(key: Key, region: RegionId): Action | undefined {
   switch (key.name) {
     case "q":
       return "quit";
+    case "c":
+      return "cycle-checks";
     case "d":
       return "toggle-description";
     // The parser reports shift-tab as tab with the modifier set, never as its own key name.

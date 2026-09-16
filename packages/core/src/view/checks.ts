@@ -135,30 +135,49 @@ export function revisionIndexByOid(revisions: readonly Pick<Revision, "headOid" 
   return byOid;
 }
 
-// Attention first. Ten of the twenty-one names on a real pull request report stale, so ordering by
-// name buries the one row that needs acting on below the fold of a scrollbox.
+// Where each kind of row sorts. Anything worth acting on floats. Passing comes next, and the
+// isRequired tiebreak inside that band puts the checks gating the merge at its top.
+//
+// Stale and skipped sink below passing. A result carried over from an older revision and a run that
+// decided to do nothing are both noise next to a check that actually passed on the head.
+export const RANK = {
+  failing: 0,
+  missing: 1,
+  pending: 2,
+  passing: 3,
+  stale: 4,
+  muted: 5,
+  skipped: 6,
+} as const;
+
 export function rowRank(row: CheckRow): number {
   if (isFailingConclusion(row.conclusion)) {
-    return 0;
+    return RANK.failing;
   }
 
   if (row.kind === "missing") {
-    return 1;
+    return RANK.missing;
   }
 
   if (row.kind === "pending") {
-    return 2;
+    return RANK.pending;
   }
 
   if (row.kind === "stale") {
-    return 3;
+    return RANK.stale;
   }
 
   if (row.conclusion !== null && MUTED.has(row.conclusion)) {
-    return 4;
+    return RANK.muted;
   }
 
-  return row.conclusion === "SKIPPED" ? 5 : 6;
+  return row.conclusion === "SKIPPED" ? RANK.skipped : RANK.passing;
+}
+
+// Rows the reader has to do something about. The check list opens on these alone when anything is
+// in trouble, so the predicate is shared rather than re-derived per surface.
+export function needsAttention(row: CheckRow): boolean {
+  return rowRank(row) <= RANK.pending;
 }
 
 function buildRow(

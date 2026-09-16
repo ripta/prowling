@@ -56,6 +56,11 @@ type Screen = {
 // couple of its rows asks for a taller terminal.
 const TALL = 60;
 
+// The markdown renderable parses off the first frame and fills its text blocks after. Capturing
+// without waiting reads blank rows where the prose goes, and only fenced code is drawn synchronously
+// enough to survive it. So every frame this harness returns is taken after the parse has landed.
+const PARSE_MS = 50;
+
 async function mount(pullRequest: PullRequest, collapsedRows = 8, height = 40): Promise<Screen> {
   const setup = await testRender(<App pullRequest={pullRequest} onQuit={() => {}} collapsedRows={collapsedRows} />, {
     width: 100,
@@ -63,16 +68,18 @@ async function mount(pullRequest: PullRequest, collapsedRows = 8, height = 40): 
   });
 
   destroy = () => setup.renderer.destroy();
-  await setup.renderOnce();
 
   // A key press updates the React tree, so the test owns it the same way the teardown does.
   const settle = async (send: () => void): Promise<void> => {
     await act(async () => {
       send();
+      await new Promise((resolve) => setTimeout(resolve, PARSE_MS));
     });
 
     await setup.renderOnce();
   };
+
+  await settle(() => {});
 
   return {
     draw: () => setup.captureCharFrame(),
@@ -104,19 +111,59 @@ async function onTimeline(pullRequest: PullRequest): Promise<Screen> {
 }
 
 describe("the state header", () => {
-  test("shows the decision, the threads, the reviewers, and a row per check", async () => {
+  // The count line is the whole check region until the reader asks for more. Twenty-one rows drawn
+  // by default took a third of the viewport from the timeline.
+  test("shows the decision, the threads, the reviewers, and the check counts alone", async () => {
     const drawn = await frame(await fixture("cli-cli-14429"));
 
     expect(drawn).toContain("APPROVED");
     expect(drawn).toContain("@niik");
-    expect(drawn).toContain("build (macos-latest)");
     expect(drawn).toContain("21  10 stale · 11 passing");
+    expect(drawn).not.toContain("build (macos-latest)");
+  });
+
+  // Nothing on this pull request needs acting on, so the cycle skips the attention state rather
+  // than spending a press on a list that would draw nothing.
+  test("c opens the full list when nothing needs attention, and closes it again", async () => {
+    const screen = await mount(await fixture("cli-cli-14429"));
+
+    await screen.press("c");
+
+    expect(screen.draw()).toContain("build (macos-latest)");
+    expect(screen.draw()).toContain("[all]");
+
+    await screen.press("c");
+
+    expect(screen.draw()).not.toContain("build (macos-latest)");
+  });
+
+  // With something to act on, the cycle stops at the attention state first. It draws the failure
+  // alone, so the row that matters is not sitting under twenty that do not.
+  test("c stops at what needs attention before showing everything", async () => {
+    const screen = await mount(withFailure(await fixture("cli-cli-14429"), "CodeQL"));
+
+    await screen.press("c");
+
+    expect(screen.draw()).toContain("[attention]");
+    expect(screen.draw()).toContain("CodeQL");
+    expect(screen.draw()).not.toContain("build (macos-latest)");
+
+    await screen.press("c");
+
+    expect(screen.draw()).toContain("[all]");
+    expect(screen.draw()).toContain("build (macos-latest)");
+
+    await screen.press("c");
+
+    expect(screen.draw()).not.toContain("CodeQL");
   });
 
   test("marks a stale check with the revision it last ran on", async () => {
-    const drawn = await frame(await fixture("cli-cli-14429"));
+    const screen = await mount(await fixture("cli-cli-14429"));
 
-    expect(drawn).toContain("dc6221e, 1 back");
+    await screen.press("c");
+
+    expect(screen.draw()).toContain("dc6221e, 1 back");
   });
 
   test("says so when a pull request has no checks", async () => {
@@ -129,13 +176,25 @@ describe("the state header", () => {
 });
 
 describe("the description", () => {
-  test("collapses to the given rows and counts what it holds back", async () => {
+  test("clips to the given rows and says which key opens the rest", async () => {
     const pullRequest = await fixture("cli-cli-14354");
     const drawn = await frame(pullRequest, 8);
-    const total = pullRequest.bodyText.split("\n").length;
 
-    expect(drawn).toContain("more lines, d to expand");
-    expect(total).toBeGreaterThan(8);
+    expect(drawn).toContain("… d to expand");
+    expect(drawn).not.toContain("How did you test this change?");
+  });
+
+  // What `bodyText` dropped. GitHub's flattening runs the paragraphs together and takes the heading
+  // marker with the break above it, so the region read as one wall of prose.
+  test("keeps the paragraph breaks and headings the web view shows", async () => {
+    const pullRequest = await fixture("cli-cli-14354");
+    const drawn = await frame(pullRequest, 8);
+    const rows = drawn.split("\n").map((row) => row.replaceAll("│", "").trim());
+    const heading = rows.indexOf("Description");
+
+    expect(heading).toBeGreaterThan(0);
+    expect(rows[heading - 1]).toBe("");
+    expect(rows[heading + 1]).toBe("");
   });
 
   // A line that wraps claims rows the count never budgeted for, and the rows it overflows into get
@@ -181,18 +240,13 @@ describe("the timeline", () => {
     expect(drawn).toContain("force-push");
   });
 
-  test("counts the checks that ran on the revision", async () => {
+  // Checks belong to the state header alone. Answering a check question here too read as a second
+  // and contradictory answer to the one the header already gives per name.
+  test("puts no check in the revision, however many ran on it", async () => {
     const drawn = await timelineFrame(await fixture("cli-cli-14429"));
 
-    expect(drawn).toContain("checks  11 · 11 passing");
-  });
-
-  test("names a failing run under the count that holds it", async () => {
-    const pullRequest = await fixture("cli-cli-14429");
-    const drawn = await timelineFrame(withFailure(pullRequest, "CodeQL"));
-
-    expect(drawn).toContain("1 failing");
-    expect(drawn).toContain("⚠ CodeQL");
+    expect(drawn).not.toContain("✓ checks");
+    expect(drawn).not.toContain("⚠ CodeQL");
   });
 
   test("opens a revision holding an unresolved thread, and says how many", async () => {
@@ -237,13 +291,13 @@ describe("moving around the timeline", () => {
   });
 
   test("k walks back through the items and j returns", async () => {
-    const screen = await onTimeline(await fixture("cli-cli-14429"));
-
-    await screen.press("j");
-    expect(screen.draw()).toContain("▎  ✓ checks");
+    const screen = await onTimeline(await fixture("cli-cli-14354"));
 
     await screen.press("k");
-    expect(screen.draw()).toContain("▎▾ a9d9d84");
+    expect(screen.draw()).toContain("▎  ● @babakks  APPROVED");
+
+    await screen.press("j");
+    expect(screen.draw()).toContain("▎▾ 7901e7e");
   });
 
   test("p moves to the revision before, and n comes back", async () => {
@@ -323,6 +377,22 @@ describe("the detail pane", () => {
     expect(drawn).toContain("◆ @babakks  acceptance/user_capability_test.go:56  unresolved, 1 reply");
     expect(drawn).toContain("# directive1:");
     expect(drawn).toContain("# rest of the file");
+  });
+
+  // The pane opens on a key press, so its body reaches the renderable after the first frame. The
+  // renderable parses that content and never asks for the redraw that would show it, so everything
+  // but the fenced block draws blank. The description does not hit this: its content is there from
+  // the first frame.
+  //
+  // Reproduced with `<markdown>` alone, so it is not this view's layout. A forced second render
+  // pass does flush it, which is the shape a fix would take.
+  test.todo("renders the prose around the fence, not just the fence", async () => {
+    const screen = await onTimeline(await fixture("cli-cli-14354"));
+
+    await onEntry(screen, "◆");
+    await screen.press("\r");
+
+    expect(screen.draw()).toContain("nitpick:");
   });
 
   // A checks entry counts runs and holds no prose, so the key falls back to closing the group.

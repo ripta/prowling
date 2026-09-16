@@ -4,18 +4,16 @@
 // scrollbox would be scrolling itself with keys the app has already claimed, and the two positions
 // would drift apart. Drawing the window the cursor sits in keeps one position to reason about.
 
-import type { FailedRun, TimelineEntry, TimelineGroup } from "@prowling/core";
+import type { TimelineEntry, TimelineGroup } from "@prowling/core";
 import { useRef } from "react";
 
-import { type Cursor, EntryLine, FailureLine, ON_HEADER, RevisionLine } from "./revision";
+import { type Cursor, EntryLine, ON_HEADER, RevisionLine } from "./revision";
 import { usePalette } from "./theme";
 
-// A row is one terminal row. A failing check gets one but carries no cursor: it belongs to the line
-// that counted it, and stopping on it separately would say nothing new.
+// A row is one terminal row.
 export type TimelineRow =
   | { kind: "revision"; key: string; at: Cursor; group: TimelineGroup; expanded: boolean }
-  | { kind: "entry"; key: string; at: Cursor; entry: TimelineEntry }
-  | { kind: "failure"; key: string; run: FailedRun };
+  | { kind: "entry"; key: string; at: Cursor; entry: TimelineEntry };
 
 // The border either side, plus the footer row.
 const BOX_CHROME = 3;
@@ -57,12 +55,6 @@ export function flattenRows(groups: TimelineGroup[], expanded: ReadonlySet<numbe
         at: { group: group.index, entry: index },
         entry,
       });
-
-      if (entry.kind === "checks") {
-        for (const run of entry.failing) {
-          rows.push({ kind: "failure", key: `rev:${group.index}:${index}:${run.checkId}`, run });
-        }
-      }
     });
   }
 
@@ -71,7 +63,7 @@ export function flattenRows(groups: TimelineGroup[], expanded: ReadonlySet<numbe
 
 // Where the cursor may stop, in the order it walks them.
 export function cursorsOf(rows: TimelineRow[]): Cursor[] {
-  return rows.flatMap((row) => (row.kind === "failure" ? [] : [row.at]));
+  return rows.map((row) => row.at);
 }
 
 export function sameCursor(left: Cursor, right: Cursor): boolean {
@@ -117,10 +109,6 @@ export function Timeline({ rows, cursor, focused, height, width }: TimelineProps
 }
 
 function Line({ row, cursor, width }: { row: TimelineRow; cursor: Cursor | null; width: number }) {
-  if (row.kind === "failure") {
-    return <FailureLine run={row.run} width={width} />;
-  }
-
   const selected = cursor !== null && sameCursor(row.at, cursor);
 
   if (row.kind === "revision") {
@@ -154,7 +142,7 @@ function useWindowTop(index: number, total: number, visible: number): number {
 }
 
 function indexOf(rows: TimelineRow[], cursor: Cursor): number {
-  const found = rows.findIndex((row) => row.kind !== "failure" && sameCursor(row.at, cursor));
+  const found = rows.findIndex((row) => sameCursor(row.at, cursor));
 
   return found === -1 ? 0 : found;
 }

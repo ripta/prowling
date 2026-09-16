@@ -2,55 +2,38 @@ import { describe, expect, test } from "bun:test";
 
 import { DEFAULT_COLLAPSED_ROWS, deriveDescription } from "./description";
 
-function body(count: number): string {
-  return Array.from({ length: count }, (_, index) => `line ${index + 1}`).join("\n");
-}
-
-describe("collapse", () => {
-  test("keeps the first rows and counts the rest", () => {
-    const view = deriveDescription(body(20), { rows: 8 });
-
-    expect(view.total).toBe(20);
-    expect(view.head).toHaveLength(8);
-    expect(view.head[0]).toBe("line 1");
-    expect(view.head[7]).toBe("line 8");
-    expect(view.remaining).toBe(12);
+describe("the collapsed height", () => {
+  test("carries the rows the region was asked for", () => {
+    expect(deriveDescription("first", { rows: 8 }).rows).toBe(8);
+    expect(deriveDescription("first", { rows: DEFAULT_COLLAPSED_ROWS }).rows).toBe(DEFAULT_COLLAPSED_ROWS);
   });
 
-  test("leaves nothing remaining when the body fits", () => {
-    const view = deriveDescription(body(3), { rows: DEFAULT_COLLAPSED_ROWS });
-
-    expect(view.head).toEqual(view.lines);
-    expect(view.remaining).toBe(0);
-  });
-
-  test("counts source lines, so a paragraph longer than the terminal is still one line", () => {
-    const view = deriveDescription(`${"x".repeat(253)}\nsecond`, { rows: 8 });
-
-    expect(view.total).toBe(2);
-    expect(view.remaining).toBe(0);
-  });
-
-  test("shows nothing and holds back everything at zero rows", () => {
-    const view = deriveDescription(body(4), { rows: 0 });
-
-    expect(view.head).toEqual([]);
-    expect(view.remaining).toBe(4);
+  test("never goes negative", () => {
+    expect(deriveDescription("first", { rows: -3 }).rows).toBe(0);
   });
 });
 
-describe("normalization", () => {
-  test("splits CRLF and lone CR the same as LF", () => {
-    const view = deriveDescription("first\r\nsecond\rthird", { rows: 8 });
+describe("the content", () => {
+  // What the old bodyText source dropped. The renderer needs the break to put a gap between two
+  // paragraphs, and the marker to know the line is a heading.
+  test("keeps the blank lines and the heading markers the renderer reads", () => {
+    const view = deriveDescription("Depends on #14320.\n\n### Description\n\nFirst para.\n\nSecond para.", { rows: 8 });
 
-    expect(view.lines).toEqual(["first", "second", "third"]);
+    expect(view.content).toBe("Depends on #14320.\n\n### Description\n\nFirst para.\n\nSecond para.");
   });
 
-  test("drops blank lines at either end but keeps the ones between", () => {
-    const view = deriveDescription("\n  \nfirst\n\nsecond\n\n  \n", { rows: 8 });
+  test("strips the pull request template's comment block", () => {
+    const view = deriveDescription("<!--\nthanks for contributing\n-->\n\nDepends on #14320.", { rows: 8 });
 
-    expect(view.lines).toEqual(["first", "", "second"]);
-    expect(view.total).toBe(3);
+    expect(view.content).toBe("Depends on #14320.");
+  });
+
+  test("normalizes CRLF and lone CR", () => {
+    expect(deriveDescription("first\r\nsecond\rthird", { rows: 8 }).content).toBe("first\nsecond\nthird");
+  });
+
+  test("drops blank lines at either end and keeps the ones between", () => {
+    expect(deriveDescription("\n  \nfirst\n\nsecond\n\n  \n", { rows: 8 }).content).toBe("first\n\nsecond");
   });
 });
 
@@ -59,15 +42,16 @@ describe("empty bodies", () => {
     const view = deriveDescription("", { rows: 8 });
 
     expect(view.isEmpty).toBe(true);
-    expect(view.lines).toEqual([]);
-    expect(view.remaining).toBe(0);
+    expect(view.content).toBe("");
   });
 
   test("whitespace only is empty", () => {
-    const view = deriveDescription("\n\n  \n", { rows: 8 });
+    expect(deriveDescription("\n\n  \n", { rows: 8 }).isEmpty).toBe(true);
+  });
 
-    expect(view.isEmpty).toBe(true);
-    expect(view.total).toBe(0);
+  // A template that is nothing but its own instructions leaves no description behind.
+  test("a body of nothing but comments is empty", () => {
+    expect(deriveDescription("<!-- fill this in -->", { rows: 8 }).isEmpty).toBe(true);
   });
 
   test("a body with content is not empty", () => {
