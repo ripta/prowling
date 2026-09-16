@@ -48,8 +48,8 @@ export function Description({ view, expanded, focused, expandedHeight }: Descrip
 
   // `scrollY` is read once, when the scrollbox is constructed, and the renderable exposes no setter
   // for it. So the box is built to scroll in both states, and collapsing hides the bar rather than
-  // giving up the scroll range. Rebuilding the box per state would reparse the markdown, and the
-  // renderable does not ask for the frame that would show the result.
+  // giving up the scroll range. Rebuilding the box per state would also reparse the whole body on
+  // every toggle.
   //
   // Collapsing also returns the box to the top, since the collapsed region is a window onto the
   // start of the body rather than onto wherever reading left off.

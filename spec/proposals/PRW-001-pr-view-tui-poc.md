@@ -540,7 +540,6 @@ milestone 1, and issue-comment placement under milestone 2.
 - 2026-09-14: The timeline cursor owns the movement keys, so the key map now takes the focused region. The timeline
   draws the window its cursor sits in rather than using a `<scrollbox>`, which would scroll itself with keys the app has
   already claimed and leave two positions to reconcile. The header and description keep their scrollboxes untouched.
-
 - 2026-09-14: The detail pane renders through OpenTUI's own `<markdown>`. The evidence this proposal cited against it
   was measured on `@opentui/core` 0.4.5 and the 0.1.x regression, and does not describe the pinned 0.5.11, where the
   component parses with `marked`, highlights fences through tree-sitter, and conceals markers by default. Rendered
@@ -606,6 +605,11 @@ milestone 1, and issue-comment placement under milestone 2.
 - 2026-09-15: Tab is the only key that moves focus. A region shortcut changes that region's state and nothing else.
   `d` had moved the focus onto the description and `c` had not, and the move was a side effect inside a state updater,
   so holding the key moved the focus without leaving the region open. Codified in ADR-02.
+- 2026-09-16: Retracts the finding that `<markdown>` never asks for a redraw when its parse lands. It does:
+  `CodeRenderable.startHighlight` requests one. Driving the app with no forced render at all draws the whole body,
+  and the pane fills 2ms after the key that opens it. The blank rows were a capture taken on the mounting frame, by a
+  harness that pumped no frame after it. What survives is the narrower point about the test. A fence draws on the
+  frame it mounts on, so asserting on fenced lines alone never reached the prose. The test now asserts on prose.
 
 ## References
 

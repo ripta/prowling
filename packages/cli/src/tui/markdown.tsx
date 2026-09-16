@@ -44,10 +44,12 @@ function syntaxStyle(palette: Palette): SyntaxStyle {
   return style;
 }
 
-// NOTE: the renderable parses its content off the frame it was given it on, and does not ask for a
-// redraw when the parse lands. A fenced block carries its own size and survives; the prose around it
-// draws blank until something else re-renders the tree. Content mounted with the first frame is
-// fine. Content that arrives later, which is every body the detail pane opens, is not.
+// The prose blocks wait on tree-sitter. A fenced block carries its own size and draws on the frame it
+// mounts on. Everything around it stays blank until the highlight lands, and the renderable asks for
+// the frame that fills it. That round trip measured 2ms against a thread body from `cli/cli#14354`.
+//
+// So this costs a reader nothing and costs a test everything. A capture taken on the mounting frame
+// reads a fence over blank rows, which is why the harness pumps frames before it asserts.
 export function Markdown({ content }: { content: string }) {
   const palette = usePalette();
 

@@ -15,6 +15,11 @@ Timeline rows show `bodyText`, which drops code fences and list markers. Anythin
 render in full. And by now OpenTUI has been pushed through two phases of real layout work, which is the evidence the
 checkpoint needs.
 
+Phase 3.1 shipped the pane against a test that only ever asserted on two lines inside a fenced block. Those are the
+only lines drawn on the frame the pane mounts on. The prose around them waits on the highlight, so the assertion was
+passing against a pane the renderer had not filled. Phase 3.2 puts the prose under test and corrects the account of
+why it was missing.
+
 ## Design Decisions
 
 ### Pane renderer behind one component
@@ -38,6 +43,7 @@ ruling on whether to keep OpenTUI is made with the user and recorded in PRW-001'
 | Milestone | Proposal | Description | Status |
 |-----------|----------|-------------|--------|
 | 3.1 | PRW-001 M2 | Detail pane with markdown rendering. Settles the pane renderer. OpenTUI checkpoint write-up | DONE |
+| 3.2 | PRW-001 M2 | Put the pane's prose under test, and retract the redraw diagnosis | DONE |
 
 Deferred questions from PRW-001 milestone 2 owned here:
 
@@ -125,3 +131,14 @@ Ruled 2026-09-15: keep OpenTUI. Recorded in PRW-001's Decision Log.
 - [x] Checkpoint write-up lists every point of OpenTUI friction met in Phases 2 and 3, and the ruling is recorded in
       PRW-001
 - [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+
+### Phase 3.2
+
+- [x] A test asserts on the prose around a fenced block, so the path 3.1 missed is the path under test
+- [x] The renderable's actual behaviour is measured, not inferred from a capture
+- [x] Every comment and log entry stating the old diagnosis is corrected or retracted
+- [x] Tracking updated: this document, `spec/phases/index.md`, PRW-001 Decision Log
+
+Measured 2026-09-16: `CodeRenderable.startHighlight` requests the frame that fills the prose. Driving the app with no
+forced render draws the whole body, 2ms after the key that opens the pane. There was no defect in the view. The
+harness that found it captured the mounting frame and pumped nothing after it, which `renderUntilStable` later fixed.

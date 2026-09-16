@@ -607,14 +607,10 @@ describe("the detail pane", () => {
     expect(drawn).toContain("# rest of the file");
   });
 
-  // The pane opens on a key press, so its body reaches the renderable after the first frame. The
-  // renderable parses that content and never asks for the redraw that would show it, so everything
-  // but the fenced block draws blank. The description does not hit this: its content is there from
-  // the first frame.
-  //
-  // Reproduced with `<markdown>` alone, so it is not this view's layout. A forced second render
-  // pass does flush it, which is the shape a fix would take.
-  test.todo("renders the prose around the fence, not just the fence", async () => {
+  // Asserts on prose rather than on the fence. A fence draws on the frame the pane mounts on and the
+  // prose waits on the highlight, so a fence-only assertion passes against a pane the renderer never
+  // filled. That is what the first version of this test did.
+  test("renders the prose around the fence, not just the fence", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14354"));
 
     await onRow(screen, "◆ @babakks");
