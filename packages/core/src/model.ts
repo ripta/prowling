@@ -106,6 +106,18 @@ export type Anchor = {
   by: "commit" | "timestamp" | "fallback";
 };
 
+export type ClassificationKind = "procedural" | "technical";
+
+// What a body is, and which rule said so. Procedural means talking about the pull request rather
+// than about the change: a command, a ping, a bot confirming it heard one.
+//
+// The rule name is carried so a misclassification traces back to one named rule. null means no rule
+// matched, which is what makes a body technical by default.
+export type Classification = {
+  kind: ClassificationKind;
+  rule: string | null;
+};
+
 export type Viewer = {
   login: string;
   didAuthor: boolean;
@@ -158,6 +170,7 @@ export type ReviewItem = {
   url: string;
   isMinimized: boolean;
   anchor: Anchor;
+  classification: Classification;
 };
 
 export type CommentItem = {
@@ -171,6 +184,7 @@ export type CommentItem = {
   isMinimized: boolean;
   minimizedReason: string | null;
   anchor: Anchor;
+  classification: Classification;
 };
 
 // Anchors to the revision the push created.
@@ -217,6 +231,7 @@ export type ReviewComment = {
   replyToId: string | null;
   isMinimized: boolean;
   anchor: Anchor;
+  classification: Classification;
 };
 
 export type Commit = {

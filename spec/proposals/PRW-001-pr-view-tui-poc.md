@@ -610,6 +610,19 @@ milestone 1, and issue-comment placement under milestone 2.
   and the pane fills 2ms after the key that opens it. The blank rows were a capture taken on the mounting frame, by a
   harness that pumped no frame after it. What survives is the narrower point about the test. A fence draws on the
   frame it mounts on, so asserting on fenced lines alone never reached the prose. The test now asserts on prose.
+- 2026-09-16: The author-type signal reaches almost nothing on its own. GitHub reports `bors`, `rust-timer`,
+  `rust-log-analyzer`, `rustbot`, `craterbot`, and `rfcbot` as `User` rather than `Bot`, so across all four fixtures
+  the signal covers 4 bodies. Body shape and known phrasing carry the classification instead.
+- 2026-09-16: Classification rules run in the order `empty-body`, `slash-command`, `mention-only`, `review-comment`,
+  `bot-phrasing`, `bot-author`, and a rule answers technical as readily as procedural. That is what makes the
+  event-type signal expressible: an empty review summary is procedural, and an inline review comment is technical.
+  `review-comment` sits above the two bot rules because a review bot marks its inline findings the way a CI bot marks
+  a status line, and `copilot-pull-request-reviewer` does exactly that.
+- 2026-09-16: Known bot phrasing carries the markers meaning accepted, running, or passed, and stops short of the ones
+  meaning failed or conflicted. An unrecognized marker stays visible for the same reason. Measured on
+  `rust-lang/rust#137944`: 39 of bors's 68 comments acknowledge a command or report a pass, and the other 29 are 5 test
+  failures, 2 merge conflicts, and 22 notices that upstream made the branch unmergeable. Folding a failure away is the
+  error in this design that costs something.
 
 ## References
 

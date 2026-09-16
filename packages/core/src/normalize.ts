@@ -4,6 +4,7 @@
 // The revision chain is built first, from the commits and the force-push events, so every item
 // receives its anchor as it is constructed.
 
+import { classify } from "./classify";
 import type { Degradation } from "./github/errors";
 import {
   ACTIONS_APP_SLUG,
@@ -188,11 +189,13 @@ function timelineItem(raw: RawTimelineItem, chain: RevisionChain): TimelineItem 
     case "PullRequestCommit":
       return { kind: "commit", id: raw.id, oid: raw.commit.oid, anchor: chain.anchor(raw.commit.oid, null) };
 
-    case "PullRequestReview":
+    case "PullRequestReview": {
+      const author = actor(raw.author);
+
       return {
         kind: "review",
         id: raw.id,
-        author: actor(raw.author),
+        author,
         state: raw.state as ReviewState,
         body: raw.body,
         bodyText: raw.bodyText,
@@ -201,13 +204,17 @@ function timelineItem(raw: RawTimelineItem, chain: RevisionChain): TimelineItem 
         url: raw.url,
         isMinimized: raw.isMinimized,
         anchor: chain.anchor(raw.commit?.oid ?? null, raw.submittedAt),
+        classification: classify({ source: "review", author, bodyText: raw.bodyText }),
       };
+    }
 
-    case "IssueComment":
+    case "IssueComment": {
+      const author = actor(raw.author);
+
       return {
         kind: "comment",
         id: raw.id,
-        author: actor(raw.author),
+        author,
         body: raw.body,
         bodyText: raw.bodyText,
         createdAt: raw.createdAt,
@@ -215,7 +222,9 @@ function timelineItem(raw: RawTimelineItem, chain: RevisionChain): TimelineItem 
         isMinimized: raw.isMinimized,
         minimizedReason: raw.minimizedReason,
         anchor: chain.anchor(null, raw.createdAt),
+        classification: classify({ source: "comment", author, bodyText: raw.bodyText }),
       };
+    }
 
     case "HeadRefForcePushedEvent":
       return {
@@ -248,9 +257,11 @@ function reviewThread(raw: RawReviewThread, chain: RevisionChain): ReviewThread 
 }
 
 function reviewComment(raw: RawReviewComment, chain: RevisionChain): ReviewComment {
+  const author = actor(raw.author);
+
   return {
     id: raw.id,
-    author: actor(raw.author),
+    author,
     body: raw.body,
     bodyText: raw.bodyText,
     createdAt: raw.createdAt,
@@ -266,6 +277,7 @@ function reviewComment(raw: RawReviewComment, chain: RevisionChain): ReviewComme
     replyToId: raw.replyTo?.id ?? null,
     isMinimized: raw.isMinimized,
     anchor: chain.anchor(raw.originalCommit?.oid ?? null, raw.createdAt),
+    classification: classify({ source: "review-comment", author, bodyText: raw.bodyText }),
   };
 }
 

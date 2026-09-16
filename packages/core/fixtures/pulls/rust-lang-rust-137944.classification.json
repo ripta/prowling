@@ -1,0 +1,3402 @@
+[
+  {
+    "id": "IC_kwDOAAsO6M6gninE",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job mingw-check failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6gnqLt",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "I can reproduce this locally but I have no idea why it would be related to this patch. Clippy neede…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6goEVD",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-tools failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6goqd9",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-tools failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6eSJ-C",
+    "source": "review",
+    "author": "workingjubilee",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "IC_kwDOAAsO6M6gsUnY",
+    "source": "comment",
+    "author": "traviscross",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "cc @rust-lang/lang"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6gwA6r",
+    "source": "comment",
+    "author": "tmiasko",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Does this perhaps fix #127336 by rejecting it?"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hC2Db",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #138058) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hIvYM",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Does this perhaps fix #127336 by rejecting it?"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hL88C",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Undrafting now that CI passes"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hL8_r",
+    "source": "comment",
+    "author": "rustbot",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Some changes occurred in compiler/rustc_codegen_cranelift"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hQlFH",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #138114) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hWm86",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #138155) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6fFn7M",
+    "source": "review",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "had an initial look until the \"library/compiler\" commit. Will look more into it later."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hil0K",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-llvm-18 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hiqQY",
+    "source": "comment",
+    "author": "rustbot",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "This PR changes a file inside tests/crashes. If a crash was fixed, please move into the correspondi…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hiq3i",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Thanks for the initial review @fee1-dead, addressed all of those comments now."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6hphcp",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #138310) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6h5L_o",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #138366) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6h5iDi",
+    "source": "comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Has there been approval (on GH/Zulip/otherwise) from the lang team to do an experiment? Please link…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iDNhB",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #138083) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iDSgw",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "I've been meaning to run perf on this and see what the damage is:"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iDShz",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iDTF6",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "🔒 Merge conflict"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iDUik",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iDUjt",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iDVJa",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 78229bc with merge e8cd94d..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iEeXL",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iEeYZ",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued e8cd94d with parent aaa2d47, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iFyWp",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (e8cd94d): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iKOCh",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Okay, so there's some work to do on perf, as expected."
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6f_GDf",
+    "source": "review",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Second pass. Will spend more time on it today after I get to my PC and not from my laptop :)"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6gA3ab",
+    "source": "review",
+    "author": "fee1-dead",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6gL0yN",
+    "source": "review",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "I have some general issues with the commits starting from \"tests: PointeeSized bounds with extern t…"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6gL1LB",
+    "source": "review",
+    "author": "fee1-dead",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "IC_kwDOAAsO6M6itwTB",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Addressed all of the comments above."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6itxjp",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6itxl2",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6ityhk",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 51a71ae with merge 82d9bcf..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iuUoN",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Has there been approval (on GH/Zulip/otherwise) from the lang team to do an experiment? Please link…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6ivW98",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6ivXAR",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued 82d9bcf with parent 9c67cec, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iwTMF",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (82d9bcf): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6iwesS",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Skipping predicate elaboration for sizedness traits helped but not anywhere near enough."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i3skE",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #138630) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i4WHI",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i4WI4",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i4XWt",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 121b836 with merge 256c6ac..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i6HmG",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i6How",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued 256c6ac with parent 259fdb5, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i71yM",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (256c6ac): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i8A0M",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Adding some sizedness special-casing to the fast path for the type_op_prove_predicate query didn't …"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i-gMM",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i-gN8",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i-hDY",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 845d9fd with merge 8dd4ea2..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6i-ol8",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "A job failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jADDg",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jADFP",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued 8dd4ea2 with parent 75530e9, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jAyEM",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (8dd4ea2): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jKDo_",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "CI failure is spurious. After some chatting with @oli-obk, I believe that the performance regressio…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jZTo8",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-tools failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jo1l2",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #138830) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jyUjy",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-tools failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jyqSz",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jyqU4",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6jyrD0",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 0f82199 with merge 0f3fb40..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6j0KI7",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6j0KNl",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued 0f3fb40 with parent b95aac6, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6j1JOv",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (0f3fb40): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mlf4D",
+    "source": "comment",
+    "author": "rustbot",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Some changes occurred to MIR optimizations"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mlgW-",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mlgYQ",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mlhDf",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 004ce92 with merge da813f7..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mmrXK",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mmrZZ",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued da813f7 with parent 69b3959, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mnbqW",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (da813f7): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mrAuT",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Dropped the changes from #139576 as they didn't seem to help."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mrBGy",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mrBIB",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mrB1T",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 8476a32 with merge fbd6c0e..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6msLWQ",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6msLYM",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued fbd6c0e with parent 18a029c, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6mtYKK",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (fbd6c0e): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6m_Kzq",
+    "source": "comment",
+    "author": "rustbot",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "changes to the core type system"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6m_Ozo",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "This shouldn't be any different than perf runs in experiment runs but to confirm:"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6m_O27",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6m_Pnp",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit fb4c0d9 with merge 5a7aba3..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6nAwGz",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6nAwJd",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued 5a7aba3 with parent 5961e5b, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6nBluu",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (5a7aba3): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6nJaiE",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Rebasing after #139577, just removing one commit, otherwise unchanged."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6nuahr",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #139979) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6lhl1V",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "IC_kwDOAAsO6M6n6sPu",
+    "source": "comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Had an initial glance yesterday (not posting the review comment yet), might have more time to do a …"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6oHknX",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Had an initial glance yesterday (not posting the review comment yet), might have more time to do a …"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6l5qxa",
+    "source": "review",
+    "author": "oli-obk",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6l5wZV",
+    "source": "review",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Still need to review bounds.rs"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6oJZ_q",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Rebased and addressed feedback."
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6ls1wD",
+    "source": "review",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Already got some comments stashed up, posting them now"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6l7d76",
+    "source": "review",
+    "author": "oli-obk",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6l7hsI",
+    "source": "review",
+    "author": "fmease",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "IC_kwDOAAsO6M6oKf0X",
+    "source": "comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "r? compiler"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6oKiMy",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "I'll assign this to @oli-obk having already done a review rather than add a new reviewer entirely."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6ojEHy",
+    "source": "comment",
+    "author": "oli-obk",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6ojFAu",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 60dec26 with merge 0b080f0..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6okkfg",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6okmfb",
+    "source": "comment",
+    "author": "oli-obk",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@craterbot check"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6okmom",
+    "source": "comment",
+    "author": "craterbot",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "👌 Experiment pr-137944 created and queued."
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6mbfIV",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "only reviewed the type system changes and have some general thoughts:"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6owvsa",
+    "source": "comment",
+    "author": "craterbot",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "🚧 Experiment pr-137944 is now running"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6o1eS3",
+    "source": "comment",
+    "author": "craterbot",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "🎉 Experiment pr-137944 is completed!"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6o1ktO",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Thanks for the review @lcnr, I'll have a look at fixing these this week. I think any of the refacto…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pQKGD",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Produced some minimal reproductions from the crater runs:"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pQQkX",
+    "source": "comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "feel free to ignore any generic_const_exprs failures."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmAQc",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Rebased, addressed most of @lcnr's feedback, fixed the crater regressions and added tests, still to…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmBBs",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmBCy",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmBkY",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "🔒 Merge conflict"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmDlJ",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Oh, apparently GitHub is still \"processing the push\", never seen that before"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmxaR",
+    "source": "comment",
+    "author": "rustbot",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "This PR modifies tests/auxiliary/minicore.rs."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmx2k",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "I had to git commit --amend, make no changes, and then force push - but it's updated now."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmx6u",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmx76",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pmyd1",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 04d7895 with merge 18f4fd1..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pn0og",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pn0qV",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued 18f4fd1 with parent 0e517d3, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6pobme",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (18f4fd1): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p1Vv6",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p1VwR",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p1V2h",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 9356650 with merge ea49398..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p1XaW",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job mingw-check failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p1i38",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p1i4J",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued ea49398 with parent 62c5f58, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p1zzv",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (ea49398): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p10Cb",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "9356650 regressed performance rather than improve it, so I'll drop that commit."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6p13gv",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job mingw-check failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6qHYGB",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #140695) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6qVs54",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-tools failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6qWdyo",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-tools failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6qn-8L",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #140781) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6qpFG9",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-llvm-19 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEIEl",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEIWY",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEQTU",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pETL4",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEVA4",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEVX6",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEXrc",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEaq_",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEeOn",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEhYe",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEir8",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6pEjv4",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  },
+  {
+    "id": "IC_kwDOAAsO6M6rpYn8",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6rpYpi",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6rpZb0",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit 84e7a29 with merge bde19de..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6rrDfA",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6rrDhr",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued bde19de with parent 414482f, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6rsOWE",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (bde19de): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6rsPsf",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Seems like addressing the review feedback above has regressed performance more :("
+  },
+  {
+    "id": "IC_kwDOAAsO6M6rwdo8",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Submitted a bunch of perf runs to go overnight to try and isolate the change that caused the regres…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6r07nq",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "None of those partial reverts explain the 5% regression over the patch's previous regression. Some …"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6r17CI",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "It appears that the difference is just changes in the benchmark suite."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6sI7na",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #140978) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6setr1",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #139916) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6qRcJ2",
+    "source": "review",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "ok! I'm done 😆"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6sxqQ9",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #140386) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "PRR_kwDOAAsO6M6qfpHn",
+    "source": "review",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "the type system impl looks good to me now, modulo some final nits."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6s6yLG",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "@oli-obk @lcnr thanks for the reviews, addressed the feedback above. I think it is best to only gat…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tB7Vc",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #141396) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tUSff",
+    "source": "comment",
+    "author": "rustbot",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Some changes occurred to the core trait solver"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tf0lV",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #141605) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tjwgW",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "A job failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tlMJ9",
+    "source": "comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "We're proposing to merge #137944. It is the first half of an unstable implementation of rust-lang/r…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tlM48",
+    "source": "comment",
+    "author": "oli-obk",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@rfcbot fcp merge"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tlM6K",
+    "source": "comment",
+    "author": "rfcbot",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Team member @oli-obk has proposed to merge this. The next step is review by the rest of the tagged …"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6trG4k",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #141644) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tzScW",
+    "source": "comment",
+    "author": "compiler-errors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Can you rerun perf one more time? I'd like to see if this work has a negative effect on the new tra…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tzXzh",
+    "source": "comment",
+    "author": "lcnr",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors try @rust-timer queue"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tzX08",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Awaiting bors try build completion."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6tzYfS",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Trying commit f0bf7db with merge 891c5af..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6t06g4",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Try build successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6t06lD",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Queued 891c5af with parent cb678b9, future comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6t27uX",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (891c5af): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6t3DPw",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "benchmark"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6t_wOu",
+    "source": "comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "I am slightly uncomfortable about breaking the pattern in https://github.com/red-lightning123/hwc. …"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6uAFOi",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "I am slightly uncomfortable about breaking the pattern in red-lightning123/hwc. We could land this …"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6unOaQ",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job aarch64-gnu-llvm-19-1 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6uvEm7",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-tools failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6vAaLs",
+    "source": "comment",
+    "author": "rfcbot",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "🔔 This is now entering its final comment period, as per the review above. 🔔"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6vIaex",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #141984) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6vZfBX",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #142033) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xEXKS",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #142442) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xE3T3",
+    "source": "comment",
+    "author": "rfcbot",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The final comment period, with a disposition to merge, as per the review above, is now complete."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xF3MZ",
+    "source": "comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "@bors r+ p=5"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xF3Nr",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "📌 Commit c290ee6 has been approved by oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xH8M-",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Testing commit c290ee6 with merge eba2d19..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xILsa",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-gnu-llvm-20-3 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xIMQy",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "💔 Test failed - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xJmDP",
+    "source": "comment",
+    "author": "workingjubilee",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Handwritten minicores."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xLF67",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #142483) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xMa8h",
+    "source": "comment",
+    "author": "workingjubilee",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "572b452 is in so this should be good to go after rebase."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xXyLC",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors r=oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xXyOL",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "📌 Commit 8c26d6e has been approved by oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xYkoj",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Testing commit 8c26d6e with merge 27cbf58..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xZLG-",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-mingw-2 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xZLfL",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "💔 Test failed - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xZd4O",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job mingw-check-1 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xaRVj",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job mingw-check-tidy failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xa2nM",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job mingw-check-1 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xbOPK",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job mingw-check-1 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xcSeC",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "☔ The latest upstream changes (presumably #142556) made this pull request unmergeable. Please resol…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xch0v",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors r=oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xch2N",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "📌 Commit b9912ee has been approved by oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xeCCG",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Testing commit b9912ee with merge 0bf3ee4..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xemhv",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job x86_64-mingw-2 failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xenIY",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "💔 Test failed - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xglc0",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors r=oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xglfi",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "📌 Commit a748639 has been approved by oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xg8c8",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Testing commit a748639 with merge f7961d7..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xhjET",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job test-various failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xhjj7",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "💔 Test failed - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xlw4u",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors r=oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xlw6X",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "📌 Commit 9f0ce54 has been approved by oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xm3hT",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Testing commit 9f0ce54 with merge 74326eb..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xnq8d",
+    "source": "comment",
+    "author": "rust-log-analyzer",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "The job aarch64-gnu-debug failed! Check out the build log: (web) (plain)"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xnrVC",
+    "source": "comment",
+    "author": "bors",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "💔 Test failed - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xoYfp",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "I thought I had checked all the tests for missing lang items after the last failure but this time I…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xpxP1",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "procedural",
+    "rule": "mention-only",
+    "snippet": "@bors r=oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xpxSD",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "📌 Commit a31e1f1 has been approved by oli-obk"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xqsrQ",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "⌛ Testing commit a31e1f1 with merge 86d0aef..."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xs-Oy",
+    "source": "comment",
+    "author": "bors",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "☀️ Test successful - checks-actions"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xs__p",
+    "source": "comment",
+    "author": "github-actions",
+    "kind": "procedural",
+    "rule": "bot-author",
+    "snippet": "What is this?"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xtQHU",
+    "source": "comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "Thanks @oli-obk, @lcnr, @fee1-dead, @fmease and @workingjubilee for reviews!"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xuaEo",
+    "source": "comment",
+    "author": "rust-timer",
+    "kind": "procedural",
+    "rule": "bot-phrasing",
+    "snippet": "Finished benchmarking commit (86d0aef): comparison URL."
+  },
+  {
+    "id": "IC_kwDOAAsO6M6xubUA",
+    "source": "comment",
+    "author": "Kobzol",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "(Note: the bootstrap change is unrelated to this PR, we used to unnecessarily compile too much stuf…"
+  },
+  {
+    "id": "IC_kwDOAAsO6M6yz4Xp",
+    "source": "comment",
+    "author": "rylev",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "As noted in this summary comment, the performance regression is expected and will be addressed in f…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M5165ax",
+    "source": "review-comment",
+    "author": "workingjubilee",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M5166x0",
+    "source": "review-comment",
+    "author": "workingjubilee",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "\"forcing const Sized not to be implemented while there are no types which are non-const Sized\"...? …"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52M44u",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Rewritten this comment, should be clearer"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M5167cD",
+    "source": "review-comment",
+    "author": "workingjubilee",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "maybe these tests should be using minicore... well, whatever for now."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52FBqz",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I ported as many tests as I could to using minicore in #137599, if this one wasn't ported it was ei…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YG6Z",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Should capitalize MetaSized here"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3E3",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YG6s",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "same as above"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3Ge",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YG7n",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Hmm. I think this should be named as pointee_sized_constraint for better readability? Same goes for…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3Ht",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I thought it better that it match the trait name which doesn't have the underscore."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525MJb",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "When you convert from camel case, underscore is used to split the capitalized name. This happens to…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53K5Wh",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YHAd",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Is something like [str] PointeeSized? Might be a dumb question since that's probably not well-forme…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52bgQX",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "It is, everything is PointeeSized."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YHDu",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "are these missing the `{Meta,Pointee,} or intentional?"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3J4",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Unintentional, fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YIsE",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "would probably be better to specify what they are (str, [T], foreign types)"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3Lj",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YIsg",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "as above"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3Nj",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YIs-",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "extra line of empty docstring"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3PD",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YItm",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "this should be reworded now that there's only one case"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3Q2",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YIuu",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "{Meta,Pointee,}"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3Sf",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YIvX",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I'd prefer it to be named as SizedTraitKind."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3Vd",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YI1D",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "should be PointeeSized"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3U_",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YI1p",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "PointeeSized"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3Xd",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YI7H",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I'm a little confused as to what this achieves with this kind of type implementing MetaSized, altho…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3aU",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "This type wouldn't be especially useful but I think it's better for the rule for what is MetaSized …"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56YzLx",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I'd like to see a more thorough exploration of how allowing this would affect our semantic model. B…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52YKIE",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "You don't need docs for cfg(bootstrap)ed items."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M52b3cF",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525NOl",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "lang = \"pointee_sized\""
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53Jhi-",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I haven't changed this because I think it should match the trait."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53J4zu",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Oh, I see your previous comment regarding this now, will change it."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53K5a-",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525N4N",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Maybe better to just refer to instantiate_constituent_tys_for_sizedness_trait only"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JgLb",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525OGL",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I don't think we this extra layer of indirection as there is already instantiate_constituent_tys_fo…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JgOl",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525PAk",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "these should all contain pointee also"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53K5gd",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525VA2",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "This part can be deduplicated through doing something like"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JgRm",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525WHs",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Any chance for duplication? In any case we should use"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JgcX",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525ZFx",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Should add a trait Bare {} here and test"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JggN",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Added"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M525Z01",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Hmmm. Where does this test come from?"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JgtA",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "This is reduction of the error that requires the cfg(bootstrap) on PartialEq - I forget what the ex…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M526Ysd",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Does this need to be proven? It's not referenced in the commit message, and also U: MetaSized alrea…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53Jg0K",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "It doesn't, fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M526bo7",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "How would the pretty printer work if we're working with a dependency crate that uses the sized_hier…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53Jg5S",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Added a test, works as expected, crate w/out feature sees ?Sized written rather than the new traits"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53AgGl",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "This error still fires for impl<V: ?Sized> right? They probably don't need to use feature(sized_hie…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JhAi",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "It does but it produces a second error, so I added the feature so that what the test was doing rema…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53AgOQ",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "After the sized hierarchy is introduced, does this need sized_hierarchy enabled to work? If yes, th…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JhDb",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "It is necessary for the non_lifetime_binders tests - these tests only work when for<T> is unconstra…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53hcQ-",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Understood, thanks."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53AgVL",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "not a struct or enum"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JhFE",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53AgiX",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "rewrite this into first if self_ty.has_non_const_sizedness() { return Err(NoSolution) }, then expli…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JhIJ",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53AgpD",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "same as above"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JhLs",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53AgyA",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "where does this test come from?"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M53JhOE",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I think this was just a simple test I was using while making the default bounds const, it failed if…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56LBuj",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "this does not check that the clause and the goal have the same polarity cc https://rust-lang.zulipc…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bGnh",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56R27c",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "This comment is actually slightly misleading. The function only checks whether the type is a struct…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bpaP",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I've rewritten the comments on sizedness_constraint, adt_sizedness_constraint and sizedness_constra…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56YxCU",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Yeah, as above, this needs some revamp with how it is presented and named."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bpbX",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "See previous comment"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56Y294",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "These now needs to be removed in the \"lint: don't consider sizedness in upcastable lint\" commit."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bpcc",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "It's still necessary for bootstrap, but I'll add a cfg_attr(bootstrap, ..) in that commit"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56Y7Xj",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Are there any tests for this? Perhaps I missed something."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bIPb",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "This function just extracts the error reporting logic that already existed for default bounds into …"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bL9K",
+    "source": "review-comment",
+    "author": "fee1-dead",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "the error reporting logic that already existed for default bounds"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bM6f",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "No, we just check for repeated default bounds where MetaSized/PointeeSized are irrelevant, and for …"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aE16",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "All the other sites adjust sizedness before adding default bounds and right after lower_bounds. May…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aFXY",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "it is kind of annoying that every lower_bounds call has to be paired with an adjust call, but with …"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bGms",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I've reordered these, the difference wasn't significant. I've also pulled forward a change from Par…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aIRT",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "leave a comment"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bGmD",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aJln",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Similarly polarity is not checked here"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bGlk",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed!"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aMjT",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "it's kind of unfortunate that we need to have the same match in multiple places, but it also seems …"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bGk3",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Yeah, between the new solver, old solver and is_trivially_sized, lots of similar functions, but har…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aMxZ",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "make this a method on SizedTraitKind and reuse it"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bGkT",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "It's a little tricky to do this because SizedTraitKind is in type_ir so only has TraitSolverLangIte…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bJmR",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "yea makes sense to just not do anything then, thx for checking"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aQRe",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Kinda weird that this is run every loop, but I do see why the alternatives would just be more round…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bGju",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Yeah, I had initially implemented it in the elaborate function but extend_deduped made more sense i…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aT1W",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "After a bootstrap bump we'll be able to remove most ?Sized from libcore, right?"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56acHd",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Yeah, they're just there because the bootstrap compiler doesn't understand that PointeeSized does a…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aVcA",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "why are predicates_of now dirty?"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bGig",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I'm not sure - it fails without the change. predicates_of is where the default bounds/supertrait ar…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bJYR",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "right, the question is why. I don't think your changes should have affected that, so some additiona…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bpWm",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Confirmed that this change to the test is definitely still necessary."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aWqG",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "did you search and replace the test suite for ?Sized? I'm not sure what's best, but I would have as…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56ac2_",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I didn't, I only changed tests that failed and needed changing. In this test, for example, ?Sized w…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56aeAM",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I think something is wrong then. C is unconstrained because it is not used in the impl, what bounds…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bKZn",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I can check if this test still fails because it might just have been the state of the implementatio…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bpYt",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I've revisited these tests and they fail with some additional \"type annotations needed\" errors, whi…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bMCQ",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Same thing, reorder to keep it the same everywhere"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bpdf",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bOR7",
+    "source": "review-comment",
+    "author": "fmease",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56bpeY",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56utU0",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "i'd expect this lint to never trigger for Sized 🤔 if Sized is a super trait the trait cannot be us…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiCx",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Removed Sized from this commit."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56ut3z",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "please move these spurious cleanups/changes into a separate PR"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiDt",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Removed these changes, they were fixup'ed into the wrong commit from later changes in the Part II w…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56uwM5",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "structurally equatingn (using ==) types does not handle alias types. Create a <sized_self_type>: Me…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiEl",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed and added test"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56uwq3",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "why is that necessary. I would expect the change in the trait solver itself to be sufficient."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiFc",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I thought this was necessary when I added it but I presume the changes in the trait solver were bro…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57hxIF",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I thought this was necessary as part of the elaboration optimisation, but in attempting to re-add s…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56uyJ_",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "style: instead of using an Option here, early return if the trait isn't a Sized trait"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiGF",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56uzZz",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "this is observable if you've got the following environment:"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiG0",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I've removed this particular part of the fast path, will need to re-run perf to see the impact"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57b9xM",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "There's obviously confounding from the rebase and other changes responding to feedback, but perf af…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57rleF",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I tried to re-add this in 9356650 with a can_eq check rather than just structural equality and it r…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56uz7c",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "again, structurally comparing types is insufficient if there are aliases/regions"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiHd",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed and added test"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56u0NL",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiI_",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M56u002",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "why not instead do this filter in implied_predicates_of and super_predicates_of? 🤔"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M57aiLj",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I assumed that it would have had to be in elaborate so that it also happened in tcx.param_env too, …"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58X2Aq",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "ICE baby"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58eK02",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed, this also required skipping PointeeSized during WF-checking, as that would hit this branch."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58X2JY",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "no Pointee in comments"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58eLEm",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58X6hQ",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "even for unelaborated Sized bounds, check match_normalize_trait_ref using the trait ref returned by…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58fml8",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58X8Xg",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "also use the below reject logic"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58eCFt",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I don't think this is possible, the below reject logic uses the obligation in the TraitObligationSt…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58fmib",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed per our discussion earlier"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58X9hV",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "fn prove_meta_sized_via_elaborated_sized"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58fmz5",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed, didn't rename as it is now returning the candidate, but I can if we want to."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58X9u_",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "&& DeepReject::relate_rigid_rigid`"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58eLKG",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58X_JO",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "if this is some, continue with an updated obligation trait ref"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58fmYx",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58YA7u",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "this can be faster, use as_lang_item , @oli-obk lang item hacks :>"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58eLXZ",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed, also all the other places that I did this."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58YC7c",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "instead: bail here?"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58eLao",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58YEsg",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "also check for Sized and bail here"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58eLdK",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I haven't done this one yet, that can happen in the Part II PR adding the host effect predicates."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58YFbL",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "there shouldn't be used outside of Sized <-> MetaSized, either make them moer specific or inline"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58eLtc",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed by inlining in the two places I was using this."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58YGGU",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "🤔"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58YHIE",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M58ZXJI",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Tried this and it doesn't work, so leaving it as-is."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59JbOu",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "what happened here? Rebase fallout? I think it should be reverted"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UM2_",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Yeah, this was left over from when add_sizedness_bounds used to be two functions - one for params/a…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59J68u",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Maybe pull this out into an #[inline(always)] helper function and dedup with below"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UM5c",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59J8Wp",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Ah yea I did this one in isolation on master, but it hasn't landed yet: #140386"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UNI5",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "#140386 has landed and I've rebased."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59KA91",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UNy6",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59KDmJ",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "How is this test actually testing that?"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UOr_",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "This snippet alone was enough to ICE previously, it was one of the cases discovered through the cra…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59KEe6",
+    "source": "review-comment",
+    "author": "oli-obk",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "bogus note, Can be resolved in follow up, but open an issue in that case"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UO15",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Will leave for a follow-up."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59Sq-0",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "please ICE"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UO7E",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59Sr7b",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "when do we want the PointeeSized variant of this enum? I feel like pretty much every use site shoul…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UPbL",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Removed that variant of SizedTraitKind and removed a bunch of unreachable branches."
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59SsKa",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UPgP",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59SsX8",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UPsh",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Removed PointeeSized here but kept the backticks because the other functions in this file all had t…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59SwNF",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UPvV",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59SwYg",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UPyC",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59Sxl0",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Suggested change"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59S1f7",
+    "source": "review-comment",
+    "author": "lcnr",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "also, please explicitly match on Filter here even if we treat both variants the same for now and ad…"
+  },
+  {
+    "id": "PRRC_kwDOAAsO6M59UQLX",
+    "source": "review-comment",
+    "author": "davidtwco",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Fixed, added ElaborateSized, defaulting it to ElaborateSized::No in the Elaborator, and then toggli…"
+  }
+]

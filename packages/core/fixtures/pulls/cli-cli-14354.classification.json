@@ -1,0 +1,106 @@
+[
+  {
+    "id": "PRR_kwDODKw3uc8AAAABMo6Usw",
+    "source": "review",
+    "author": "copilot-pull-request-reviewer",
+    "kind": "procedural",
+    "rule": "bot-author",
+    "snippet": "Copilot review overview"
+  },
+  {
+    "id": "PRR_kwDODKw3uc8AAAABM1tCgQ",
+    "source": "review",
+    "author": "copilot-pull-request-reviewer",
+    "kind": "procedural",
+    "rule": "bot-author",
+    "snippet": "Copilot review overview"
+  },
+  {
+    "id": "PRR_kwDODKw3uc8AAAABM1upzg",
+    "source": "review",
+    "author": "babakks",
+    "kind": "technical",
+    "rule": null,
+    "snippet": "LGTM"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7r-wN5",
+    "source": "review-comment",
+    "author": "copilot-pull-request-reviewer",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "🛑 Requirement: The core filtering behavior is not exercised by a test. Existing tests cover token …"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7r-wOw",
+    "source": "review-comment",
+    "author": "copilot-pull-request-reviewer",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "🛑 Requirement: The validator does not enforce the documented \"exactly one\" capability declaration.…"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7spoFn",
+    "source": "review-comment",
+    "author": "copilot-pull-request-reviewer",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "🛑 Requirement: The parser’s valid results are never asserted. Every call here discards the returne…"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7sp3DD",
+    "source": "review-comment",
+    "author": "williammartin",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Added valid true, false, and CRLF cases that assert the parsed capability value, so an inversion no…"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7spoHN",
+    "source": "review-comment",
+    "author": "copilot-pull-request-reviewer",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "💭 Commentary: This says user-only scripts are always skipped, but an explicitly selected incompati…"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7sp3Dz",
+    "source": "review-comment",
+    "author": "williammartin",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Updated the README to distinguish unfiltered omission from the error produced when an incompatible …"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7spoIN",
+    "source": "review-comment",
+    "author": "copilot-pull-request-reviewer",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "💭 Commentary: This is not a redaction-only dependency update: the version jump also absorbs roughl…"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7sp3DL",
+    "source": "review-comment",
+    "author": "williammartin",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "Removed the go-internal update from this PR to keep the acceptance harness runtime surface scoped. …"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7spt0L",
+    "source": "review-comment",
+    "author": "babakks",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "nitpick: I know it's easier this way, but let's allow any number of lines at the top starting with …"
+  },
+  {
+    "id": "PRRC_kwDODKw3uc7spyM1",
+    "source": "review-comment",
+    "author": "williammartin",
+    "kind": "technical",
+    "rule": "review-comment",
+    "snippet": "I think we should do that when it's needed. I'm not even sure the directive will stick around the w…"
+  }
+]

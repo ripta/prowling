@@ -7,6 +7,7 @@ import { parsePullRequestRef } from "../github/ref";
 import type {
   Actor,
   Anchor,
+  Classification,
   CommentItem,
   ForcePushItem,
   PullRequest,
@@ -26,6 +27,9 @@ const T2 = "2025-01-01T02:00:00Z";
 const T3 = "2025-01-01T03:00:00Z";
 
 const octocat: Actor = { login: "octocat", kind: "User" };
+
+// Grouping is what these tests are about, so every body here is one a rule left alone.
+const technical: Classification = { kind: "technical", rule: null };
 
 // Oids are one letter repeated, so a seven-character prefix still reads as the letter.
 function oid(letter: string): string {
@@ -62,6 +66,7 @@ function review(id: string, revision: number, submittedAt: string | null): Revie
     url: `https://example.test/${id}`,
     isMinimized: false,
     anchor: at(revision),
+    classification: technical,
   };
 }
 
@@ -77,6 +82,7 @@ function comment(id: string, revision: number, createdAt: string): CommentItem {
     isMinimized: false,
     minimizedReason: null,
     anchor: { revision, by: "timestamp" },
+    classification: technical,
   };
 }
 
@@ -111,6 +117,7 @@ function reply(id: string, revision: number, createdAt: string): ReviewComment {
     replyToId: null,
     isMinimized: false,
     anchor: at(revision),
+    classification: technical,
   };
 }
 

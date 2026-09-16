@@ -1,5 +1,7 @@
 version: 1
 allow:
+  - prefix: [awk]
   - prefix: [bun]
+  - prefix: [jq]
   - prefix: [ls]
   - prefix: [rumdl]

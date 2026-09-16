@@ -1,4 +1,17 @@
 export {
+  classifiedBodies,
+  type ClassifiedBodiesInput,
+  type ClassifiedBody,
+  classify,
+  type ClassifyInput,
+  MENTION_PHRASE_WORDS,
+  type Rule,
+  RULES,
+  SNIPPET_CHARS,
+  type Source,
+} from "./classify";
+
+export {
   type Classified,
   classifyErrors,
   classifyResponse,

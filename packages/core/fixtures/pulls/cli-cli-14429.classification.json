@@ -1,0 +1,18 @@
+[
+  {
+    "id": "PRR_kwDODKw3uc8AAAABNKvJvA",
+    "source": "review",
+    "author": "copilot-pull-request-reviewer",
+    "kind": "procedural",
+    "rule": "bot-author",
+    "snippet": "Copilot review overview"
+  },
+  {
+    "id": "PRR_kwDODKw3uc8AAAABNMlTBw",
+    "source": "review",
+    "author": "BagToad",
+    "kind": "procedural",
+    "rule": "empty-body",
+    "snippet": ""
+  }
+]

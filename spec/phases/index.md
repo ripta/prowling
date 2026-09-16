@@ -9,7 +9,7 @@ phase status changes.
 | 1 | PRW-001 | Data layer: transport, model, revision chain | COMPLETE | 3/3 |
 | 2 | PRW-001 | Header and timeline, ending in the layout gate | COMPLETE | 2/2 |
 | 3 | PRW-001 | Detail pane and OpenTUI checkpoint | COMPLETE | 2/2 |
-| 4 | PRW-001 | Classification and folding | PLANNED | 0/2 |
+| 4 | PRW-001 | Classification and folding | IN PROGRESS | 1/2 |
 | 5 | PRW-001 | CI providers: Actions logs, Cloud Build, generic | PLANNED | 0/2 |
 | 6 | PRW-001 | Perspective: boundaries and emphasis | PLANNED | 0/2 |
 
@@ -38,6 +38,5 @@ PRW-001 becomes `implemented` when Phase 6 completes. Its revisit hook for the f
 
 ## Pending Phases
 
-- Phase 4: Classification
 - Phase 5: CI providers
 - Phase 6: Perspective
