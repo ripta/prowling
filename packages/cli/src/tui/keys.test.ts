@@ -64,9 +64,14 @@ describe("the timeline cursor", () => {
 // The pane is modal, and it is not on the tab ring, so it is absent from `regions` above and none of
 // the shared assertions reach it.
 describe("the detail pane", () => {
-  test("esc and q both close it", () => {
+  test("esc closes it", () => {
     expect(resolveAction(key("escape"), "detail")).toBe("close-detail");
-    expect(resolveAction(key("q"), "detail")).toBe("close-detail");
+  });
+
+  // Leaning on the dismiss key closes the pane and stops there. `q` would have quit on the press
+  // after the one that closed it.
+  test("q neither closes it nor leaves the app", () => {
+    expect(resolveAction(key("q"), "detail")).toBeUndefined();
   });
 
   test("ctrl-c still leaves the app", () => {
@@ -86,8 +91,11 @@ describe("the detail pane", () => {
     expect(resolveAction(key("n"), "detail")).toBeUndefined();
   });
 
-  test("it advertises the way out", () => {
-    expect(hintsFor("detail").map((hint) => hint.keys)).toContain("esc/q");
+  test("it advertises the way out, and nothing that would leave the app", () => {
+    const keys = hintsFor("detail").map((hint) => hint.keys);
+
+    expect(keys).toContain("esc");
+    expect(keys).not.toContain("q");
   });
 });
 

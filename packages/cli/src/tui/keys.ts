@@ -1,5 +1,10 @@
 // What a key press means to the app, which depends on where the focus is.
 //
+// A key's meaning may change with the focus, but never to a heavier action than it already carried.
+// Moving around, changing what a region draws, dismissing a mode, and leaving the app are four
+// separate weights, and a key belongs to one of them everywhere. That is what keeps a repeated or
+// held press from reaching further than the first press did.
+//
 // The header and the description are scrollboxes, and a scrollbox handles its own scrolling once
 // focused: arrows, page up and down, home and end. So the rule in those regions is that an unclaimed
 // key returns undefined and reaches the focused region untouched. Claiming a key the scrollbox needs
@@ -56,7 +61,7 @@ const TIMELINE: readonly Hint[] = [
 export function hintsFor(region: RegionId): readonly Hint[] {
   if (region === "detail") {
     return [
-      { keys: "esc/q", label: "close" },
+      { keys: "esc", label: "close" },
       { keys: "↑↓", label: "scroll" },
     ];
   }
@@ -73,13 +78,16 @@ export function resolveAction(key: Key, region: RegionId): Action | undefined {
     return key.name === "c" ? "quit" : undefined;
   }
 
-  // The pane is modal, so it claims only the keys that close it and leaves the rest to its
+  // The pane is modal, so it claims only the key that closes it and leaves the rest to its
   // scrollbox. Toggling the description underneath it, or tabbing to a region it covers, would act
   // on something the reader cannot see.
   //
-  // `q` closes rather than quits here, which is the pager idiom. Ctrl-C still leaves the app.
+  // Dismissing and leaving are different weights of action, so no key carries both. `esc` dismisses
+  // and `q` leaves. Neither takes on the other's job in any region, which is what keeps a repeated
+  // press from reaching further than the first one did. So `q` means nothing here, and a reader
+  // leaning on it ends up with the pane closed and the app still running. Ctrl-C still leaves.
   if (region === "detail") {
-    return key.name === "escape" || key.name === "q" ? "close-detail" : undefined;
+    return key.name === "escape" ? "close-detail" : undefined;
   }
 
   switch (key.name) {

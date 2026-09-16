@@ -56,6 +56,7 @@ type Screen = {
   // like "down" arrives as four keystrokes and scrolls nothing.
   arrow: (direction: "up" | "down") => Promise<void>;
   tab: () => Promise<void>;
+  escape: () => Promise<void>;
 };
 
 // The timeline takes the rows the regions above it leave, so a test that wants to read more than a
@@ -104,8 +105,13 @@ async function renderUntilStable(setup: Renderer, floor: number): Promise<void> 
   }
 }
 
-async function mount(pullRequest: PullRequest, collapsedRows = 8, height = 40): Promise<Screen> {
-  const setup = await testRender(<App pullRequest={pullRequest} onQuit={() => {}} collapsedRows={collapsedRows} />, {
+async function mount(
+  pullRequest: PullRequest,
+  collapsedRows = 8,
+  height = 40,
+  onQuit: (code: number) => void = () => {},
+): Promise<Screen> {
+  const setup = await testRender(<App pullRequest={pullRequest} onQuit={onQuit} collapsedRows={collapsedRows} />, {
     width: 100,
     height,
   });
@@ -134,6 +140,7 @@ async function mount(pullRequest: PullRequest, collapsedRows = 8, height = 40): 
       }),
     arrow: (direction) => settle(() => setup.mockInput.pressArrow(direction)),
     tab: () => settle(() => setup.mockInput.pressTab()),
+    escape: () => settle(() => setup.mockInput.pressEscape()),
   };
 }
 
@@ -150,8 +157,8 @@ async function timelineFrame(pullRequest: PullRequest): Promise<string> {
 }
 
 // Tab walks header, description, timeline.
-async function onTimeline(pullRequest: PullRequest): Promise<Screen> {
-  const screen = await mount(pullRequest, 8, TALL);
+async function onTimeline(pullRequest: PullRequest, onQuit?: (code: number) => void): Promise<Screen> {
+  const screen = await mount(pullRequest, 8, TALL, onQuit);
 
   await screen.tab();
   await screen.tab();
@@ -552,21 +559,39 @@ async function onRow(screen: Screen, match: string): Promise<void> {
 }
 
 describe("the detail pane", () => {
-  // Closing is driven with q here rather than esc. The mock input delivers no escape the hook can
-  // see, so the esc binding is covered in the key map's own test instead.
-  test("enter opens the item under the cursor, and q closes back to the timeline", async () => {
+  test("enter opens the item under the cursor, and esc closes back to the timeline", async () => {
     const screen = await onTimeline(await fixture("cli-cli-14354"));
 
     await onRow(screen, "◆ @babakks");
     await screen.press("\r");
 
     expect(screen.draw()).toContain("detail");
-    expect(screen.draw()).toContain("esc/q close");
+    expect(screen.draw()).toContain("esc close");
 
-    await screen.press("q");
+    await screen.escape();
 
     expect(screen.draw()).toContain("timeline");
     expect(screen.draw()).toContain("jk move");
+  });
+
+  // The pane used to close on q, which left the quit binding sitting behind it. The second press
+  // then took the app down. Each press here gets its own render, which is what a reader pressing the
+  // key again after seeing nothing happen does.
+  test("q neither closes the pane nor leaves the app, however many times it is pressed", async () => {
+    let left: number | undefined;
+    const screen = await onTimeline(await fixture("cli-cli-14354"), (code) => {
+      left = code;
+    });
+
+    await onRow(screen, "◆ @babakks");
+    await screen.press("\r");
+
+    for (let press = 0; press < 4; press += 1) {
+      await screen.press("q");
+    }
+
+    expect(left).toBeUndefined();
+    expect(screen.draw()).toContain("esc close");
   });
 
   test("renders the body it was opened on, keeping the shape bodyText drops", async () => {
@@ -606,12 +631,25 @@ describe("the detail pane", () => {
     await screen.press("j");
     await screen.press("\r");
 
-    expect(screen.draw()).toContain("esc/q close");
+    expect(screen.draw()).toContain("esc close");
 
-    await screen.press("q");
+    await screen.escape();
 
     expect(screen.draw()).toContain("▎  ● @BagToad");
     expect(screen.draw()).toContain("▾ dc6221e");
+  });
+});
+
+describe("leaving the app", () => {
+  test("q quits from a region that is on screen", async () => {
+    let left: number | undefined;
+    const screen = await onTimeline(await fixture("cli-cli-14429"), (code) => {
+      left = code;
+    });
+
+    await screen.press("q");
+
+    expect(left).toBe(0);
   });
 });
 
