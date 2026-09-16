@@ -586,6 +586,10 @@ milestone 1, and issue-comment placement under milestone 2.
 - 2026-09-15: Check rows sort failing, never run, running, required passing, passing, stale, skipped. Attention still
   floats and the merge-gating checks come next. Stale and skipped sink, where the previous order had them above
   everything that passed.
+- 2026-09-15: The markdown renderable resolves its own token styles and inherits nothing from the foreground around
+  it. Left unregistered they fall back to the library's defaults, which are built for a dark background. Moving the
+  description onto it drew the region at roughly 1.3:1 on a light terminal, the same failure the palette work fixed
+  everywhere else. The palette now supplies `default`, `conceal`, and the `markup.*` names, built once per palette.
 - 2026-09-15: `<markdown>` does not ask for a redraw when its parse lands. Content present on the first frame is fine,
   which is why the description renders. Content arriving later draws only its fenced blocks, and the prose around them
   stays blank. Every body the detail pane opens arrives later, so the pane has been rendering fences over blank rows.

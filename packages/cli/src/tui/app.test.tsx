@@ -420,6 +420,20 @@ describe("the palette", () => {
 
     expect(fgOf(frame, "Fix remote branch deletion")).toBe(hex(DARK.text));
   });
+
+  // The markdown renderable does not inherit the foreground around it. Unregistered token styles
+  // fall back to its own, which are built for a dark background and vanish on a light one.
+  test("draws the description through the palette on either background", async () => {
+    const light = await spans(await fixture("cli-cli-14354"), LIGHT);
+
+    expect(fgOf(light, "Depends on #14320")).toBe(hex(LIGHT.text));
+    expect(fgOf(light, "GitHub App installation tokens")).toBe(hex(LIGHT.text));
+    expect(fgOf(light, "Description")).toBe(hex(LIGHT.text));
+
+    const dark = await spans(await fixture("cli-cli-14354"), DARK);
+
+    expect(fgOf(dark, "Depends on #14320")).toBe(hex(DARK.text));
+  });
 });
 
 // The character frame carries no color, so a palette assertion reads the spans instead. Resolving
@@ -432,6 +446,10 @@ async function spans(pullRequest: PullRequest, palette?: Palette): Promise<Captu
   });
 
   destroy = () => setup.renderer.destroy();
+
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, PARSE_MS));
+  });
   await setup.renderOnce();
 
   return setup.captureSpans();
