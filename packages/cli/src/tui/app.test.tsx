@@ -52,6 +52,9 @@ type Screen = {
   // Several presses delivered before a render, which is what holding a key down does. React batches
   // them into one pass, so a handler that is only correct once per render shows up here.
   hold: (key: string, times: number) => Promise<void>;
+  // An actual arrow escape sequence. `press` sends its argument as literal characters, so a name
+  // like "down" arrives as four keystrokes and scrolls nothing.
+  arrow: (direction: "up" | "down") => Promise<void>;
   tab: () => Promise<void>;
 };
 
@@ -129,6 +132,7 @@ async function mount(pullRequest: PullRequest, collapsedRows = 8, height = 40): 
           setup.mockInput.pressKey(key);
         }
       }),
+    arrow: (direction) => settle(() => setup.mockInput.pressArrow(direction)),
     tab: () => settle(() => setup.mockInput.pressTab()),
   };
 }
@@ -260,6 +264,45 @@ describe("the description", () => {
 
     await screen.tab();
     expect(screen.draw()).toContain("jk move");
+  });
+
+  // `scrollY` is a constructor option with no setter, so a box built for the collapsed state has no
+  // scroll range however the prop changes afterwards. The arrows then did nothing in a region whose
+  // whole point is reading past the fold.
+  test("the expanded description scrolls, and collapsing returns it to the top", async () => {
+    const screen = await mount(await fixture("cli-cli-14354"), 8, TALL);
+
+    await screen.tab();
+    await screen.press("d");
+
+    expect(screen.draw()).toContain("Depends on #14320.");
+
+    await screen.arrow("down");
+    await screen.arrow("down");
+
+    expect(screen.draw()).not.toContain("Depends on #14320.");
+
+    await screen.press("d");
+
+    expect(screen.draw()).toContain("Depends on #14320.");
+  });
+
+  // The scroll range is there while collapsed too, so the bar would draw over a column the prose
+  // needs. Hiding it is what keeps the collapsed region the width it reads at.
+  test("keeps the collapsed region free of a scrollbar", async () => {
+    const screen = await mount(await fixture("cli-cli-14354"), 8, TALL);
+    const line = "a user account, so running";
+
+    expect(screen.draw()).toContain(line);
+
+    await screen.tab();
+    await screen.press("d");
+
+    expect(screen.draw()).not.toContain(line);
+
+    await screen.press("d");
+
+    expect(screen.draw()).toContain(line);
   });
 
   // What `bodyText` dropped. GitHub's flattening runs the paragraphs together and takes the heading

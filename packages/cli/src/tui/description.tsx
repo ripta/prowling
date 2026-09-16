@@ -5,7 +5,9 @@
 // is what clips: a fixed-height box draws a wrapping child over the rows below it instead of hiding
 // it.
 
+import type { ScrollBoxRenderable } from "@opentui/core";
 import type { DescriptionView } from "@prowling/core";
+import { useEffect, useRef } from "react";
 
 import { Markdown } from "./markdown";
 import { BORDER, usePalette } from "./theme";
@@ -42,6 +44,30 @@ export type DescriptionProps = {
 
 export function Description({ view, expanded, focused, expandedHeight }: DescriptionProps) {
   const palette = usePalette();
+  const box = useRef<ScrollBoxRenderable>(null);
+
+  // `scrollY` is read once, when the scrollbox is constructed, and the renderable exposes no setter
+  // for it. So the box is built to scroll in both states, and collapsing hides the bar rather than
+  // giving up the scroll range. Rebuilding the box per state would reparse the markdown, and the
+  // renderable does not ask for the frame that would show the result.
+  //
+  // Collapsing also returns the box to the top, since the collapsed region is a window onto the
+  // start of the body rather than onto wherever reading left off.
+  useEffect(() => {
+    const scroll = box.current;
+
+    if (scroll === null) {
+      return;
+    }
+
+    if (expanded) {
+      scroll.verticalScrollBar.resetVisibilityControl();
+      return;
+    }
+
+    scroll.scrollTop = 0;
+    scroll.verticalScrollBar.visible = false;
+  }, [expanded]);
 
   return (
     <box
@@ -62,8 +88,9 @@ export function Description({ view, expanded, focused, expandedHeight }: Descrip
         /* Scrolling belongs to the expanded state. Collapsed, the box is a window onto the top of
            the body and the key the title names is the way further in. */
         <scrollbox
+          ref={box}
           focused={focused && expanded}
-          scrollY={expanded}
+          scrollY
           style={{ height: expanded ? expandedHeight : view.rows }}
         >
           <Markdown content={view.content} />
